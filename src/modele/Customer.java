@@ -6,7 +6,11 @@
 package modele;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -15,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -40,20 +45,19 @@ public class Customer extends Point implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Basic(optional = false)
-    @Column(name = "DEMAND")
-    private int demand;
     @Column(name = "POSITION")
     private Integer position;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
+    private Set<Demand> customerDemands;
 
     public Customer() {
         super();
-        this.demand = 0;
         this.position = 0;
+        this.customerDemands = new HashSet<Demand>();
     }
 
     public Customer(double x, double y, int demand) {
         super(2, x, y);
-        this.demand = 0;
         this.position = 0;
     }
 
@@ -83,6 +87,17 @@ public class Customer extends Point implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public boolean addDemand(int firstDay, int lastDay) {
+        if (firstDay <= lastDay) {
+            Demand d = new Demand(firstDay, lastDay, this);
+            this.customerDemands.add(d);
+            if (this.customerDemands.contains(d)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
