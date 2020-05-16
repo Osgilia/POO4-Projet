@@ -12,6 +12,10 @@
     <class>modele.Demand</class>
     <class>modele.Machine</class>
     <class>modele.OrderMachine</class>
+    <class>modele.Instance</class>
+    <class>modele.Installation</class>
+    <class>modele.Itinerary</class>
+    <class>modele.DayHorizon</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/machines"/>
       <property name="javax.persistence.jdbc.user" value=""/>
