@@ -141,22 +141,4 @@ public class Demand implements Serializable {
         this.lastDay = 0;
         this.machine = null;
     }
-
-    /**
-     * Adds a machine order
-     *
-     * @param machine : machine type to order
-     * @param nbMachines : number of machines
-     * @return
-     */
-//    public boolean addMachineOrder(Machine machine, int nbMachines) {
-//        if (machine != null && nbMachines > 0) {
-//            OrderMachine order = new OrderMachine(this, machine, nbMachines);
-//            this.machineOrders.add(order);
-//            if (machine.addOrder(order)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 }
