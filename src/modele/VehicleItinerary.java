@@ -105,11 +105,9 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         double capacityUsed = this.getVehicleCapacityUsed();
         int totalSizeMachinesRequested = d.getTotalSizeMachines();
         if (capacityUsed + totalSizeMachinesRequested > capacity) {
-            System.err.println("capacity issue");
             return false;
         }
         if (this.getDayNumber() < d.getFirstDay() || this.getDayNumber() > d.getLastDay()) {
-//            System.err.println("day number");
             return false;
         }
         if (!super.addDemand(d)) {
