@@ -6,9 +6,9 @@
 package modele;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,9 +56,9 @@ public class Planning implements Serializable {
      */
     @Column(name = "NBDAYS")
     private int nbDays;
-    
+
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "nplanning")
-    private Set<DayHorizon> days;
+    private List<DayHorizon> days;
 
     /**
      * No-argument constructor
@@ -66,13 +66,24 @@ public class Planning implements Serializable {
     public Planning() {
         this.cost = 0;
         this.nbDays = 0;
-        this.days = new HashSet<>();
+        this.days = new ArrayList<>();
     }
 
     /**
      * Parameterized constructor
+     *
+     * @param nbDays
+     */
+    public Planning(int nbDays) {
+        this();
+        this.nbDays = nbDays;
+    }
+
+    /**
+     * Parameterized constructor
+     *
      * @param ninstance
-     * @param nbDays 
+     * @param nbDays
      */
     public Planning(Instance ninstance, int nbDays) {
         this();
@@ -83,7 +94,7 @@ public class Planning implements Serializable {
     public void setNinstance(Instance ninstance) {
         this.ninstance = ninstance;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -113,6 +124,32 @@ public class Planning implements Serializable {
 
     @Override
     public String toString() {
-        return "Planning{" + "cost=" + cost + ", nbDays=" + nbDays + '}';
+        String str = "Planning spread over " + nbDays + " days with a cost of " + cost;
+        for(DayHorizon day : days) {
+            str += "\n\t" + day;
+        }
+        return str;
+    }
+
+    public int getNbDays() {
+        return nbDays;
+    }
+    
+    /**
+     * Adds a day in the planning horizon
+     *
+     * @param dayHorizon
+     * @return true if success
+     */
+    public boolean addDayHorizon(DayHorizon dayHorizon) {
+        int dayNumber = dayHorizon.getDayNumber();
+        if (dayNumber > 0 && dayNumber < nbDays) {
+            this.days.add(dayHorizon);
+            if (this.days.contains(dayHorizon)) {
+                dayHorizon.setPlanning(this);
+                return true;
+            }
+        }
+        return false;
     }
 }

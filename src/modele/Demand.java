@@ -54,6 +54,10 @@ public class Demand implements Serializable {
     @JoinColumn(name = "NMACHINE", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private Machine machine;
+    
+    @JoinColumn(name = "NITINERARY", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private Itinerary itinerary;
 
     @Column(name = "NBMACHINES")
     private int nbMachines;
@@ -66,6 +70,7 @@ public class Demand implements Serializable {
         this.lastDay = 0;
         this.customer = null;
         this.machine = null;
+        this.itinerary = null;
         this.nbMachines = 0;
     }
 
@@ -128,7 +133,27 @@ public class Demand implements Serializable {
 
     @Override
     public String toString() {
-        return "- " + nbMachines + " machines of type " + machine;
+        return "- " + nbMachines + " machine(s) of type " + machine;
+    }
+
+    public int getFirstDay() {
+        return firstDay;
+    }
+
+    public int getLastDay() {
+        return lastDay;
+    }
+
+    public void setItinerary(Itinerary itinerary) {
+        this.itinerary = itinerary;
+    }
+    
+    /**
+     * Returns the total size of the requested machine(s)
+     * @return integer
+     */
+    public int getTotalSizeMachines() {
+        return this.machine.getSize() * this.nbMachines;
     }
     
     /**

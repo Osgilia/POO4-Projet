@@ -54,6 +54,9 @@ public class Vehicle implements Serializable {
 
     @Column(name = "DISTANCEMAX")
     private double distanceMax;
+    
+    @Column(name = "DISTANCETRAVELLED")
+    private double distanceTravelled;
 
     @Column(name = "DISTANCECOST")
     private double distanceCost;
@@ -70,6 +73,7 @@ public class Vehicle implements Serializable {
      */
     public Vehicle() {
         this.capacity = 0;
+        this.distanceTravelled = 0.0;
         this.capacityUsed = 0;
         this.usageCost = 0.0;
         this.distanceMax = 0.0;
@@ -79,6 +83,7 @@ public class Vehicle implements Serializable {
 
     /**
      * Parameterized constructor
+     * @param id
      * @param depot
      * @param capacity
      * @param distanceMax
@@ -103,6 +108,7 @@ public class Vehicle implements Serializable {
     public Vehicle(Vehicle v) {
         this();
         this.capacity = v.getCapacity();
+        this.distanceTravelled = v.getDistanceTravelled();
         this.depot = v.getDepot();
         this.capacityUsed = v.getCapacityUsed();
         this.usageCost = v.getUsageCost();
@@ -139,6 +145,22 @@ public class Vehicle implements Serializable {
         return depot;
     }
 
+    public double getDistanceTravelled() {
+        return distanceTravelled;
+    }
+
+    public void setUsageCost(double usageCost) {
+        this.usageCost = usageCost;
+    }
+
+    public void setCapacityUsed(double capacityUsed) {
+        this.capacityUsed = capacityUsed;
+    }
+
+    public void setDistanceTravelled(double distanceTravelled) {
+        this.distanceTravelled = distanceTravelled;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -160,8 +182,7 @@ public class Vehicle implements Serializable {
 
     @Override
     public String toString() {
-        return "Vehicule : id " + id + " | Capacity " + this.capacityUsed + "/" + this.capacity + " that costs " + this.usageCost
-                + "\n\t\tDepot : " + this.depot;
+        return "Vehicule : id " + id + " | Capacity " + this.capacityUsed + "/" + this.capacity + " that costs " + this.usageCost;
     }
 
     /**

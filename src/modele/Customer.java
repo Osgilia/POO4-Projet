@@ -1,17 +1,15 @@
 package modele;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -42,7 +40,7 @@ public class Customer extends Point implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     private Set<Demand> customerDemands;
-
+    
     /**
      * No-argument constructor
      */
@@ -54,9 +52,11 @@ public class Customer extends Point implements Serializable {
 
     /**
      * Parameterized constructor
+     *
+     * @param id
      * @param x
      * @param y
-     * @param demand 
+     * @param demand
      */
     public Customer(Integer id, double x, double y, int demand) {
         super(id, 2, x, y);
@@ -85,11 +85,15 @@ public class Customer extends Point implements Serializable {
 
     @Override
     public String toString() {
-        String str = "Customer in position " + this.position + " at " + super.toString() + " asking for :\n";
-        for(Demand d : customerDemands) {
-            str += "\t" + d.toString() + "\n";
+        String str = "Customer (" + super.getId() + ") in position " + this.position + " at " + super.toString() + " asking for :\n";
+        for (Demand d : customerDemands) {
+            str += "\t\t\t\t" + d.toString() + "\n";
         }
         return str;
+    }
+
+    public Set<Demand> getCustomerDemands() {
+        return customerDemands;
     }
 
     /**

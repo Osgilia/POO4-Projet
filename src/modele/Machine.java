@@ -100,11 +100,15 @@ public class Machine implements Serializable {
         return "[size = " + size + " and penalty = " + penalty + "]";
     }
 
+    public int getSize() {
+        return size;
+    }
+    
     /**
      * Adds a relation entity between this machine and a technician
      *
      * @param installation : relation entity
-     * @return
+     * @return true if success
      */
     public boolean addTechnician(Installation installation) {
         if (installation != null && installation.getMachine() == this) {
