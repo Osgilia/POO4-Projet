@@ -1,6 +1,7 @@
 package modele;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,12 +33,24 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     @ManyToOne
     @JoinColumn(name = "VEHICLE_ID")
     private Vehicle vehicle;
+    
+    @Column(name = "COST")
+    private double cost;
+    
+    @Column(name = "DISTANCETRAVELLED")
+    private double distanceTravelled;
+    
+    @Column(name = "CAPACITYUSED")
+    private double capacityUsed;
 
     /**
      * No-argument constructor
      */
     public VehicleItinerary() {
         super();
+        this.cost = 0.0;
+        this.capacityUsed = 0.0;
+        this.distanceTravelled = 0.0;
     }
 
     /**
@@ -71,7 +84,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
 
     @Override
     public String toString() {
-        return "- Itinerary of " + vehicle + " :" + super.toString();
+        return "- Itinerary of " + vehicle + " [Capacity = " + capacityUsed + "/" + this.vehicle.getCapacity() + "] :" + super.toString();
     }
 
     public Vehicle getVehicle() {
@@ -83,11 +96,11 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     }
 
     public double getVehicleCapacityUsed() {
-        return vehicle.getCapacityUsed();
+        return this.capacityUsed;
     }
 
     public void setVehicleCapacityUsed(double newCapacity) {
-        vehicle.setCapacityUsed(newCapacity);
+        this.capacityUsed = newCapacity;
     }
 
     /**
@@ -102,7 +115,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             return false;
         }
         double capacity = this.getVehicleCapacity();
-        double capacityUsed = this.getVehicleCapacityUsed();
         int totalSizeMachinesRequested = d.getTotalSizeMachines();
         if (capacityUsed + totalSizeMachinesRequested > capacity) {
             return false;
@@ -117,5 +129,15 @@ public class VehicleItinerary extends Itinerary implements Serializable {
 
         // todo update cost vehicle + planning
         return true;
+    }
+    
+    
+    /**
+     * Clears data related to the vehicle itinerary
+     */
+    public void clear() {
+        this.capacityUsed = 0.0;
+        this.distanceTravelled = 0.0;
+        this.cost = 0.0;
     }
 }

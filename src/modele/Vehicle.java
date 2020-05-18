@@ -43,21 +43,15 @@ public class Vehicle implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "COST")
+    @Column(name = "USAGECOST")
     private double usageCost;
-
-    @Column(name = "CAPACITYUSED")
-    private double capacityUsed;
-
+    
     @Column(name = "CAPACITY")
     private double capacity;
 
     @Column(name = "DISTANCEMAX")
     private double distanceMax;
     
-    @Column(name = "DISTANCETRAVELLED")
-    private double distanceTravelled;
-
     @Column(name = "DISTANCECOST")
     private double distanceCost;
 
@@ -72,13 +66,11 @@ public class Vehicle implements Serializable {
      * No-argument constructor
      */
     public Vehicle() {
-        this.capacity = 0;
-        this.distanceTravelled = 0.0;
-        this.capacityUsed = 0;
-        this.usageCost = 0.0;
+        this.capacity = 0.0;
         this.distanceMax = 0.0;
         this.distanceCost = 0.0;
         this.dayCost = 0.0;
+        this.usageCost = 0.0;
     }
 
     /**
@@ -89,7 +81,6 @@ public class Vehicle implements Serializable {
      * @param distanceMax
      * @param distanceCost
      * @param dayCost
-     * @param usageCost 
      */
     public Vehicle(Integer id, Depot depot, double capacity, double distanceMax, double distanceCost, double dayCost, double usageCost) {
         this();
@@ -98,6 +89,7 @@ public class Vehicle implements Serializable {
         this.distanceMax = distanceMax > 0 ? distanceMax : 0.0;
         this.distanceCost = distanceCost > 0 ? distanceCost : 0.0;
         this.dayCost = dayCost > 0 ? dayCost : 0.0;
+        this.usageCost = usageCost > 0 ? usageCost : 0.0;
         this.depot = depot;
     }
 
@@ -108,23 +100,21 @@ public class Vehicle implements Serializable {
     public Vehicle(Vehicle v) {
         this();
         this.capacity = v.getCapacity();
-        this.distanceTravelled = v.getDistanceTravelled();
-        this.depot = v.getDepot();
-        this.capacityUsed = v.getCapacityUsed();
         this.usageCost = v.getUsageCost();
+        this.depot = v.getDepot();
         this.dayCost = v.getDayCost();
         this.distanceCost = v.getDistanceCost();
         this.distanceMax = v.getDistanceMax();
-    }
-
-    public double getUsageCost() {
-        return usageCost;
     }
 
     public double getDistanceMax() {
         return distanceMax;
     }
 
+    public double getUsageCost() {
+        return usageCost;
+    }
+    
     public double getDistanceCost() {
         return distanceCost;
     }
@@ -133,32 +123,12 @@ public class Vehicle implements Serializable {
         return dayCost;
     }
 
-    public double getCapacityUsed() {
-        return capacityUsed;
-    }
-
     public double getCapacity() {
         return capacity;
     }
 
     public Depot getDepot() {
         return depot;
-    }
-
-    public double getDistanceTravelled() {
-        return distanceTravelled;
-    }
-
-    public void setUsageCost(double usageCost) {
-        this.usageCost = usageCost;
-    }
-
-    public void setCapacityUsed(double capacityUsed) {
-        this.capacityUsed = capacityUsed;
-    }
-
-    public void setDistanceTravelled(double distanceTravelled) {
-        this.distanceTravelled = distanceTravelled;
     }
     
     @Override
@@ -182,15 +152,8 @@ public class Vehicle implements Serializable {
 
     @Override
     public String toString() {
-        return "Vehicule (" + id + ") [Capacity " + this.capacityUsed + "/" + this.capacity + " that costs " + this.usageCost + "]";
+        return "Vehicule (" + id + ")"; // todo
     }
 
-    /**
-     * Clears data related to the vehicule
-     */
-    public void clear() {
-        this.capacityUsed = 0.0;
-        this.distanceTravelled = 0.0;
-    }
 
 }

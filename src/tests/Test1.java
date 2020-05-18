@@ -80,7 +80,6 @@ public class Test1 {
             /*
                 Todo : 
                     - demande traitée par un itinéraire => demande retirée de la liste
-                    - clear vehicle data at the end of each day with clear()
                     - update costs
                     - technician itineraries
                     - and more
@@ -102,9 +101,6 @@ public class Test1 {
             }
             
             p.addDayHorizon(day);
-            
-//            v1.clear();
-//            v2.clear(); // clears vehicle data at the end of each day
         }
 
         System.out.println(p);
