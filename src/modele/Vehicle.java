@@ -182,14 +182,15 @@ public class Vehicle implements Serializable {
 
     @Override
     public String toString() {
-        return "Vehicule : id " + id + " | Capacity " + this.capacityUsed + "/" + this.capacity + " that costs " + this.usageCost;
+        return "Vehicule (" + id + ") [Capacity " + this.capacityUsed + "/" + this.capacity + " that costs " + this.usageCost + "]";
     }
 
     /**
      * Clears data related to the vehicule
      */
     public void clear() {
-        this.capacityUsed = 0;
+        this.capacityUsed = 0.0;
+        this.distanceTravelled = 0.0;
     }
 
 }

@@ -56,7 +56,7 @@ public class Test1 {
                 truckDayCost = 100,
                 truckDistanceCost = 100000,
                 truckMaxDistance = 960,
-                truckCapacity = 100;
+                truckCapacity = 40;
 
         Technician t1 = new Technician(1, 10, 0, 200, 500, technicianCost, technicianDistanceCost, technicianDayCost);
         Technician t2 = new Technician(2, 10, -10, 100, 300, technicianCost, technicianDistanceCost, technicianDayCost);
@@ -76,6 +76,15 @@ public class Test1 {
             VehicleItinerary vehicleItinerary2 = new VehicleItinerary(v2);
             day.addVehiculeItinerary(vehicleItinerary1);
             day.addVehiculeItinerary(vehicleItinerary2);
+            
+            /*
+                Todo : 
+                    - demande traitée par un itinéraire => demande retirée de la liste
+                    - clear vehicle data at the end of each day with clear()
+                    - update costs
+                    - technician itineraries
+                    - and more
+            */
             for (Demand d1 : c1.getCustomerDemands()) {
                 if (!vehicleItinerary1.addDemandVehicle(d1)) {
                     vehicleItinerary2.addDemandVehicle(d1);
@@ -92,9 +101,10 @@ public class Test1 {
                 }
             }
             
-
-            // Todo : technician itineraries
             p.addDayHorizon(day);
+            
+//            v1.clear();
+//            v2.clear(); // clears vehicle data at the end of each day
         }
 
         System.out.println(p);

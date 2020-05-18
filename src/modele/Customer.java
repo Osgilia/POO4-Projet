@@ -108,6 +108,7 @@ public class Customer extends Point implements Serializable {
     public boolean addDemand(int firstDay, int lastDay, Machine m, int nbMachines) {
         if (firstDay <= lastDay) {
             Demand d = new Demand(firstDay, lastDay, this, m, nbMachines);
+            m.addDemand(d);
             this.customerDemands.add(d);
             if (this.customerDemands.contains(d)) {
                 return true;

@@ -46,12 +46,22 @@ public class Machine implements Serializable {
     private List<Installation> potentialInstallations;
 
     /**
+     * Demands associated to the machine type
+     */
+    @OneToMany(mappedBy = "machine",
+            cascade = {
+                CascadeType.PERSIST
+            })
+    private List<Demand> demandsMachineType;
+
+    /**
      * No-argument constructor
      */
     public Machine() {
         this.size = 0;
         this.penalty = 0.0;
         this.potentialInstallations = new ArrayList<>();
+        this.demandsMachineType = new ArrayList<>();
     }
 
     /**
@@ -103,7 +113,7 @@ public class Machine implements Serializable {
     public int getSize() {
         return size;
     }
-    
+
     /**
      * Adds a relation entity between this machine and a technician
      *
@@ -114,6 +124,22 @@ public class Machine implements Serializable {
         if (installation != null && installation.getMachine() == this) {
             if (!this.potentialInstallations.contains(installation)) {
                 this.potentialInstallations.add(installation);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Adds a demand associated to this type of machine
+     *
+     * @param demand
+     * @return true if success
+     */
+    public boolean addDemand(Demand demand) {
+        if (demand != null) {
+            this.demandsMachineType.add(demand);
+            if (this.demandsMachineType.contains(demand)) {
                 return true;
             }
         }
