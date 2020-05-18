@@ -19,8 +19,9 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Route thats connects two points
  *
- * @author Osgilia
+ * @author Henri, Louis, Lucas
  */
 @Entity
 @Table(name = "ROUTE")
@@ -34,30 +35,26 @@ public class Route implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "DISTANCE")
     private Double distance;
+
     @JoinColumn(name = "NARRIVEE", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private Point arrivee;
+
     @JoinColumn(name = "NDEPART", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private Point depart;
-
-    public Route() {
-        this.depart = new Point();
-        this.arrivee = new Point();
-        this.distance = 0.0;
-    }
 
     public Route(Point depart, Point arrivee, Double distance) {
         this.depart = depart;
         this.arrivee = arrivee;
         this.distance = distance;
     }
-    
-    
+
     public Long getId() {
         return id;
     }
@@ -97,12 +94,9 @@ public class Route implements Serializable {
     public Point getDepart() {
         return depart;
     }
-    
-    
 
     @Override
     public String toString() {
-        return "modele.Route[ id=" + id + " ]";
+        return "Route " + id + ": " + this.depart + " vers " + this.arrivee + " = " + this.distance;
     }
-
 }

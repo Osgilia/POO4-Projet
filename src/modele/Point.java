@@ -10,57 +10,92 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.MapKey;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Class representing a point
  *
- * @author Osgilia
+ * @author Henri, Lucas, Louis
  */
 @Entity
-public class Point implements Serializable {
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "POINTTYPE",
+        discriminatorType = DiscriminatorType.INTEGER)
+@Table(name = "POINT")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Point.findAll", query = "SELECT p FROM Point p")
+    , @NamedQuery(name = "Point.findById", query = "SELECT p FROM Point p WHERE p.id = :id")
+    , @NamedQuery(name = "Point.findByX", query = "SELECT p FROM Point p WHERE p.x = :x")
+    , @NamedQuery(name = "Point.findByY", query = "SELECT p FROM Point p WHERE p.y = :y")})
+public abstract class Point implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     @Column(name = "POINTTYPE")
     private Integer pointType;
+
     @Basic(optional = false)
     @Column(name = "X")
     private double x;
+
     @Basic(optional = false)
     @Column(name = "Y")
     private double y;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "depart")
+    @MapKey(name = "arrivee")
     private Map<Point, Route> myRoutes;
+
+    @OneToMany(mappedBy = "ndepot")
+    private Set<Vehicle> collectionVehicules;
 
     public Point() {
         this.pointType = 1;
         this.x = 0;
         this.y = 0;
-
+        this.myRoutes = new HashMap<>();
+        this.collectionVehicules = new HashSet<>();
     }
 
-    public Point(Integer pointType, double x, double y) {
+    public Point(Integer id, Integer pointType, double x, double y) {
         this();
+        this.id = id;
         this.pointType = pointType;
         this.x = x;
         this.y = y;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
     }
 
     @Override
@@ -72,7 +107,6 @@ public class Point implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Point)) {
             return false;
         }
@@ -83,7 +117,19 @@ public class Point implements Serializable {
         return true;
     }
 
-    public boolean addDestination(Point p, Double distance) {
+    @Override
+    public String toString() {
+        return "[x = " + this.x + ", y = " + this.y + "]";
+    }
+
+    /**
+     * Adds a route between this and p
+     *
+     * @param p : point of arrival
+     * @param distance
+     * @return true if success
+     */
+    public boolean addDestination(Point p, double distance) {
         if (p != null) {
             Route r = new Route(this, p, distance);
             this.myRoutes.put(p, r);
@@ -94,32 +140,39 @@ public class Point implements Serializable {
         return false;
     }
 
+    /**
+     * Returns the distance between this and key
+     *
+     * @param key : point
+     * @return distance or infinity if error
+     */
     public double getDistanceTo(Point key) {
-        HashMap<Point, Route> routes = new HashMap<Point, Route>(this.myRoutes);
-        Iterator hashMapIterator = routes.entrySet().iterator();
-        Point pointArrivee = null;
-        Route route = null;
-        while (hashMapIterator.hasNext()) {
-            Map.Entry me = (Map.Entry) hashMapIterator.next();
-            route = (Route) me.getValue();
-            pointArrivee = (Point) me.getKey();
-            if (pointArrivee == key) {
-                break;
-            } else {
-                pointArrivee = null;
-                route = null;
-            }
-        }
-        if (pointArrivee == null || route == null) {
+        if (this.myRoutes.containsKey(key)) {
+            return this.myRoutes.get(key).getDistance();
+        } else {
             return Double.POSITIVE_INFINITY;
         }
-        return route.getDistance();
-    }
-    
-    
-    @Override
-    public String toString() {
-        return "modele.Point[ id=" + id + " ]";
     }
 
+//    public double getDistanceTo(Point key) {
+//        HashMap<Point, Route> routes = new HashMap<Point, Route>(this.myRoutes);
+//        Iterator hashMapIterator = routes.entrySet().iterator();
+//        Point pointArrivee = null;
+//        Route route = null;
+//        while (hashMapIterator.hasNext()) {
+//            Map.Entry me = (Map.Entry) hashMapIterator.next();
+//            route = (Route) me.getValue();
+//            pointArrivee = (Point) me.getKey();
+//            if (pointArrivee == key) {
+//                break;
+//            } else {
+//                pointArrivee = null;
+//                route = null;
+//            }
+//        }
+//        if (pointArrivee == null || route == null) {
+//            return Double.POSITIVE_INFINITY;
+//        }
+//        return route.getDistance();
+//    }
 }
