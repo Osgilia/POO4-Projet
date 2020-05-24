@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package modele;
 
 import java.io.Serializable;
 import java.util.Objects;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +11,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -55,9 +48,17 @@ public class Demand implements Serializable {
     @ManyToOne(optional = false)
     private Machine machine;
     
-    @JoinColumn(name = "NITINERARY", referencedColumnName = "ID")
+    @JoinColumn(name = "NVEHICLEITINERARY", referencedColumnName = "ID")
     @ManyToOne(optional = false)
-    private Itinerary itinerary;
+    private VehicleItinerary vehicleItinerary;
+    
+    @JoinColumn(name = "NTECHNICIANITINERARY", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private TechnicianItinerary technicianItinerary;
+    
+    @JoinColumn(name = "NPLANNING", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private Planning planning;
 
     @Column(name = "NBMACHINES")
     private int nbMachines;
@@ -70,7 +71,6 @@ public class Demand implements Serializable {
         this.lastDay = 0;
         this.customer = null;
         this.machine = null;
-        this.itinerary = null;
         this.nbMachines = 0;
     }
 
@@ -81,20 +81,22 @@ public class Demand implements Serializable {
      * @param customer
      * @param machine
      * @param nbMachines 
+     * @param p : planning
      */
-    public Demand(int firstDay, int lastDay, Customer customer, Machine machine, int nbMachines) {
+    public Demand(int firstDay, int lastDay, Customer customer, Machine machine, int nbMachines, Planning p) {
         this();
         this.firstDay = firstDay;
         this.lastDay = lastDay;
         this.customer = customer;
         this.nbMachines = nbMachines;
         this.machine = machine;
+        this.planning = p;
     }
 
     public Long getId() {
         return id;
     }
-
+    
     @Override
     public int hashCode() {
         int hash = 5;
@@ -144,8 +146,28 @@ public class Demand implements Serializable {
         return lastDay;
     }
 
-    public void setItinerary(Itinerary itinerary) {
-        this.itinerary = itinerary;
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public VehicleItinerary getVehicleItinerary() {
+        return vehicleItinerary;
+    }
+
+    public void setVehicleItinerary(VehicleItinerary vehicleItinerary) {
+        this.vehicleItinerary = vehicleItinerary;
+    }
+
+    public TechnicianItinerary getTechnicianItinerary() {
+        return technicianItinerary;
+    }
+
+    public void setTechnicianItinerary(TechnicianItinerary technicianItinerary) {
+        this.technicianItinerary = technicianItinerary;
+    }
+    
+    public Machine getMachine() {
+        return machine;
     }
     
     /**
@@ -165,5 +187,8 @@ public class Demand implements Serializable {
         this.firstDay = 0;
         this.lastDay = 0;
         this.machine = null;
+        this.planning = null;
+        this.technicianItinerary = null;
+        this.vehicleItinerary = null;
     }
 }

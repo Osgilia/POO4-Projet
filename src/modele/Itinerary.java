@@ -1,15 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package modele;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -21,7 +13,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -43,12 +34,6 @@ public class Itinerary implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToMany(mappedBy = "itinerary",
-            cascade = {
-                CascadeType.PERSIST
-            })
-    private List<Demand> customersDemands;
-
     /**
      * Vehicle or technician itinerary
      */
@@ -66,7 +51,6 @@ public class Itinerary implements Serializable {
      * No-argument constructor
      */
     public Itinerary() {
-        this.customersDemands = new ArrayList<>();
         this.itineraryType = 1;
     }
 
@@ -115,11 +99,7 @@ public class Itinerary implements Serializable {
 
     @Override
     public String toString() {
-        String str = "";
-        for (Demand demand : customersDemands) {
-            str += "\n\t\t\t\t " + demand;
-        }
-        return str;
+        return "Itinerary Type = " + itineraryType;
     }
 
     public void setDayHorizon(DayHorizon dayHorizon) {
@@ -135,21 +115,17 @@ public class Itinerary implements Serializable {
     public int getDayNumber() {
         return dayHorizon.getDayNumber();
     }
+    
+    public void updateCostDay() {
+        this.dayHorizon.updateCost();
+    }
 
     /**
-     * Adds a customer demand to this itinerary
+     * Toggles the state of a demand
      *
-     * @param d : demand
-     * @return true if success
+     * @param d : demand to toggle
      */
-    public boolean addDemand(Demand d) {
-        if (d != null) {
-            this.customersDemands.add(d);
-            if (this.customersDemands.contains(d)) {
-                d.setItinerary(this);
-                return true;
-            }
-        }
-        return false;
+    protected void toggleDemand(Demand d) {
+        this.dayHorizon.toggleDemand(d);
     }
 }

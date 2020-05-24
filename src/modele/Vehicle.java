@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package modele;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,20 +27,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Vehicle.findAll", query = "SELECT v FROM Vehicle v")
-    , @NamedQuery(name = "Vehicle.findById", query = "SELECT v FROM Vehicle v WHERE v.id = :id")
-    , @NamedQuery(name = "Vehicle.findByCout", query = "SELECT v FROM Vehicle v WHERE v.cout = :cout")
-    , @NamedQuery(name = "Vehicle.findByCapaciteutilisee", query = "SELECT v FROM Vehicle v WHERE v.capaciteutilisee = :capaciteutilisee")
-    , @NamedQuery(name = "Vehicle.findAllNotUsed", query = "SELECT v FROM Vehicle v WHERE v.listCustomer IS EMPTY")
-    , @NamedQuery(name = "Vehicle.findByCapacite", query = "SELECT v FROM Vehicle v WHERE v.capacite = :capacite")})
+    , @NamedQuery(name = "Vehicle.findById", query = "SELECT v FROM Vehicle v WHERE v.id = :id")})
 public class Vehicle implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "USAGECOST")
-    private double usageCost;
     
     @Column(name = "CAPACITY")
     private double capacity;
@@ -52,15 +41,33 @@ public class Vehicle implements Serializable {
     @Column(name = "DISTANCEMAX")
     private double distanceMax;
     
+    /**
+     * Cost per distance unit covered by the vehicle
+     */
     @Column(name = "DISTANCECOST")
     private double distanceCost;
 
+    /**
+     * Daily cost of the vehicle
+     */
     @Column(name = "DAYCOST")
     private double dayCost;
+    
+    /**
+     * Cost of using a technician during a day of the planning horizon
+     */
+    @Column(name = "USAGECOST")
+    private double usageCost;
 
     @JoinColumn(name = "DEPOT", referencedColumnName = "ID")
     @ManyToOne
     private Depot depot;
+    
+    @OneToMany(mappedBy = "itinerary",
+            cascade = {
+                CascadeType.PERSIST
+            })
+    private List<VehicleItinerary> itineraries;
 
     /**
      * No-argument constructor
@@ -71,6 +78,7 @@ public class Vehicle implements Serializable {
         this.distanceCost = 0.0;
         this.dayCost = 0.0;
         this.usageCost = 0.0;
+        this.itineraries = new ArrayList<>();
     }
 
     /**
@@ -81,6 +89,7 @@ public class Vehicle implements Serializable {
      * @param distanceMax
      * @param distanceCost
      * @param dayCost
+     * @param usageCost
      */
     public Vehicle(Integer id, Depot depot, double capacity, double distanceMax, double distanceCost, double dayCost, double usageCost) {
         this();
@@ -89,8 +98,8 @@ public class Vehicle implements Serializable {
         this.distanceMax = distanceMax > 0 ? distanceMax : 0.0;
         this.distanceCost = distanceCost > 0 ? distanceCost : 0.0;
         this.dayCost = dayCost > 0 ? dayCost : 0.0;
-        this.usageCost = usageCost > 0 ? usageCost : 0.0;
         this.depot = depot;
+        this.usageCost = usageCost;
     }
 
     /**
@@ -100,7 +109,6 @@ public class Vehicle implements Serializable {
     public Vehicle(Vehicle v) {
         this();
         this.capacity = v.getCapacity();
-        this.usageCost = v.getUsageCost();
         this.depot = v.getDepot();
         this.dayCost = v.getDayCost();
         this.distanceCost = v.getDistanceCost();
@@ -109,10 +117,6 @@ public class Vehicle implements Serializable {
 
     public double getDistanceMax() {
         return distanceMax;
-    }
-
-    public double getUsageCost() {
-        return usageCost;
     }
     
     public double getDistanceCost() {
@@ -129,6 +133,14 @@ public class Vehicle implements Serializable {
 
     public Depot getDepot() {
         return depot;
+    }
+
+    public double getUsageCost() {
+        return usageCost;
+    }
+    
+    public void setDepot(Depot depot) {
+        this.depot = depot;
     }
     
     @Override
@@ -152,8 +164,10 @@ public class Vehicle implements Serializable {
 
     @Override
     public String toString() {
-        return "Vehicule (" + id + ")"; // todo
+        return "Vehicule (" + id + ")";
     }
 
-
+    public void addItinerary(VehicleItinerary v) {
+        this.itineraries.add(v);
+    }
 }
