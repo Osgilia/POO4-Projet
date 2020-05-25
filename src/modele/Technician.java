@@ -74,6 +74,12 @@ public class Technician extends Point implements Serializable {
             })
     private List<Installation> potentialInstallations;
 
+    @OneToMany(mappedBy = "itinerary",
+            cascade = {
+                CascadeType.PERSIST
+            })
+    private List<TechnicianItinerary> itineraries;
+
     /**
      * No-argument constructor
      */
@@ -85,6 +91,7 @@ public class Technician extends Point implements Serializable {
         this.distMax = 0.0;
         this.demandMax = 0;
         this.potentialInstallations = new ArrayList<>();
+        this.itineraries = new ArrayList<>();
     }
 
     /**
@@ -108,6 +115,7 @@ public class Technician extends Point implements Serializable {
         this.distMax = distanceMax;
         this.demandMax = demandMax;
         this.potentialInstallations = new ArrayList<>();
+        this.itineraries = new ArrayList<>();
     }
 
     @Override
@@ -131,9 +139,31 @@ public class Technician extends Point implements Serializable {
 
     @Override
     public String toString() {
-        return "Technician (" + id + ") " + " [distance cost = " + distanceCost + ", day cost = "
-                + dayCost + ", usage cost = " + usageCost + " max distance = "
-                + distMax + ", max demands = " + demandMax + ']';
+        return "Technician (" + id + ")";
+    }
+
+    public double getDistanceCost() {
+        return distanceCost;
+    }
+
+    public double getDayCost() {
+        return dayCost;
+    }
+
+    public double getUsageCost() {
+        return usageCost;
+    }
+
+    public double getDistMax() {
+        return distMax;
+    }
+
+    public int getDemandMax() {
+        return demandMax;
+    }
+
+    public void addItinerary(TechnicianItinerary t) {
+        this.itineraries.add(t);
     }
 
     /**
@@ -153,5 +183,41 @@ public class Technician extends Point implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if the technician can install the machines requested and if he can
+     * work (doesn't need to rest)
+     *
+     * @todo : 2 days rest if 5 working days, else 1 day rest
+     * @todo : to review
+     * @param demand
+     * @param dayNumber
+     * @return true if success
+     */
+    public boolean canInstallDemand(Demand demand, int dayNumber) {
+        boolean canInstall = false;
+        for (Installation installation : this.potentialInstallations) {
+            if (installation.getMachine().equals(demand.getMachine())) {
+                canInstall = true;
+            }
+        }
+
+        int lastDay = 0;
+        int nbStraightWorkingDays = 0;
+        for (TechnicianItinerary itinerary : itineraries) {
+            int currentDayNumber = itinerary.getDayNumber();
+            if (currentDayNumber > lastDay) {
+                if (currentDayNumber == lastDay + 1) {
+                    lastDay = currentDayNumber;
+                    nbStraightWorkingDays++;
+                    if (nbStraightWorkingDays > 4) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return canInstall;
     }
 }
