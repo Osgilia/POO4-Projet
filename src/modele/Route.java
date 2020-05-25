@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package modele;
 
 import java.io.Serializable;
@@ -49,7 +44,21 @@ public class Route implements Serializable {
     @ManyToOne(optional = false)
     private Point depart;
 
+    /**
+     * No-arg constructor
+     */
+    public Route() {
+        this.distance = 0.0;
+    }
+    
+    /**
+     * Parameterized constructor
+     * @param depart
+     * @param arrivee
+     * @param distance 
+     */
     public Route(Point depart, Point arrivee, Double distance) {
+        this();
         this.depart = depart;
         this.arrivee = arrivee;
         this.distance = distance;
@@ -57,10 +66,6 @@ public class Route implements Serializable {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Override
@@ -72,7 +77,6 @@ public class Route implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Route)) {
             return false;
         }
@@ -97,6 +101,6 @@ public class Route implements Serializable {
 
     @Override
     public String toString() {
-        return "Route " + id + ": " + this.depart + " vers " + this.arrivee + " = " + this.distance;
+        return "Route " + id + ": From " + this.depart + " to " + this.arrivee + " = " + this.distance;
     }
 }

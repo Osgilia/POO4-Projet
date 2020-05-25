@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Point représentant le dépôt
+ * Point that represents a depot
  *
  * @author Henri, Lucas, Louis
  */

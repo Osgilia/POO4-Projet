@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package modele;
 
 import java.io.Serializable;
@@ -40,24 +35,21 @@ public class DayHorizon implements Serializable {
             cascade = {
                 CascadeType.PERSIST
             })
-    private List<VehicleItinerary> vehicleItineraries;
-
-    @OneToMany(mappedBy = "dayHorizon",
-            cascade = {
-                CascadeType.PERSIST
-            })
-    private List<TechnicianItinerary> technicianItineraries;
+    private List<Itinerary> itineraries;
 
     @Column(name = "NUMBER")
     private int dayNumber;
+
+    @Column(name = "COST")
+    private double cost;
 
     /**
      * No-argument constructor
      */
     public DayHorizon() {
         this.dayNumber = -1;
-        this.vehicleItineraries = new ArrayList<>();
-        this.technicianItineraries = new ArrayList<>();
+        this.cost = 0.0;
+        this.itineraries = new ArrayList<>();
     }
 
     /**
@@ -101,14 +93,10 @@ public class DayHorizon implements Serializable {
 
     @Override
     public String toString() {
-        String str = "\tDay " + dayNumber + " :";
-        for(VehicleItinerary v : vehicleItineraries) {
-            str += "\n\t\t\t" + v;
+        String str = "\tDay " + dayNumber + " with a cost of " + cost + " :";
+        for (Itinerary i : itineraries) {
+            str += "\n\t\t\t" + i;
         }
-        str += "\n\t\t---";
-//        for(TechnicianItinerary t : technicianItineraries) {
-//            str += "\n\t\t\t" + t;
-//        }
         return str;
     }
 
@@ -116,21 +104,45 @@ public class DayHorizon implements Serializable {
         this.planning = planning;
     }
 
+    public double getCost() {
+        return cost;
+    }
+
     public int getDayNumber() {
         return dayNumber;
     }
 
+    public List<Itinerary> getItineraries() {
+        return itineraries;
+    }
+
     /**
-     * Adds a vehicle itinerary to the current day
+     * Updates the cost of the day during the horizon
+     */
+    public void updateCost() {
+        double costDay = 0.0;
+        for (Itinerary itinerary : this.itineraries) {
+            if (itinerary instanceof VehicleItinerary) {
+                costDay += ((VehicleItinerary) itinerary).computeCostItinerary();
+            }
+            if (itinerary instanceof TechnicianItinerary) {
+                costDay += ((TechnicianItinerary) itinerary).computeCostItinerary();
+            }
+        }
+        this.cost = costDay;
+        this.planning.updateCost();
+    }
+
+    /**
+     * Adds an itinerary to the current day
      *
-     * @todo : refact with addTechnicianItinerary
      * @param itinerary
      * @return true if success
      */
-    public boolean addVehiculeItinerary(VehicleItinerary itinerary) {
+    public boolean addItinerary(Itinerary itinerary) {
         if (itinerary != null) {
-            this.vehicleItineraries.add(itinerary);
-            if (this.vehicleItineraries.contains(itinerary)) {
+            this.itineraries.add(itinerary);
+            if (this.itineraries.contains(itinerary)) {
                 itinerary.setDayHorizon(this);
                 return true;
             }
@@ -139,19 +151,11 @@ public class DayHorizon implements Serializable {
     }
 
     /**
-     * Adds a technician itinerary to the current day
+     * Toggles the state of a demand in the planning
      *
-     * @param itinerary
-     * @return true if success
+     * @param d : demand to toggle
      */
-    public boolean addTechnicianItinerary(TechnicianItinerary itinerary) {
-        if (itinerary != null) {
-            this.technicianItineraries.add(itinerary);
-            if (this.technicianItineraries.contains(itinerary)) {
-                itinerary.setDayHorizon(this);
-                return true;
-            }
-        }
-        return false;
+    public void toggleDemand(Demand d) {
+        this.planning.toggleDemand(d);
     }
 }

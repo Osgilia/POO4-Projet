@@ -1,13 +1,9 @@
 package modele;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -26,17 +22,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Customer.findAll", query = "SELECT c FROM Customer c")
-    , @NamedQuery(name = "Customer.findByDemand", query = "SELECT c FROM Customer c WHERE c.demand = :demand")
-    , @NamedQuery(name = "Customer.findByPosition", query = "SELECT c FROM Customer c WHERE c.position = :position")
     , @NamedQuery(name = "Customer.findNotServed", query = "SELECT c FROM Customer c WHERE c.nvehicule IS NULL")
     , @NamedQuery(name = "Customer.findById", query = "SELECT c FROM Customer c WHERE c.id = :id")}
 )
 @DiscriminatorValue("2")
 public class Customer extends Point implements Serializable {
-
-    @Basic(optional = false)
-    @Column(name = "POSITION")
-    private Integer position;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     private Set<Demand> customerDemands;
@@ -46,7 +36,6 @@ public class Customer extends Point implements Serializable {
      */
     public Customer() {
         super();
-        this.position = 0;
         this.customerDemands = new HashSet<>();
     }
 
@@ -60,7 +49,6 @@ public class Customer extends Point implements Serializable {
      */
     public Customer(Integer id, double x, double y, int demand) {
         super(id, 2, x, y);
-        this.position = 0;
         this.customerDemands = new HashSet<>();
     }
 
@@ -85,7 +73,7 @@ public class Customer extends Point implements Serializable {
 
     @Override
     public String toString() {
-        String str = "Customer (" + super.getId() + ") in position " + this.position + " at " + super.toString() + " asking for :\n";
+        String str = "Customer (" + super.getId() + ")" + " at " + super.toString() + " asking for :\n";
         for (Demand d : customerDemands) {
             str += "\t\t\t\t" + d.toString() + "\n";
         }
@@ -103,12 +91,14 @@ public class Customer extends Point implements Serializable {
      * @param lastDay : last day of delivery window
      * @param m : machine to add
      * @param nbMachines
+     * @param p : planning
      * @return true if demand is added
      */
-    public boolean addDemand(int firstDay, int lastDay, Machine m, int nbMachines) {
+    public boolean addDemand(int firstDay, int lastDay, Machine m, int nbMachines, Planning p) {
         if (firstDay <= lastDay) {
-            Demand d = new Demand(firstDay, lastDay, this, m, nbMachines);
+            Demand d = new Demand(firstDay, lastDay, this, m, nbMachines, p);
             m.addDemand(d);
+            p.addDemand(d);
             this.customerDemands.add(d);
             if (this.customerDemands.contains(d)) {
                 return true;
@@ -121,7 +111,6 @@ public class Customer extends Point implements Serializable {
      * Clears data related to the customer
      */
     public void clear() {
-        this.position = 0;
         for (Demand d : this.customerDemands) {
             d.clear();
         }

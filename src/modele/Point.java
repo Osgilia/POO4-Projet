@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package modele;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -67,17 +61,24 @@ public abstract class Point implements Serializable {
     @MapKey(name = "arrivee")
     private Map<Point, Route> myRoutes;
 
-    @OneToMany(mappedBy = "ndepot")
-    private Set<Vehicle> collectionVehicules;
-
+    /**
+     * No-arg constructor
+     */
     public Point() {
         this.pointType = 1;
         this.x = 0;
         this.y = 0;
         this.myRoutes = new HashMap<>();
-        this.collectionVehicules = new HashSet<>();
     }
 
+    /**
+     * Parameterized constructor
+     *
+     * @param id
+     * @param pointType
+     * @param x
+     * @param y
+     */
     public Point(Integer id, Integer pointType, double x, double y) {
         this();
         this.id = id;
@@ -154,25 +155,15 @@ public abstract class Point implements Serializable {
         }
     }
 
-//    public double getDistanceTo(Point key) {
-//        HashMap<Point, Route> routes = new HashMap<Point, Route>(this.myRoutes);
-//        Iterator hashMapIterator = routes.entrySet().iterator();
-//        Point pointArrivee = null;
-//        Route route = null;
-//        while (hashMapIterator.hasNext()) {
-//            Map.Entry me = (Map.Entry) hashMapIterator.next();
-//            route = (Route) me.getValue();
-//            pointArrivee = (Point) me.getKey();
-//            if (pointArrivee == key) {
-//                break;
-//            } else {
-//                pointArrivee = null;
-//                route = null;
-//            }
-//        }
-//        if (pointArrivee == null || route == null) {
-//            return Double.POSITIVE_INFINITY;
-//        }
-//        return route.getDistance();
-//    }
+    /**
+     * Returns the euclidian distance between two points with its integer
+     * portion by excess
+     *
+     * @param pointB
+     * @return the distance
+     */
+    public int computeDistance(Point pointB) {
+        double distance = Math.sqrt(Math.pow(this.getX() - pointB.getX(), 2) + Math.pow(this.getY() - pointB.getY(), 2));
+        return (int) Math.ceil(distance);
+    }
 }
