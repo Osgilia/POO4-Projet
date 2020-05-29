@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 /**
@@ -18,6 +20,10 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Machine implements Serializable {
+
+    /************************
+     *      ATTRIBUTES      *
+     ***********************/
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,6 +61,17 @@ public class Machine implements Serializable {
     private List<Demand> demandsMachineType;
 
     /**
+     * Instance using this machine
+     */
+    @JoinColumn(name = "MINSTANCE", referencedColumnName = "ID")
+    @ManyToOne
+    private Instance mInstance;
+    
+    /****************************
+    *       CONSTRUCTORS        *
+    ****************************/
+
+    /**
      * No-argument constructor
      */
     public Machine() {
@@ -77,6 +94,32 @@ public class Machine implements Serializable {
         this.size = size;
         this.penalty = penalty;
     }
+    
+    
+    /********************************
+     *      GETTERS & SETTERS       *
+     *******************************/
+
+    public int getSize() {
+        return size;
+    }
+
+    public double getPenalty() {
+        return penalty;
+    }
+
+    public Instance getmInstance() {
+        return mInstance;
+    }
+
+    public void setmInstance(Instance mInstance) {
+        this.mInstance = mInstance;
+    }
+    
+    
+    /************************
+     *       METHODS        *
+     ***********************/
 
     @Override
     public int hashCode() {
@@ -110,9 +153,7 @@ public class Machine implements Serializable {
         return "[size = " + size + " and penalty = " + penalty + "]";
     }
 
-    public int getSize() {
-        return size;
-    }
+    
 
     /**
      * Adds a relation entity between this machine and a technician

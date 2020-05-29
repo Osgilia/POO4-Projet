@@ -30,6 +30,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Instance.findByNom", query = "SELECT i FROM Instance i WHERE i.nom = :nom")})
 public class Instance implements Serializable {
 
+    /************************
+     *      ATTRIBUTES      *
+     ***********************/
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +52,28 @@ public class Instance implements Serializable {
     @OneToMany(mappedBy = "ninstance")
     private List<Planning> planningList;
     
+    /**
+     * Vehicle(s) affected to this instance
+     */
+    @OneToMany(mappedBy = "vInstance")
+    private List<Vehicle> vehicleList;
+    
+    /**
+     * Point(s) affected to this instance
+     */
+    @OneToMany(mappedBy = "pInstance")
+    private List<Point> pointList;
+    
+    /**
+     * Machine(s) affected to this instance
+     */
+    @OneToMany(mappedBy = "mInstance")
+    private List<Machine> machineList;
+    
+    /****************************
+    *       CONSTRUCTORS        *
+    ****************************/
+    
     public Instance() {
         this.name = "DEFAULT NAME";
         this.dataset = "DEFAULT NAME";
@@ -59,6 +85,11 @@ public class Instance implements Serializable {
         this.name = name;
         this.dataset = dataset;
     }
+    
+    
+    /********************************
+     *      GETTERS & SETTERS       *
+     *******************************/
 
     public String getName() {
         return name;
@@ -67,6 +98,11 @@ public class Instance implements Serializable {
     public String getDataset() {
         return dataset;
     }
+
+    
+    /************************
+     *       METHODS        *
+     ***********************/
 
     @Override
     public int hashCode() {
@@ -114,4 +150,50 @@ public class Instance implements Serializable {
         }
         return false;
     }
+    
+    /**
+     * Add a vehicle that represents one of the vehicles of this instance
+     * @param v : vehicle
+     * @return true if success
+     */
+    public boolean addVehicle(Vehicle v) {
+        if(v != null) {
+            if(this.vehicleList.add(v)) {
+                v.setvInstance(this);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Add a point that represents one of the points of this instance
+     * @param p : point
+     * @return true if success
+     */
+    public boolean addPoint(Point p) {
+        if(p != null) {
+            if(this.pointList.add(p)) {
+                p.setpInstance(this);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Add a machine that represents one of the machines of this instance
+     * @param m : Machine
+     * @return true if success
+     */
+    public boolean addMachine(Machine m) {
+        if(m != null) {
+            if(this.machineList.add(m)) {
+                m.setmInstance(this);
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
