@@ -78,12 +78,19 @@ public class Instance implements Serializable {
         this.name = "DEFAULT NAME";
         this.dataset = "DEFAULT NAME";
         this.planningList = new ArrayList<>();
+        this.vehicleList = new ArrayList<>();
+        this.pointList = new ArrayList<>();
+        this.machineList = new ArrayList<>();
     }
 
     public Instance(String name, String dataset) {
         this();
         this.name = name;
         this.dataset = dataset;
+        this.planningList = new ArrayList<>();
+        this.vehicleList = new ArrayList<>();
+        this.pointList = new ArrayList<>();
+        this.machineList = new ArrayList<>();
     }
     
     

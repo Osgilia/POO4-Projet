@@ -47,7 +47,7 @@ public class Customer extends Point implements Serializable {
      * @param y
      * @param demand
      */
-    public Customer(Integer id, double x, double y, int demand) {
+    public Customer(Integer id, double x, double y) {
         super(id, 2, x, y);
         this.customerDemands = new HashSet<>();
     }

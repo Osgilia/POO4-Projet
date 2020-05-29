@@ -1,6 +1,7 @@
 package modele;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -68,6 +69,7 @@ public class Itinerary implements Serializable {
      */
     public Itinerary() {
         this.itineraryType = 1;
+        this.itineraryPointList = new ArrayList<>();
     }
 
     /**
@@ -78,6 +80,7 @@ public class Itinerary implements Serializable {
     public Itinerary(Integer itineraryType) {
         this();
         this.itineraryType = itineraryType;
+        this.itineraryPointList = new ArrayList<>();
     }
 
     

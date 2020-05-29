@@ -1,6 +1,7 @@
 package modele;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -93,6 +94,7 @@ public abstract class Point implements Serializable {
         this.x = 0;
         this.y = 0;
         this.myRoutes = new HashMap<>();
+        this.itineraryPointList = new ArrayList<>();
     }
 
     /**
@@ -109,6 +111,7 @@ public abstract class Point implements Serializable {
         this.pointType = pointType;
         this.x = x;
         this.y = y;
+        this.itineraryPointList = new ArrayList<>();
     }
 
     
