@@ -140,8 +140,12 @@ public class Instance implements Serializable {
 
     @Override
     public String toString() {
-        return "Instance : " + " name = " + name + ", dataset = " + dataset + ']';
+        return "Instance{" + "id=" + id + ", name=" + name + ", dataset=" + dataset + ", planningList=" + planningList + ", vehicleList=" + vehicleList + ", pointList=" + pointList + ", machineList=" + machineList + '}';
     }
+
+    
+    
+    
     
     /**
      * Adds a planning that represents one of the solutions of the instance
