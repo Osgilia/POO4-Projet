@@ -77,14 +77,6 @@ public class ItineraryPoint implements Serializable {
     public Point getPoint() {
         return point;
     }
-
-    public void setItinerary(Itinerary itinerary) {
-        this.itinerary = itinerary;
-    }
-
-    public void setPoint(Point point) {
-        this.point = point;
-    }
     
 
     /************************
