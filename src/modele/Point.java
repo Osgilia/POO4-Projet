@@ -79,7 +79,10 @@ public abstract class Point implements Serializable {
     /**
      * ItineraryPoint(s) affected to this Itinerary
      */
-    @OneToMany(mappedBy = "point")
+    @OneToMany(mappedBy = "point",
+            cascade = {
+                CascadeType.PERSIST
+            })
     private List<ItineraryPoint> itineraryPointList;
     
     /****************************
@@ -212,16 +215,15 @@ public abstract class Point implements Serializable {
         return (int) Math.ceil(distance);
     }
     
-    /**
-     * Add an ItineraryPoint that represents one of the itineraries of this Point
-     * @param i : Itinerary
-     * @return true if success
-     */
-    public boolean addItineraryPoint(ItineraryPoint i) {
-        if(i != null) {
-            if(this.itineraryPointList.add(i)) {
-                i.setPoint(this);
-                return true;
+  
+    public boolean addItineraryPoint(Itinerary itinerary) {
+        if (itinerary != null) {
+            ItineraryPoint itineraryPoint = new ItineraryPoint(itinerary, this);
+            if (!this.itineraryPointList.contains(itineraryPoint)) {
+                this.itineraryPointList.add(itineraryPoint);
+                if (itinerary.addPoint(itineraryPoint)) {
+                    return true;
+                }
             }
         }
         return false;

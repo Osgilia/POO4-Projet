@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -57,7 +58,10 @@ public class Itinerary implements Serializable {
     /**
      * ItineraryPoint(s) affected to this Itinerary
      */
-    @OneToMany(mappedBy = "itinerary")
+    @OneToMany(mappedBy = "itinerary",
+            cascade = {
+                CascadeType.PERSIST
+            })
     private List<ItineraryPoint> itineraryPointList;
     
     /****************************
@@ -158,15 +162,16 @@ public class Itinerary implements Serializable {
         this.dayHorizon.toggleDemand(d);
     }
     
+
     /**
-     * Add an ItineraryPoint that represents one of the points of this itinerary
-     * @param i : Itinerary
-     * @return true if success
+     * 
+     * @param itineraryPoint
+     * @return 
      */
-    public boolean addItineraryPoint(ItineraryPoint i) {
-        if(i != null) {
-            if(this.itineraryPointList.add(i)) {
-                i.setItinerary(this);
+    public boolean addPoint(ItineraryPoint itineraryPoint) {
+        if (itineraryPoint != null && itineraryPoint.getItinerary()== this) {
+            if (!this.itineraryPointList.contains(itineraryPoint)) {
+                this.itineraryPointList.add(itineraryPoint);
                 return true;
             }
         }
