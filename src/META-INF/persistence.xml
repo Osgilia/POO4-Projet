@@ -19,6 +19,7 @@
     <class>modele.TechnicianItinerary</class>
     <class>modele.VehicleItinerary</class>
     <class>modele.CustomerVisit</class>
+    <class>modele.ItineraryPoint</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/machines"/>
       <property name="javax.persistence.jdbc.user" value=""/>

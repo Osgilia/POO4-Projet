@@ -1,7 +1,10 @@
 package modele;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -13,6 +16,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -28,6 +32,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "ITINERARY")
 @XmlRootElement
 public class Itinerary implements Serializable {
+
+    /************************
+     *      ATTRIBUTES      *
+     ***********************/
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,10 +56,24 @@ public class Itinerary implements Serializable {
     private DayHorizon dayHorizon;
 
     /**
+     * ItineraryPoint(s) affected to this Itinerary
+     */
+    @OneToMany(mappedBy = "itinerary",
+            cascade = {
+                CascadeType.PERSIST
+            })
+    private List<ItineraryPoint> itineraryPointList;
+    
+    /****************************
+    *       CONSTRUCTORS        *
+    ****************************/
+
+    /**
      * No-argument constructor
      */
     public Itinerary() {
         this.itineraryType = 1;
+        this.itineraryPointList = new ArrayList<>();
     }
 
     /**
@@ -62,7 +84,36 @@ public class Itinerary implements Serializable {
     public Itinerary(Integer itineraryType) {
         this();
         this.itineraryType = itineraryType;
+        this.itineraryPointList = new ArrayList<>();
     }
+
+    
+    /********************************
+     *      GETTERS & SETTERS       *
+     *******************************/
+
+    public void setDayHorizon(DayHorizon dayHorizon) {
+        if (dayHorizon != null) {
+            this.dayHorizon = dayHorizon;
+        }
+    }
+
+    public DayHorizon getDayHorizon() {
+        return dayHorizon;
+    }
+
+    public int getDayNumber() {
+        return dayHorizon.getDayNumber();
+    }
+    
+    public void updateCostDay() {
+        this.dayHorizon.updateCost();
+    }
+    
+    
+    /************************
+     *       METHODS        *
+     ***********************/
 
     @Override
     public int hashCode() {
@@ -102,24 +153,6 @@ public class Itinerary implements Serializable {
         return "Itinerary Type = " + itineraryType;
     }
 
-    public void setDayHorizon(DayHorizon dayHorizon) {
-        if (dayHorizon != null) {
-            this.dayHorizon = dayHorizon;
-        }
-    }
-
-    public DayHorizon getDayHorizon() {
-        return dayHorizon;
-    }
-
-    public int getDayNumber() {
-        return dayHorizon.getDayNumber();
-    }
-    
-    public void updateCostDay() {
-        this.dayHorizon.updateCost();
-    }
-
     /**
      * Toggles the state of a demand
      *
@@ -127,5 +160,21 @@ public class Itinerary implements Serializable {
      */
     protected void toggleDemand(Demand d) {
         this.dayHorizon.toggleDemand(d);
+    }
+    
+
+    /**
+     * 
+     * @param itineraryPoint
+     * @return 
+     */
+    public boolean addPoint(ItineraryPoint itineraryPoint) {
+        if (itineraryPoint != null && itineraryPoint.getItinerary()== this) {
+            if (!this.itineraryPointList.contains(itineraryPoint)) {
+                this.itineraryPointList.add(itineraryPoint);
+                return true;
+            }
+        }
+        return false;
     }
 }

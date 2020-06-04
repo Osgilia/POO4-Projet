@@ -30,6 +30,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Vehicle.findById", query = "SELECT v FROM Vehicle v WHERE v.id = :id")})
 public class Vehicle implements Serializable {
 
+    /************************
+     *      ATTRIBUTES      *
+     ***********************/
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,6 +72,18 @@ public class Vehicle implements Serializable {
                 CascadeType.PERSIST
             })
     private List<VehicleItinerary> itineraries;
+    
+    /**
+     * Instance using this vehicle
+     */
+    @JoinColumn(name = "VINSTANCE", referencedColumnName = "ID")
+    @ManyToOne
+    private Instance vInstance;
+    
+    
+    /****************************
+    *       CONSTRUCTORS        *
+    ****************************/
 
     /**
      * No-argument constructor
@@ -114,6 +130,11 @@ public class Vehicle implements Serializable {
         this.distanceCost = v.getDistanceCost();
         this.distanceMax = v.getDistanceMax();
     }
+    
+    
+    /********************************
+     *      GETTERS & SETTERS       *
+     *******************************/
 
     public double getDistanceMax() {
         return distanceMax;
@@ -142,7 +163,20 @@ public class Vehicle implements Serializable {
     public void setDepot(Depot depot) {
         this.depot = depot;
     }
+
+    public Instance getvInstance() {
+        return vInstance;
+    }
+
+    public void setvInstance(Instance vInstance) {
+        this.vInstance = vInstance;
+    }
     
+    
+    /************************
+     *       METHODS        *
+     ***********************/
+
     @Override
     public int hashCode() {
         int hash = 0;

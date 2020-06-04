@@ -1,8 +1,10 @@
 package modele;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -16,6 +18,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -41,6 +45,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Point.findByY", query = "SELECT p FROM Point p WHERE p.y = :y")})
 public abstract class Point implements Serializable {
 
+    /************************
+     *      ATTRIBUTES      *
+     ***********************/
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,6 +70,26 @@ public abstract class Point implements Serializable {
     private Map<Point, Route> myRoutes;
 
     /**
+     * Instance using this point
+     */
+    @JoinColumn(name = "PINSTANCE", referencedColumnName = "ID")
+    @ManyToOne
+    private Instance pInstance;
+    
+    /**
+     * ItineraryPoint(s) affected to this Itinerary
+     */
+    @OneToMany(mappedBy = "point",
+            cascade = {
+                CascadeType.PERSIST
+            })
+    private List<ItineraryPoint> itineraryPointList;
+    
+    /****************************
+    *       CONSTRUCTORS        *
+    ****************************/
+
+    /**
      * No-arg constructor
      */
     public Point() {
@@ -69,6 +97,7 @@ public abstract class Point implements Serializable {
         this.x = 0;
         this.y = 0;
         this.myRoutes = new HashMap<>();
+        this.itineraryPointList = new ArrayList<>();
     }
 
     /**
@@ -85,7 +114,13 @@ public abstract class Point implements Serializable {
         this.pointType = pointType;
         this.x = x;
         this.y = y;
+        this.itineraryPointList = new ArrayList<>();
     }
+
+    
+    /********************************
+     *      GETTERS & SETTERS       *
+     *******************************/
 
     public Integer getId() {
         return id;
@@ -98,6 +133,19 @@ public abstract class Point implements Serializable {
     public double getY() {
         return y;
     }
+
+    public Instance getpInstance() {
+        return pInstance;
+    }
+
+    public void setpInstance(Instance pInstance) {
+        this.pInstance = pInstance;
+    }
+
+    
+    /************************
+     *       METHODS        *
+     ***********************/
 
     @Override
     public int hashCode() {
@@ -165,5 +213,19 @@ public abstract class Point implements Serializable {
     public int computeDistance(Point pointB) {
         double distance = Math.sqrt(Math.pow(this.getX() - pointB.getX(), 2) + Math.pow(this.getY() - pointB.getY(), 2));
         return (int) Math.ceil(distance);
+    }
+    
+  
+    public boolean addItineraryPoint(Itinerary itinerary) {
+        if (itinerary != null) {
+            ItineraryPoint itineraryPoint = new ItineraryPoint(itinerary, this);
+            if (!this.itineraryPointList.contains(itineraryPoint)) {
+                this.itineraryPointList.add(itineraryPoint);
+                if (itinerary.addPoint(itineraryPoint)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
