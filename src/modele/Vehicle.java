@@ -3,6 +3,7 @@ package modele;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -71,15 +73,14 @@ public class Vehicle implements Serializable {
             cascade = {
                 CascadeType.PERSIST
             })
-    private List<VehicleItinerary> itineraries;
+    private List<VehicleItinerary> itineraries;    
     
     /**
      * Instance using this vehicle
      */
     @JoinColumn(name = "VINSTANCE", referencedColumnName = "ID")
-    @ManyToOne
+    @OneToOne
     private Instance vInstance;
-    
     
     /****************************
     *       CONSTRUCTORS        *
@@ -162,35 +163,38 @@ public class Vehicle implements Serializable {
     
     public void setDepot(Depot depot) {
         this.depot = depot;
-    }
-
-    public Instance getvInstance() {
-        return vInstance;
-    }
-
+    }   
+    
     public void setvInstance(Instance vInstance) {
-        this.vInstance = vInstance;
+        if(vInstance != null) {
+            this.vInstance = vInstance;
+            vInstance.setVehicle(this);
+        }
     }
-    
-    
-    /************************
-     *       METHODS        *
-     ***********************/
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 7;
+        hash = 83 * hash + Objects.hashCode(this.id);
         return hash;
     }
 
+    /************************
+     *       METHODS        *
+     ***********************/
     @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Vehicle)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        Vehicle other = (Vehicle) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Vehicle other = (Vehicle) obj;
+        if (!Objects.equals(this.id, other.id)) {
             return false;
         }
         return true;

@@ -153,9 +153,9 @@ public class DayHorizon implements Serializable {
     /**
      * Toggles the state of a demand in the planning
      *
-     * @param d : demand to toggle
+     * @param d : planned demand to toggle
      */
-    public void toggleDemand(Demand d) {
+    public void toggleDemand(PlannedDemand d) {
         this.planning.toggleDemand(d);
     }
 }

@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -27,13 +28,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Instance.findAll", query = "SELECT i FROM Instance i")
     , @NamedQuery(name = "Instance.findById", query = "SELECT i FROM Instance i WHERE i.id = :id")
-    , @NamedQuery(name = "Instance.findByNom", query = "SELECT i FROM Instance i WHERE i.nom = :nom")})
+    , @NamedQuery(name = "Instance.findByName", query = "SELECT i FROM Instance i WHERE i.name = :name")})
 public class Instance implements Serializable {
 
-    /************************
-     *      ATTRIBUTES      *
-     ***********************/
-
+    /**
+     * **********************
+     * ATTRIBUTES * *********************
+     */
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,41 +45,40 @@ public class Instance implements Serializable {
     @Basic(optional = false)
     @Column(name = "NAME")
     private String name;
-    
+
     @Basic(optional = false)
     @Column(name = "DATASET")
     private String dataset;
-    
+
     @OneToMany(mappedBy = "ninstance")
     private List<Planning> planningList;
-    
+
     /**
-     * Vehicle(s) affected to this instance
+     * Vehicle affected to this instance
      */
-    @OneToMany(mappedBy = "vInstance")
-    private List<Vehicle> vehicleList;
-    
+    @OneToOne(mappedBy = "vInstance")
+    private Vehicle vehicle;
+
     /**
      * Point(s) affected to this instance
      */
     @OneToMany(mappedBy = "pInstance")
     private List<Point> pointList;
-    
+
     /**
-     * Machine(s) affected to this instance
+     * MachineType(s) affected to this instance
      */
     @OneToMany(mappedBy = "mInstance")
-    private List<Machine> machineList;
-    
-    /****************************
-    *       CONSTRUCTORS        *
-    ****************************/
-    
+    private List<MachineType> machineList;
+
+    /**
+     * **************************
+     * CONSTRUCTORS * **************************
+     */
     public Instance() {
         this.name = "DEFAULT NAME";
         this.dataset = "DEFAULT NAME";
         this.planningList = new ArrayList<>();
-        this.vehicleList = new ArrayList<>();
         this.pointList = new ArrayList<>();
         this.machineList = new ArrayList<>();
     }
@@ -88,16 +88,14 @@ public class Instance implements Serializable {
         this.name = name;
         this.dataset = dataset;
         this.planningList = new ArrayList<>();
-        this.vehicleList = new ArrayList<>();
         this.pointList = new ArrayList<>();
         this.machineList = new ArrayList<>();
     }
-    
-    
-    /********************************
-     *      GETTERS & SETTERS       *
-     *******************************/
 
+    /**
+     * ******************************
+     * GETTERS & SETTERS * *****************************
+     */
     public String getName() {
         return name;
     }
@@ -106,11 +104,22 @@ public class Instance implements Serializable {
         return dataset;
     }
 
-    
-    /************************
-     *       METHODS        *
-     ***********************/
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
 
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public List<Point> getPointList() {
+        return pointList;
+    }
+
+    /**
+     * **********************
+     * METHODS * *********************
+     */
     @Override
     public int hashCode() {
         int hash = 5;
@@ -140,71 +149,146 @@ public class Instance implements Serializable {
 
     @Override
     public String toString() {
-        return "Instance{" + "id=" + id + ", name=" + name + ", dataset=" + dataset + ", planningList=" + planningList + ", vehicleList=" + vehicleList + ", pointList=" + pointList + ", machineList=" + machineList + '}';
+        String str = "\nInstance : " + name + " from " + dataset + "\n";
+        str += "\nMachines :";
+        for (MachineType m : machineList) {
+            str += "\n\t" + m;
+        }
+        str += "\n\nPoints :";
+        for (Point p : pointList) {
+            str += "\n\t" + p;
+        }
+        return str;
     }
 
-    
-    
-    
-    
     /**
-     * Adds a planning that represents one of the solutions of the instance
-     * @param p : planning
+     * Gets the last planning of the instance which has not been sequenced yet
+     *
+     * @return the last planning
+     */
+    public Planning getLastPlanning() {
+        for (Planning p : planningList) {
+            if (p.getCost() == 0) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets machine entity from its id
+     *
+     * @param id
+     * @return MachineType
+     */
+    public MachineType getMachineType(int id) {
+        for (MachineType m : machineList) {
+            if (m.getId() == id) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks if instance contains given point
+     *
+     * @param point
      * @return true if success
      */
-    public boolean addPlanning(Planning p) {
-        if(p != null) {
-            if(this.planningList.add(p)) {
-                p.setNinstance(this);
+    public boolean containsPoint(Point point) {
+        if (this.pointList.contains(point)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets point from the list of points of this instance
+     *
+     * @param point
+     * @return Point
+     */
+    public Point getPoint(Point point) {
+        for (Point p : this.pointList) {
+            if (p.equals(point)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Scans the list of instantiated points and returns only the technicians
+     *
+     * @return list of Technician
+     */
+    public List<Technician> getTechnicians() {
+        List<Technician> technicians = new ArrayList<>();
+        for (Point p : this.pointList) {
+            if (p instanceof Technician) {
+                technicians.add((Technician) p);
+            }
+        }
+        return technicians;
+    }
+
+    /**
+     * Gets depot from a list of instantiated points
+     *
+     * @return Depot
+     */
+    public Depot getDepot() {
+        for (Point p : this.pointList) {
+            if (p instanceof Depot) {
+                return (Depot) p;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add a machine that represents one of the machines of this instance
+     *
+     * @param m : MachineType
+     * @return true if success
+     */
+    public boolean addMachine(MachineType m) {
+        if (m != null) {
+            if (this.machineList.add(m)) {
                 return true;
             }
         }
         return false;
     }
-    
-    /**
-     * Add a vehicle that represents one of the vehicles of this instance
-     * @param v : vehicle
-     * @return true if success
-     */
-    public boolean addVehicle(Vehicle v) {
-        if(v != null) {
-            if(this.vehicleList.add(v)) {
-                v.setvInstance(this);
-                return true;
-            }
-        }
-        return false;
-    }
-    
+
     /**
      * Add a point that represents one of the points of this instance
+     *
      * @param p : point
      * @return true if success
      */
     public boolean addPoint(Point p) {
-        if(p != null) {
-            if(this.pointList.add(p)) {
-                p.setpInstance(this);
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Add a machine that represents one of the machines of this instance
-     * @param m : Machine
-     * @return true if success
-     */
-    public boolean addMachine(Machine m) {
-        if(m != null) {
-            if(this.machineList.add(m)) {
-                m.setmInstance(this);
+        if (p != null) {
+            if (this.pointList.add(p)) {
                 return true;
             }
         }
         return false;
     }
 
+    /**
+     * Adds a planning that represents one of the solutions of the instance
+     *
+     * @param p : planning
+     * @return true if success
+     */
+    public boolean addPlanning(Planning p) {
+        if (p != null) {
+            if (this.planningList.add(p)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -1,16 +1,7 @@
 package tests;
 
 import java.util.Map;
-import modele.Customer;
-import modele.DayHorizon;
-import modele.Demand;
-import modele.Depot;
-import modele.Machine;
-import modele.Planning;
-import modele.Technician;
-import modele.TechnicianItinerary;
-import modele.Vehicle;
-import modele.VehicleItinerary;
+import modele.*;
 
 /**
  * Initial testing of the object model
@@ -20,11 +11,13 @@ import modele.VehicleItinerary;
 public class Test1 {
 
     public static void main(String[] args) {
-        Depot d = new Depot(1, 0, 0);
-        Customer c1 = new Customer(2, 10, 10);
-        Customer c2 = new Customer(3, -10, 10);
-        Customer c3 = new Customer(4, 10, -10);
+        // Création de l'instance
+        Instance instance = new Instance("Nom1","Dataset1");
         
+       // Création d'un planning de 3 jours
+        Planning p = new Planning(instance, 3);
+        
+        // Caractéristique des véhicules
         double technicianDistanceCost = 10,
                 technicianDayCost = 500,
                 technicianCost = 10,
@@ -34,14 +27,33 @@ public class Test1 {
                 truckMaxDistance = 960,
                 truckCapacity = 60;
         
-        Machine m1 = new Machine(1, 5, 100);
-        Machine m2 = new Machine(2, 10, 200);
+        // Création des machines
+        MachineType m1 = new MachineType(1, 5, 100, instance);
+        MachineType m2 = new MachineType(2, 10, 200, instance);
         
-        Technician t1 = new Technician(5, 10, 0, 200, 4, technicianCost, technicianDistanceCost, technicianDayCost);
-        Technician t2 = new Technician(6, 10, -10, 100, 4, technicianCost, technicianDistanceCost, technicianDayCost);
-        t1.addPotentialInstallation(m1);
-        t2.addPotentialInstallation(m2);
+        // Création du dépot
+        Depot d = new Depot(1, 0, 0, instance);
         
+        // Création des clients
+        Customer c1 = new Customer(2, 10, 10, instance);
+        Customer c2 = new Customer(3, -10, 10, instance);
+        Customer c3 = new Customer(4, 10, -10, instance);
+        
+        // Création des véhicules
+        Vehicle v1 = new Vehicle(1, d, truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
+        Vehicle v2 = new Vehicle(2, d, truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
+        
+        // Création des techniciens
+        Technician t1 = new Technician(5, 10, 0, 200, 4, technicianCost, technicianDistanceCost, technicianDayCost, instance);
+        Technician t2 = new Technician(6, 10, -10, 100, 4, technicianCost, technicianDistanceCost, technicianDayCost, instance);
+        
+        // Habilitation des techniciens à travailler sur certains type de machine
+        t1.addAccreditation(m1);
+        t2.addAccreditation(m2);
+        
+        // Affectation des Machines, Véhicules et Points à l'instance
+        
+        // Création des routes
         d.addDestination(c1, 15);
         d.addDestination(c2, 15);
         d.addDestination(c3, 15);
@@ -67,17 +79,13 @@ public class Test1 {
         t2.addDestination(c2, t2.computeDistance(c2));
         t2.addDestination(c3, t2.computeDistance(c3));
         
-        Planning p = new Planning(3);
-
         c1.addDemand(1, 5, m1, 1, p);
         c1.addDemand(1, 3, m2, 2, p);
         c2.addDemand(2, 4, m1, 3, p);
         c3.addDemand(2, 8, m2, 2, p);
         c3.addDemand(2, 8, m1, 4, p);
-
-        Vehicle v1 = new Vehicle(1, d, truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
-        Vehicle v2 = new Vehicle(2, d, truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
-
+        
+        //Création des jours de l'horizon
         for (int i = 1; i <= p.getNbDays(); i++) {
             DayHorizon day = new DayHorizon(i);
 
@@ -93,7 +101,7 @@ public class Test1 {
 
             p.addDayHorizon(day);
 
-            for (Map.Entry<Demand, Integer> demand : p.getDemands().entrySet()) {
+            for (Map.Entry<PlannedDemand, Integer> demand : p.getDemands().entrySet()) {
                 if (demand.getValue() == 0) { // if demand is to be supplied
                     if (!vehicleItinerary1.addDemandVehicle(demand.getKey())) {
                         vehicleItinerary2.addDemandVehicle(demand.getKey());

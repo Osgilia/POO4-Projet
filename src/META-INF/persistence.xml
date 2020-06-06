@@ -10,7 +10,6 @@
     <class>modele.Vehicle</class>
     <class>modele.Planning</class>
     <class>modele.Demand</class>
-    <class>modele.Machine</class>
     <class>modele.OrderMachine</class>
     <class>modele.Instance</class>
     <class>modele.Installation</class>
@@ -19,7 +18,8 @@
     <class>modele.TechnicianItinerary</class>
     <class>modele.VehicleItinerary</class>
     <class>modele.CustomerVisit</class>
-    <class>modele.ItineraryPoint</class>
+    <class>modele.MachineType</class>
+    <class>modele.PlannedDemand</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/machines"/>
       <property name="javax.persistence.jdbc.user" value=""/>
