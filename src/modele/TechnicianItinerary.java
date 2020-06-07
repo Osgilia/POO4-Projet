@@ -3,6 +3,7 @@ package modele;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -47,12 +48,12 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
 
     @Column(name = "NBDEMANDS")
     private int nbDemands;
-    
+
     @OneToMany(mappedBy = "technician_itinerary",
             cascade = {
                 CascadeType.PERSIST
             })
-    private List<Demand> customersDemands;
+    private List<PlannedDemand> customersDemands;
 
     /**
      * No-argument constructor
@@ -73,24 +74,30 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
     public TechnicianItinerary(Technician technician) {
         super(2);
         this.technician = technician;
-        this.addItineraryToVehicle();
+        this.addItineraryToTechnician();
         this.customersDemands = new ArrayList<>();
     }
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.technician);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof TechnicianItinerary)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        TechnicianItinerary other = (TechnicianItinerary) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TechnicianItinerary other = (TechnicianItinerary) obj;
+        if (!Objects.equals(this.technician, other.technician)) {
             return false;
         }
         return true;
@@ -100,7 +107,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
     public String toString() {
         String str = "- Itinerary of " + technician + " [Nb demands = " + nbDemands + "/" + this.technician.getDemandMax() + " | Distance = "
                 + distanceTravelled + "/" + this.technician.getDistMax() + " | Cost = " + cost + "] :";
-        for (Demand demand : customersDemands) {
+        for (PlannedDemand demand : customersDemands) {
             str += "\n\t\t\t\t " + demand;
         }
         return str;
@@ -134,35 +141,23 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         return nbDemands;
     }
 
-    private void addItineraryToVehicle() {
+    private void addItineraryToTechnician() {
         this.technician.addItinerary(this);
     }
-    
-    /**
-     * Get a list of customers based on the demands of the itinerary
-     *
-     * @return a list of customers
-     */
-    public List<Customer> getCustomers() {
-        List<Customer> customers = new ArrayList<>();
-        for(Demand d : customersDemands) {
-            customers.add(d.getCustomer());
-        }
-        return customers;
-    }
-    
+
     /**
      * Adds a demand to the itinerary
      *
      * @param d : demand to add
      * @return true if success
      */
-    public boolean addDemand(Demand d) {
+    public boolean addDemand(PlannedDemand d) {
         if (d != null) {
             this.customersDemands.add(d);
             if (this.customersDemands.contains(d)) {
                 this.toggleDemand(d);
                 d.setTechnicianItinerary(this);
+                this.addPoint(d.getCustomer());
                 return true;
             }
         }
@@ -176,12 +171,12 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      * @param d : demand to assess
      * @return true if possible, false otherwise
      */
-    public boolean addDemandTechnician(Demand d) {
+    public boolean addDemandTechnician(PlannedDemand d) {
         if (d == null) {
             return false;
         }
         int dayNumber = this.getDayNumber();
-        if (dayNumber < d.getFirstDay() || this.getDayNumber() > d.getLastDay()) {
+        if (dayNumber < d.getFirstDay() || dayNumber > d.getLastDay()) {
             return false;
         }
         int deliveryDayNumber = d.getVehicleItinerary().getDayNumber();
@@ -191,7 +186,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         if (nbDemands + 1 > this.technician.getDemandMax()) {
             return false;
         }
-        double distanceUpdated = this.computeDistanceDemands();
+        double distanceUpdated = this.computeDistanceDemands(d);
         if (distanceUpdated > this.technician.getDistMax()) {
             return false;
         }
@@ -210,24 +205,37 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
     }
 
     /**
-     * Compute the distance between each customer in the sequence
+     * Computes the distance between each point in a given sequence
      *
-     * @return double : distance travelled in the itinerary
+     * @param pointsItinerary : points in the sequence
+     * @return the distance
      */
-    protected double computeDistanceDemands() {
-        List<Customer> customers = this.getCustomers();
-        if (customers.isEmpty()) {
+    protected double computeDistanceDemands(List<Point> pointsItinerary) {
+        if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
-        double distance = this.technician.getDistanceTo(customers.get(0));
-        for (int i = 1; i < customers.size(); i++) {
-            Customer prevCustomer = customers.get(i - 1);
-            if (!prevCustomer.equals(customers.get(i))) {
-                distance += prevCustomer.getDistanceTo(customers.get(i));
+        double distance = this.technician.getDistanceTo(pointsItinerary.get(0));
+        for (int i = 1; i < pointsItinerary.size(); i++) {
+            Point previousPoint = pointsItinerary.get(i - 1);
+            if (!previousPoint.equals(pointsItinerary.get(i))) {
+                distance += previousPoint.getDistanceTo(pointsItinerary.get(i));
             }
         }
-        distance += customers.get(customers.size() - 1).getDistanceTo(this.technician);
+        distance += pointsItinerary.get(pointsItinerary.size() - 1).getDistanceTo(this.technician);
         return distance;
+    }
+
+    /**
+     * Computes the distance between each point in the sequence with a
+     * subsequent request
+     *
+     * @param d : demand to add
+     * @return the distance
+     */
+    protected double computeDistanceDemands(PlannedDemand d) {
+        List<Point> pointsItinerary = new ArrayList<>(super.getPoints());
+        pointsItinerary.add(d.getCustomer());
+        return this.computeDistanceDemands(pointsItinerary);
     }
 
     /**
@@ -237,7 +245,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      * @return double : the cost of the itinerary
      */
     protected double computeCostItinerary() {
-        double distanceDemands = this.computeDistanceDemands();
+        double distanceDemands = this.computeDistanceDemands(new ArrayList<>(super.getPoints()));
         double newCost = distanceDemands * this.technician.getDistanceCost();
         if (distanceDemands != 0.0) { // if used
             newCost += this.technician.getDayCost();

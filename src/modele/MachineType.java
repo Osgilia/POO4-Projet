@@ -2,7 +2,10 @@ package modele;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -19,7 +23,7 @@ import javax.persistence.OneToMany;
  * @author Henri, Lucas, Louis
  */
 @Entity
-public class Machine implements Serializable {
+public class MachineType implements Serializable {
 
     /************************
      *      ATTRIBUTES      *
@@ -43,13 +47,10 @@ public class Machine implements Serializable {
     private double penalty;
 
     /**
-     * Potential machines the technician can install
+     * Technicians that can install the machine
      */
-    @OneToMany(mappedBy = "machine",
-            cascade = {
-                CascadeType.PERSIST
-            })
-    private List<Installation> potentialInstallations;
+    @ManyToMany(mappedBy = "authorizedMachines")
+    private Set<Technician> certifiedTechnicians;
 
     /**
      * Demands associated to the machine type
@@ -74,10 +75,10 @@ public class Machine implements Serializable {
     /**
      * No-argument constructor
      */
-    public Machine() {
+    public MachineType() {
         this.size = 0;
         this.penalty = 0.0;
-        this.potentialInstallations = new ArrayList<>();
+        this.certifiedTechnicians = new HashSet<>();
         this.demandsMachineType = new ArrayList<>();
     }
 
@@ -87,12 +88,14 @@ public class Machine implements Serializable {
      * @param id
      * @param size
      * @param penalty
+     * @param instance
      */
-    public Machine(Integer id, int size, double penalty) {
+    public MachineType(Integer id, int size, double penalty, Instance instance) {
         this();
         this.id = id;
         this.size = size;
         this.penalty = penalty;
+        this.mInstance = instance;
     }
     
     
@@ -112,21 +115,16 @@ public class Machine implements Serializable {
         return mInstance;
     }
 
-    public void setmInstance(Instance mInstance) {
-        this.mInstance = mInstance;
-    }
-    
-    
-    /************************
-     *       METHODS        *
-     ***********************/
-
     @Override
     public int hashCode() {
-        int hash = 3;
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(this.id);
         return hash;
     }
 
+    /************************
+     *       METHODS        *
+     ***********************/
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -138,11 +136,8 @@ public class Machine implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Machine other = (Machine) obj;
-        if (this.size != other.size) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.penalty) != Double.doubleToLongBits(other.penalty)) {
+        final MachineType other = (MachineType) obj;
+        if (!Objects.equals(this.id, other.id)) {
             return false;
         }
         return true;
@@ -153,20 +148,19 @@ public class Machine implements Serializable {
         return "[size = " + size + " and penalty = " + penalty + "]";
     }
 
+    public Integer getId() {
+        return id;
+    }
     
-
     /**
-     * Adds a relation entity between this machine and a technician
+     * Adds a technician to the list of technicians that can install this machine
      *
-     * @param installation : relation entity
+     * @param technician
      * @return true if success
      */
-    public boolean addTechnician(Installation installation) {
-        if (installation != null && installation.getMachine() == this) {
-            if (!this.potentialInstallations.contains(installation)) {
-                this.potentialInstallations.add(installation);
-                return true;
-            }
+    public boolean addTechnician(Technician technician) {
+        if (technician != null) {
+            return this.certifiedTechnicians.add(technician);
         }
         return false;
     }

@@ -1,7 +1,10 @@
 package modele;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +14,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -46,22 +50,19 @@ public class Demand implements Serializable {
 
     @JoinColumn(name = "NMACHINE", referencedColumnName = "ID")
     @ManyToOne(optional = false)
-    private Machine machine;
-    
-    @JoinColumn(name = "NVEHICLEITINERARY", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
-    private VehicleItinerary vehicleItinerary;
-    
-    @JoinColumn(name = "NTECHNICIANITINERARY", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
-    private TechnicianItinerary technicianItinerary;
-    
-    @JoinColumn(name = "NPLANNING", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
-    private Planning planning;
+    private MachineType machine;
 
     @Column(name = "NBMACHINES")
     private int nbMachines;
+
+    /**
+     * Demands that are linked to a planning
+     */
+    @OneToMany(mappedBy = "demand",
+            cascade = {
+                CascadeType.PERSIST
+            })
+    private Set<PlannedDemand> plannedDemands;
 
     /**
      * No-argument constructor
@@ -72,31 +73,31 @@ public class Demand implements Serializable {
         this.customer = null;
         this.machine = null;
         this.nbMachines = 0;
+        this.plannedDemands = new HashSet<>();
     }
 
     /**
      * Parameterized constructor
+     *
      * @param firstDay
      * @param lastDay
      * @param customer
      * @param machine
-     * @param nbMachines 
-     * @param p : planning
+     * @param nbMachines
      */
-    public Demand(int firstDay, int lastDay, Customer customer, Machine machine, int nbMachines, Planning p) {
+    public Demand(int firstDay, int lastDay, Customer customer, MachineType machine, int nbMachines) {
         this();
         this.firstDay = firstDay;
         this.lastDay = lastDay;
         this.customer = customer;
         this.nbMachines = nbMachines;
         this.machine = machine;
-        this.planning = p;
     }
 
     public Long getId() {
         return id;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -150,34 +151,33 @@ public class Demand implements Serializable {
         return customer;
     }
 
-    public VehicleItinerary getVehicleItinerary() {
-        return vehicleItinerary;
-    }
-
-    public void setVehicleItinerary(VehicleItinerary vehicleItinerary) {
-        this.vehicleItinerary = vehicleItinerary;
-    }
-
-    public TechnicianItinerary getTechnicianItinerary() {
-        return technicianItinerary;
-    }
-
-    public void setTechnicianItinerary(TechnicianItinerary technicianItinerary) {
-        this.technicianItinerary = technicianItinerary;
-    }
-    
-    public Machine getMachine() {
+    public MachineType getMachine() {
         return machine;
     }
     
     /**
+     * Adds a demand in the list of demands of this type that are associated to
+     * a planning
+     *
+     * @param plannedDemand
+     * @return true if success
+     */
+    public boolean addPlannedDemand(PlannedDemand plannedDemand) {
+        if (plannedDemand != null && plannedDemand.getDemand().equals(this)) {
+            return this.plannedDemands.add(plannedDemand);
+        }
+        return false;
+    }
+
+    /**
      * Returns the total size of the requested machine(s)
+     *
      * @return integer
      */
     public int getTotalSizeMachines() {
         return this.machine.getSize() * this.nbMachines;
     }
-    
+
     /**
      * Clears data related to the request
      */
@@ -187,8 +187,5 @@ public class Demand implements Serializable {
         this.firstDay = 0;
         this.lastDay = 0;
         this.machine = null;
-        this.planning = null;
-        this.technicianItinerary = null;
-        this.vehicleItinerary = null;
     }
 }

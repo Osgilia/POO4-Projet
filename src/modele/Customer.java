@@ -45,35 +45,16 @@ public class Customer extends Point implements Serializable {
      * @param id
      * @param x
      * @param y
-     * @param demand
+     * @param instance
      */
-    public Customer(Integer id, double x, double y) {
-        super(id, 2, x, y);
+    public Customer(Integer id, double x, double y, Instance instance) {
+        super(id, 2, x, y, instance);
         this.customerDemands = new HashSet<>();
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (this.getId() != null ? this.getId().hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Customer)) {
-            return false;
-        }
-        Customer other = (Customer) object;
-        if ((super.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
-        String str = "Customer (" + super.getId() + ")" + " at " + super.toString() + " asking for :\n";
+        String str = "Customer (" + super.getIdLocation()+ ")" + " at " + super.toString() + " asking for :\n";
         for (Demand d : customerDemands) {
             str += "\t\t\t\t" + d.toString() + "\n";
         }
@@ -83,7 +64,7 @@ public class Customer extends Point implements Serializable {
     public Set<Demand> getCustomerDemands() {
         return customerDemands;
     }
-
+    
     /**
      * Adds a demand
      *
@@ -94,9 +75,9 @@ public class Customer extends Point implements Serializable {
      * @param p : planning
      * @return true if demand is added
      */
-    public boolean addDemand(int firstDay, int lastDay, Machine m, int nbMachines, Planning p) {
+    public boolean addDemand(int firstDay, int lastDay, MachineType m, int nbMachines, Planning p) {
         if (firstDay <= lastDay) {
-            Demand d = new Demand(firstDay, lastDay, this, m, nbMachines, p);
+            Demand d = new Demand(firstDay, lastDay, this, m, nbMachines);            
             m.addDemand(d);
             p.addDemand(d);
             this.customerDemands.add(d);

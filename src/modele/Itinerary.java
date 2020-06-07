@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -15,8 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -33,10 +32,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Itinerary implements Serializable {
 
-    /************************
-     *      ATTRIBUTES      *
-     ***********************/
-
+    /**
+     * **********************
+     * ATTRIBUTES * *********************
+     */
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,25 +54,19 @@ public class Itinerary implements Serializable {
     @JoinColumn(name = "DAYHORIZON_ID")
     private DayHorizon dayHorizon;
 
-    /**
-     * ItineraryPoint(s) affected to this Itinerary
-     */
-    @OneToMany(mappedBy = "itinerary",
-            cascade = {
-                CascadeType.PERSIST
-            })
-    private List<ItineraryPoint> itineraryPointList;
-    
-    /****************************
-    *       CONSTRUCTORS        *
-    ****************************/
+    @ManyToMany(mappedBy = "itineraries")
+    private List<Point> points;
 
+    /**
+     * **************************
+     * CONSTRUCTORS * **************************
+     */
     /**
      * No-argument constructor
      */
     public Itinerary() {
         this.itineraryType = 1;
-        this.itineraryPointList = new ArrayList<>();
+        this.points = new ArrayList<>();
     }
 
     /**
@@ -84,14 +77,12 @@ public class Itinerary implements Serializable {
     public Itinerary(Integer itineraryType) {
         this();
         this.itineraryType = itineraryType;
-        this.itineraryPointList = new ArrayList<>();
     }
 
-    
-    /********************************
-     *      GETTERS & SETTERS       *
-     *******************************/
-
+    /**
+     * ******************************
+     * GETTERS & SETTERS * *****************************
+     */
     public void setDayHorizon(DayHorizon dayHorizon) {
         if (dayHorizon != null) {
             this.dayHorizon = dayHorizon;
@@ -105,16 +96,19 @@ public class Itinerary implements Serializable {
     public int getDayNumber() {
         return dayHorizon.getDayNumber();
     }
-    
+
     public void updateCostDay() {
         this.dayHorizon.updateCost();
     }
-    
-    
-    /************************
-     *       METHODS        *
-     ***********************/
 
+    public List<Point> getPoints() {
+        return points;
+    }
+    
+    /**
+     * **********************
+     * METHODS * *********************
+     */
     @Override
     public int hashCode() {
         int hash = 7;
@@ -156,24 +150,21 @@ public class Itinerary implements Serializable {
     /**
      * Toggles the state of a demand
      *
-     * @param d : demand to toggle
+     * @param d : planned demand to toggle
      */
-    protected void toggleDemand(Demand d) {
+    protected void toggleDemand(PlannedDemand d) {
         this.dayHorizon.toggleDemand(d);
     }
-    
 
     /**
-     * 
-     * @param itineraryPoint
-     * @return 
+     * Adds a point to the itinerary
+     *
+     * @param point
+     * @return
      */
-    public boolean addPoint(ItineraryPoint itineraryPoint) {
-        if (itineraryPoint != null && itineraryPoint.getItinerary()== this) {
-            if (!this.itineraryPointList.contains(itineraryPoint)) {
-                this.itineraryPointList.add(itineraryPoint);
-                return true;
-            }
+    public boolean addPoint(Point point) {
+        if (point != null) {
+            return this.points.add(point);
         }
         return false;
     }

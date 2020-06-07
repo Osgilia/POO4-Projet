@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -19,6 +19,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.NamedQueries;
@@ -43,16 +45,19 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Point.findById", query = "SELECT p FROM Point p WHERE p.id = :id")
     , @NamedQuery(name = "Point.findByX", query = "SELECT p FROM Point p WHERE p.x = :x")
     , @NamedQuery(name = "Point.findByY", query = "SELECT p FROM Point p WHERE p.y = :y")})
-public abstract class Point implements Serializable {
+public class Point implements Serializable {
 
-    /************************
-     *      ATTRIBUTES      *
-     ***********************/
-    
+    /**
+     * **********************
+     * ATTRIBUTES * *********************
+     */
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "IDLOCATION")
+    private Integer idLocation;
 
     @Column(name = "POINTTYPE")
     private Integer pointType;
@@ -75,20 +80,18 @@ public abstract class Point implements Serializable {
     @JoinColumn(name = "PINSTANCE", referencedColumnName = "ID")
     @ManyToOne
     private Instance pInstance;
-    
-    /**
-     * ItineraryPoint(s) affected to this Itinerary
-     */
-    @OneToMany(mappedBy = "point",
-            cascade = {
-                CascadeType.PERSIST
-            })
-    private List<ItineraryPoint> itineraryPointList;
-    
-    /****************************
-    *       CONSTRUCTORS        *
-    ****************************/
 
+    @ManyToMany
+    @JoinTable(
+            name = "point_itinerary",
+            joinColumns = @JoinColumn(name = "point_id"),
+            inverseJoinColumns = @JoinColumn(name = "itinerary_id"))
+    private Set<Itinerary> itineraries;
+
+    /**
+     * **************************
+     * CONSTRUCTORS * **************************
+     */
     /**
      * No-arg constructor
      */
@@ -97,33 +100,33 @@ public abstract class Point implements Serializable {
         this.x = 0;
         this.y = 0;
         this.myRoutes = new HashMap<>();
-        this.itineraryPointList = new ArrayList<>();
+        this.itineraries = new HashSet<>();
     }
 
     /**
      * Parameterized constructor
      *
-     * @param id
+     * @param idLocation
      * @param pointType
      * @param x
      * @param y
+     * @param instance
      */
-    public Point(Integer id, Integer pointType, double x, double y) {
+    public Point(Integer idLocation, Integer pointType, double x, double y, Instance instance) {
         this();
-        this.id = id;
+        this.idLocation = idLocation;
         this.pointType = pointType;
         this.x = x;
         this.y = y;
-        this.itineraryPointList = new ArrayList<>();
+        this.pInstance = instance;
     }
 
-    
-    /********************************
-     *      GETTERS & SETTERS       *
-     *******************************/
-
-    public Integer getId() {
-        return id;
+    /**
+     * ******************************
+     * GETTERS & SETTERS * *****************************
+     */
+    public Integer getIdLocation() {
+        return idLocation;
     }
 
     public double getX() {
@@ -138,29 +141,46 @@ public abstract class Point implements Serializable {
         return pInstance;
     }
 
-    public void setpInstance(Instance pInstance) {
-        this.pInstance = pInstance;
-    }
-
-    
-    /************************
-     *       METHODS        *
-     ***********************/
-
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 7;
+        hash = 17 * hash + Objects.hashCode(this.id);
+        hash = 17 * hash + Objects.hashCode(this.idLocation);
+        hash = 17 * hash + Objects.hashCode(this.pointType);
+        hash = 17 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+        hash = 17 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
         return hash;
     }
 
+    /**
+     * **********************
+     * METHODS * *********************
+     */
     @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Point)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        Point other = (Point) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Point other = (Point) obj;
+        if (Double.doubleToLongBits(this.x) != Double.doubleToLongBits(other.x)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.y) != Double.doubleToLongBits(other.y)) {
+            return false;
+        }
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.idLocation, other.idLocation)) {
+            return false;
+        }
+        if (!Objects.equals(this.pointType, other.pointType)) {
             return false;
         }
         return true;
@@ -214,16 +234,17 @@ public abstract class Point implements Serializable {
         double distance = Math.sqrt(Math.pow(this.getX() - pointB.getX(), 2) + Math.pow(this.getY() - pointB.getY(), 2));
         return (int) Math.ceil(distance);
     }
-    
-  
+
+    /**
+     * Adds an itinerary to this point
+     *
+     * @param itinerary
+     * @return true if success
+     */
     public boolean addItineraryPoint(Itinerary itinerary) {
         if (itinerary != null) {
-            ItineraryPoint itineraryPoint = new ItineraryPoint(itinerary, this);
-            if (!this.itineraryPointList.contains(itineraryPoint)) {
-                this.itineraryPointList.add(itineraryPoint);
-                if (itinerary.addPoint(itineraryPoint)) {
-                    return true;
-                }
+            if (this.itineraries.add(itinerary)) {
+                return itinerary.addPoint(this);
             }
         }
         return false;
