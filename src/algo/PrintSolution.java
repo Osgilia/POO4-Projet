@@ -35,7 +35,7 @@ public class PrintSolution {
 
         // Outputs the solution in text file
         // For each day in planning ..
-        FileWriter fileToPrint = new FileWriter("D:/javaSolution/solution.txt");
+        FileWriter fileToPrint = new FileWriter("A:\\Lucas\\Desktop\\solution.txt");
         PrintWriter printWriter = new PrintWriter(fileToPrint);
         try {
 
@@ -53,11 +53,11 @@ public class PrintSolution {
             for (DayHorizon day : planning.getDays()) {
                 printWriter.printf("DAY = %d\n", day.getDayNumber());
 
-                printWriter.printf("NUMBER_OF_TRUCKS  = %d\n", computeTruckUsed(day.getItineraries()));
-                printWriter.printf(displayTruckActivity(day.getItineraries()));
+                printWriter.printf("NUMBER_OF_TRUCKS  = %d\n", day.computeTruckUsed());
+                printWriter.printf(day.displayTruckActivity());
 
-                printWriter.printf("NUMBER_OF_TECHNICIANS  = %d\n", computeTechnicianUsed(day.getItineraries()));
-                printWriter.printf(displayTechniciansActivity(day.getItineraries()));
+                printWriter.printf("NUMBER_OF_TECHNICIANS  = %d\n", day.computeTechnicianUsed());
+                printWriter.printf(day.displayTechniciansActivity());
 
             }
 
@@ -76,64 +76,4 @@ public class PrintSolution {
         }
 
     }
-
-    public static int computeTruckUsed(List<Itinerary> itineraries) {
-        int trucksUsed = 0;
-        for (Itinerary i : itineraries) {
-            if (i instanceof VehicleItinerary) {
-                if (((VehicleItinerary) i).getCustomersDemands().size() > 0) {
-                    trucksUsed++;
-                }
-            }
-        }
-        return trucksUsed;
-    }
-
-    public static int computeTechnicianUsed(List<Itinerary> itineraries) {
-        int techniciansUsed = 0;
-        for (Itinerary i : itineraries) {
-            if (i instanceof TechnicianItinerary) {
-                if (((TechnicianItinerary) i).getCustomersDemands().size() > 0) {
-                    techniciansUsed++;
-                }
-            }
-        }
-        return techniciansUsed;
-    }
-
-    public static String displayTruckActivity(List<Itinerary> itineraries) {
-        int index = 0;
-        String str = "";
-        for (Itinerary i : itineraries) {
-            if (i instanceof VehicleItinerary) {
-                index++;
-                if (((VehicleItinerary) i).getCustomersDemands().size() > 0) {
-                    str += index;
-                    for (PlannedDemand d : ((VehicleItinerary) i).getCustomersDemands()) {
-                        str += " " + d.getDemand().getId();
-                    }
-                    str += "\n";
-                }
-            }
-        }
-        return str;
-    }
-    
-        public static String displayTechniciansActivity(List<Itinerary> itineraries) {
-        int index = 0;
-        String str = "";
-        for (Itinerary i : itineraries) {
-            if (i instanceof TechnicianItinerary) {
-                if (((TechnicianItinerary) i).getCustomersDemands().size() > 0) {
-                    str += ((TechnicianItinerary) i).getTechnician().getId();
-                    for (PlannedDemand d : ((TechnicianItinerary) i).getCustomersDemands()) {
-                        str += " " + d.getDemand().getId();
-                    }
-                    str += "\n";
-                }
-            }
-        }
-        return str;
-    }
-
 }

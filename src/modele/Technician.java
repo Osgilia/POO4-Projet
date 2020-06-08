@@ -122,7 +122,7 @@ public class Technician extends Point implements Serializable {
 
     @Override
     public String toString() {
-        String str = "Technician (" + super.getIdLocation() + ") at " + super.toString();
+        String str = "Technician (" + super.getId() + ") at " + super.toString();
         return str;
     }
 

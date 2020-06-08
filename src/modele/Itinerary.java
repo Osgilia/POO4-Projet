@@ -109,8 +109,6 @@ public class Itinerary implements Serializable {
         return itineraryType;
     }
     
-    
-    
     /**
      * **********************
      * METHODS * *********************

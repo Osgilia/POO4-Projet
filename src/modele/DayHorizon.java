@@ -158,4 +158,82 @@ public class DayHorizon implements Serializable {
     public void toggleDemand(PlannedDemand d) {
         this.planning.toggleDemand(d);
     }
+
+    /**
+     * Compute the number of trucks used during the day
+     *
+     * @return int
+     */
+    public int computeTruckUsed() {
+        int trucksUsed = 0;
+        for (Itinerary i : itineraries) {
+            if (i instanceof VehicleItinerary) {
+                if (((VehicleItinerary) i).getCustomersDemands().size() > 0) {
+                    trucksUsed++;
+                }
+            }
+        }
+        return trucksUsed;
+    }
+
+    /**
+     * Computes the number of technicians used
+     *
+     * @return int
+     */
+    public int computeTechnicianUsed() {
+        int techniciansUsed = 0;
+        for (Itinerary i : itineraries) {
+            if (i instanceof TechnicianItinerary) {
+                if (((TechnicianItinerary) i).getCustomersDemands().size() > 0) {
+                    techniciansUsed++;
+                }
+            }
+        }
+        return techniciansUsed;
+    }
+
+    /**
+     * Displays the vehicle activity with ids of demands
+     *
+     * @return String
+     */
+    public String displayTruckActivity() {
+        int index = 0;
+        String str = "";
+        for (Itinerary i : itineraries) {
+            if (i instanceof VehicleItinerary) {
+                index++;
+                if (((VehicleItinerary) i).getCustomersDemands().size() > 0) {
+                    str += index;
+                    for (PlannedDemand d : ((VehicleItinerary) i).getCustomersDemands()) {
+                        str += " " + d.getDemand().getId();
+                    }
+                    str += "\n";
+                }
+            }
+        }
+        return str;
+    }
+
+    /**
+     * Displays the technician activity with the ids of the demands
+     *
+     * @return String
+     */
+    public String displayTechniciansActivity() {
+        String str = "";
+        for (Itinerary i : itineraries) {
+            if (i instanceof TechnicianItinerary) {
+                if (((TechnicianItinerary) i).getCustomersDemands().size() > 0) {
+                    str += ((TechnicianItinerary) i).getTechnician().getId();
+                    for (PlannedDemand d : ((TechnicianItinerary) i).getCustomersDemands()) {
+                        str += " " + d.getDemand().getId();
+                    }
+                    str += "\n";
+                }
+            }
+        }
+        return str;
+    }
 }
