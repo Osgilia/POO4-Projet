@@ -99,6 +99,7 @@ public class Technician extends Point implements Serializable {
      * Parameterized constructor
      *
      * @param id
+     * @param idLocation
      * @param x
      * @param y
      * @param distanceCost
@@ -108,8 +109,8 @@ public class Technician extends Point implements Serializable {
      * @param usageCost
      * @param instance
      */
-    public Technician(Integer id, double x, double y, double distanceMax, int demandMax, double usageCost, double distanceCost, double dayCost, Instance instance) {
-        super(id, 3, x, y, instance);
+    public Technician(Integer id, Integer idLocation, double x, double y, double distanceMax, int demandMax, double usageCost, double distanceCost, double dayCost, Instance instance) {
+        super(id, idLocation, 3, x, y, instance);
         this.distanceCost = distanceCost;
         this.dayCost = dayCost;
         this.usageCost = usageCost;

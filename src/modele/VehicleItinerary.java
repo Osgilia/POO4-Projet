@@ -277,4 +277,10 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.distanceTravelled = 0.0;
         this.cost = 0.0;
     }
+
+    public List<PlannedDemand> getCustomersDemands() {
+        return customersDemands;
+    }
+
+    
 }

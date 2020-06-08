@@ -11,7 +11,7 @@ import modele.*;
 public class Test1 {
 
     public static void main(String[] args) {
-        // Création de l'instance
+   /*     // Création de l'instance
         Instance instance = new Instance("Nom1","Dataset1");
         
        // Création d'un planning de 3 jours
@@ -79,11 +79,11 @@ public class Test1 {
         t2.addDestination(c2, t2.computeDistance(c2));
         t2.addDestination(c3, t2.computeDistance(c3));
         
-        c1.addDemand(1, 5, m1, 1, p);
-        c1.addDemand(1, 3, m2, 2, p);
-        c2.addDemand(2, 4, m1, 3, p);
-        c3.addDemand(2, 8, m2, 2, p);
-        c3.addDemand(2, 8, m1, 4, p);
+        c1.addDemand(1,1, 5, m1, 1, p);
+        c1.addDemand(2,1, 3, m2, 2, p);
+        c2.addDemand(3,2, 4, m1, 3, p);
+        c3.addDemand(4,2, 8, m2, 2, p);
+        c3.addDemand(5,2, 8, m1, 4, p);
         
         //Création des jours de l'horizon
         for (int i = 1; i <= p.getNbDays(); i++) {
@@ -116,6 +116,6 @@ public class Test1 {
         }
         
         System.out.println(p);
-
+*/
     }
 }

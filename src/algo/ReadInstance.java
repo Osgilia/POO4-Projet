@@ -108,9 +108,9 @@ public class ReadInstance {
                             int id = Integer.parseInt(argument[0]),
                                     x = Integer.parseInt(argument[1]),
                                     y = Integer.parseInt(argument[2]);
-                            points[i] = new Point(id, -1, x, y, instance);
+                            points[i] = new Point(id,id, -1, x, y, instance);
                             if (Integer.parseInt(argument[0]) == 1) {
-                                instance.addPoint(new Depot(1, Integer.parseInt(argument[1]), Integer.parseInt(argument[2]), instance));
+                                instance.addPoint(new Depot(1, 1, Integer.parseInt(argument[1]), Integer.parseInt(argument[2]), instance));
                             }
                         }
                         break;
@@ -126,13 +126,13 @@ public class ReadInstance {
                                     nbMachinesRequested = Integer.parseInt(argument[5]);
                             MachineType m = instance.getMachineType(machineId);
                             for (int j = 0; j < points.length; j++) {
-                                Customer c = new Customer(idLocation, points[j].getX(), points[j].getY(), instance);
+                                Customer c = new Customer(id, idLocation, points[j].getX(), points[j].getY(), instance);
                                 if (points[j].getIdLocation() == idLocation) {
                                     if (!instance.containsPoint(c)) {
                                         instance.addPoint(c);
-                                        c.addDemand(firstDay, lastDay, m, nbMachinesRequested, planning);
+                                        c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, planning);
                                     } else if (instance.getPoint(c) instanceof Customer) {
-                                        ((Customer) instance.getPoint(c)).addDemand(firstDay, lastDay, m, nbMachinesRequested, planning);
+                                        ((Customer) instance.getPoint(c)).addDemand(id ,firstDay, lastDay, m, nbMachinesRequested, planning);
                                     }
                                 }
                             }
@@ -148,7 +148,7 @@ public class ReadInstance {
                                     demandMax = Integer.parseInt(argument[3]);
                             for (int j = 0; j < points.length; j++) {
                                 if (points[j].getIdLocation() == idLocation) {
-                                    Technician t = new Technician(idLocation, points[j].getX(), points[j].getY(), distanceMax, demandMax, technicianCost, technicianDistanceCost, technicianDayCost, instance);
+                                    Technician t = new Technician(id, idLocation, points[j].getX(), points[j].getY(), distanceMax, demandMax, technicianCost, technicianDistanceCost, technicianDayCost, instance);
                                     instance.addPoint(t);
                                     for (int k = 4; k < nbMachines + 4; k++) {
                                         if (Integer.parseInt(argument[k]) == 1) {

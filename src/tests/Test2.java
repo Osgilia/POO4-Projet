@@ -2,6 +2,7 @@ package tests;
 
 import algo.MinimalSolution;
 import algo.ReadInstance;
+import java.io.IOException;
 import modele.*;
 
 /**
@@ -11,9 +12,9 @@ import modele.*;
  */
 public class Test2 {
 
-    public static void main(String[] args) {
-        Instance instance = ReadInstance.readInstance("A:\\Lucas\\Desktop\\testInstance.txt");
-        // System.out.println(instance);
+    public static void main(String[] args) throws IOException {
+        Instance instance = ReadInstance.readInstance("C:\\Users\\Osgilia\\Desktop\\testInstance.txt");
+         //System.out.println(instance);
 
         /**
          * Minimal solution : 

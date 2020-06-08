@@ -106,14 +106,16 @@ public class Point implements Serializable {
     /**
      * Parameterized constructor
      *
+     * @param id
      * @param idLocation
      * @param pointType
      * @param x
      * @param y
      * @param instance
      */
-    public Point(Integer idLocation, Integer pointType, double x, double y, Instance instance) {
+    public Point(Integer id, Integer idLocation, Integer pointType, double x, double y, Instance instance) {
         this();
+        this.id = id;
         this.idLocation = idLocation;
         this.pointType = pointType;
         this.x = x;
@@ -129,6 +131,11 @@ public class Point implements Serializable {
         return idLocation;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    
     public double getX() {
         return x;
     }

@@ -1,5 +1,6 @@
 package algo;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +20,7 @@ import modele.VehicleItinerary;
  */
 public class MinimalSolution {
 
-    public static void minimalSolution(Instance instance) {
+    public static void minimalSolution(Instance instance) throws IOException {
         Planning planning = instance.getLastPlanning();
         Vehicle vehicleInstance = instance.getVehicle();
         double truckCost = vehicleInstance.getUsageCost(),
