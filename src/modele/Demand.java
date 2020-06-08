@@ -138,7 +138,7 @@ public class Demand implements Serializable {
 
     @Override
     public String toString() {
-        return "- " + nbMachines + " machine(s) of type " + machine;
+        return "[" + id + "] : " + nbMachines + " machine(s) of type " + machine;
     }
 
     public int getFirstDay() {

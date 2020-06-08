@@ -16,11 +16,12 @@ import modele.Vehicle;
  * @author Henri, Lucas, Louis
  */
 public class ReadInstance {
+
     public static Instance readInstance(String file) {
         // Init
         Instance instance = null;
         Planning planning = null;
-        
+
         double technicianDistanceCost = -1,
                 technicianDayCost = -1,
                 technicianCost = -1,
@@ -108,7 +109,7 @@ public class ReadInstance {
                             int id = Integer.parseInt(argument[0]),
                                     x = Integer.parseInt(argument[1]),
                                     y = Integer.parseInt(argument[2]);
-                            points[i] = new Point(id,id, -1, x, y, instance);
+                            points[i] = new Point(id, id, -1, x, y, instance);
                             if (Integer.parseInt(argument[0]) == 1) {
                                 instance.addPoint(new Depot(1, 1, Integer.parseInt(argument[1]), Integer.parseInt(argument[2]), instance));
                             }
@@ -132,7 +133,7 @@ public class ReadInstance {
                                         instance.addPoint(c);
                                         c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, planning);
                                     } else if (instance.getPoint(c) instanceof Customer) {
-                                        ((Customer) instance.getPoint(c)).addDemand(id ,firstDay, lastDay, m, nbMachinesRequested, planning);
+                                        ((Customer) instance.getPoint(c)).addDemand(id, firstDay, lastDay, m, nbMachinesRequested, planning);
                                     }
                                 }
                             }
@@ -176,20 +177,18 @@ public class ReadInstance {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         // VEHICLE TYPE ASSOCIATED TO THE INSTANCE ///////
         Vehicle vehicleType = new Vehicle(1, instance.getDepot(), truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
         vehicleType.setvInstance(instance);
-        
+
         // ROUTES ////////////////////////////////////////
         for (Point p1 : instance.getPointList()) {
             for (Point p2 : instance.getPointList()) {
-                if (!p1.equals(p2)) {
-                    p1.addDestination(p2, p1.computeDistance(p2));
-                }
+                p1.addDestination(p2, p1.computeDistance(p2));
             }
         }
-        
+
         return instance;
     }
 }

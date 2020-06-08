@@ -135,7 +135,6 @@ public class Point implements Serializable {
         return id;
     }
 
-    
     public double getX() {
         return x;
     }
@@ -150,19 +149,12 @@ public class Point implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 17 * hash + Objects.hashCode(this.id);
-        hash = 17 * hash + Objects.hashCode(this.idLocation);
-        hash = 17 * hash + Objects.hashCode(this.pointType);
-        hash = 17 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
-        hash = 17 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
+        int hash = 5;
+        hash = 11 * hash + Objects.hashCode(this.id);
+        hash = 11 * hash + Objects.hashCode(this.idLocation);
         return hash;
     }
 
-    /**
-     * **********************
-     * METHODS * *********************
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -175,19 +167,10 @@ public class Point implements Serializable {
             return false;
         }
         final Point other = (Point) obj;
-        if (Double.doubleToLongBits(this.x) != Double.doubleToLongBits(other.x)) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.y) != Double.doubleToLongBits(other.y)) {
-            return false;
-        }
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
         if (!Objects.equals(this.idLocation, other.idLocation)) {
-            return false;
-        }
-        if (!Objects.equals(this.pointType, other.pointType)) {
             return false;
         }
         return true;
