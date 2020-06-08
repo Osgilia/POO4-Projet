@@ -78,6 +78,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         this.customersDemands = new ArrayList<>();
     }
 
+    
     @Override
     public int hashCode() {
         int hash = 7;
@@ -140,6 +141,12 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
     public int getNbDemands() {
         return nbDemands;
     }
+
+    public List<PlannedDemand> getCustomersDemands() {
+        return customersDemands;
+    }
+    
+    
 
     private void addItineraryToTechnician() {
         this.technician.addItinerary(this);
@@ -204,6 +211,9 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         return true;
     }
 
+    
+    
+    
     /**
      * Computes the distance between each point in a given sequence
      *

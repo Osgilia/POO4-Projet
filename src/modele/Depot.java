@@ -33,8 +33,8 @@ public class Depot extends Point implements Serializable {
         this.vehicleSet = new HashSet<>();
     }
 
-    public Depot(Integer id, double x, double y, Instance instance) {
-        super(id, 1, x, y, instance);
+    public Depot(Integer id, Integer idLocation, double x, double y, Instance instance) {
+        super(id, idLocation, 1, x, y, instance);
         this.vehicleSet = new HashSet<>();
     }
 

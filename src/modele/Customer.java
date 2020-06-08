@@ -47,8 +47,8 @@ public class Customer extends Point implements Serializable {
      * @param y
      * @param instance
      */
-    public Customer(Integer id, double x, double y, Instance instance) {
-        super(id, 2, x, y, instance);
+    public Customer(Integer id, Integer idLocation, double x, double y, Instance instance) {
+        super(id, idLocation, 2, x, y, instance);
         this.customerDemands = new HashSet<>();
     }
 
@@ -75,9 +75,9 @@ public class Customer extends Point implements Serializable {
      * @param p : planning
      * @return true if demand is added
      */
-    public boolean addDemand(int firstDay, int lastDay, MachineType m, int nbMachines, Planning p) {
+    public boolean addDemand(int id, int firstDay, int lastDay, MachineType m, int nbMachines, Planning p) {
         if (firstDay <= lastDay) {
-            Demand d = new Demand(firstDay, lastDay, this, m, nbMachines);            
+            Demand d = new Demand(id, firstDay, lastDay, this, m, nbMachines);            
             m.addDemand(d);
             p.addDemand(d);
             this.customerDemands.add(d);

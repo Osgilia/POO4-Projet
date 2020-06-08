@@ -140,11 +140,18 @@ public class Planning implements Serializable {
     public double getCost() {
         return cost;
     }
+    
+    
 
     public Map<PlannedDemand, Integer> getDemands() {
         return plannedDemands;
     }
 
+    public List<DayHorizon> getDays() {
+        return days;
+    }
+
+    
     /**
      * Adds a day in the planning horizon
      *

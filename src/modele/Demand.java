@@ -32,7 +32,7 @@ public class Demand implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * First day of the delivery window
@@ -79,14 +79,16 @@ public class Demand implements Serializable {
     /**
      * Parameterized constructor
      *
+     * @param id
      * @param firstDay
      * @param lastDay
      * @param customer
      * @param machine
      * @param nbMachines
      */
-    public Demand(int firstDay, int lastDay, Customer customer, MachineType machine, int nbMachines) {
+    public Demand(int id, int firstDay, int lastDay, Customer customer, MachineType machine, int nbMachines) {
         this();
+        this.id = id;
         this.firstDay = firstDay;
         this.lastDay = lastDay;
         this.customer = customer;
@@ -94,7 +96,7 @@ public class Demand implements Serializable {
         this.machine = machine;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
