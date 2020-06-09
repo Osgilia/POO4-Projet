@@ -1,5 +1,6 @@
 package modele;
 
+import dao.RouteDao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -188,9 +189,10 @@ public class Point implements Serializable {
      * @param distance
      * @return true if success
      */
-    public boolean addDestination(Point p, double distance) {
+    public boolean addDestination(Point p, double distance, RouteDao routeManager) {
         if (p != null) {
             Route r = new Route(this, p, distance);
+            routeManager.create(r);
             this.myRoutes.put(p, r);
             if (this.myRoutes.containsKey(r)) {
                 return true;

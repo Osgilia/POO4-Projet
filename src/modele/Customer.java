@@ -1,5 +1,6 @@
 package modele;
 
+import dao.DemandDao;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Customer.findAll", query = "SELECT c FROM Customer c")
-    , @NamedQuery(name = "Customer.findNotServed", query = "SELECT c FROM Customer c WHERE c.nvehicule IS NULL")
     , @NamedQuery(name = "Customer.findById", query = "SELECT c FROM Customer c WHERE c.id = :id")}
 )
 @DiscriminatorValue("2")
@@ -75,9 +75,10 @@ public class Customer extends Point implements Serializable {
      * @param p : planning
      * @return true if demand is added
      */
-    public boolean addDemand(int id, int firstDay, int lastDay, MachineType m, int nbMachines, Planning p) {
+    public boolean addDemand(int id, int firstDay, int lastDay, MachineType m, int nbMachines, Planning p, DemandDao demandManager) {
         if (firstDay <= lastDay) {
-            Demand d = new Demand(id, firstDay, lastDay, this, m, nbMachines);            
+            Demand d = new Demand(id, firstDay, lastDay, this, m, nbMachines);
+            demandManager.create(d);
             m.addDemand(d);
             p.addDemand(d);
             this.customerDemands.add(d);
