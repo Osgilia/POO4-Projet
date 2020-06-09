@@ -33,28 +33,9 @@ public class Depot extends Point implements Serializable {
         this.vehicleSet = new HashSet<>();
     }
 
-    public Depot(Integer id, double x, double y) {
-        super(id, 1, x, y);
+    public Depot(Integer id, Integer idLocation, double x, double y, Instance instance) {
+        super(id, idLocation, 1, x, y, instance);
         this.vehicleSet = new HashSet<>();
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (this.getId() != null ? this.getId().hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Depot)) {
-            return false;
-        }
-        Depot other = (Depot) object;
-        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
-            return false;
-        }
-        return true;
     }
 
     @Override

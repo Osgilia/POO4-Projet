@@ -59,8 +59,11 @@ public class Planning implements Serializable {
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "nplanning")
     private List<DayHorizon> days;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "nplanning")
-    private Map<Demand, Integer> demands;
+    @OneToMany(mappedBy = "planning",
+            cascade = {
+                CascadeType.PERSIST
+            })
+    private Map<PlannedDemand, Integer> plannedDemands;
 
     /**
      * No-argument constructor
@@ -69,7 +72,7 @@ public class Planning implements Serializable {
         this.cost = 0;
         this.nbDays = 0;
         this.days = new ArrayList<>();
-        this.demands = new HashMap<>();
+        this.plannedDemands = new HashMap<>();
     }
 
     /**
@@ -92,10 +95,6 @@ public class Planning implements Serializable {
         this();
         this.ninstance = ninstance;
         this.nbDays = nbDays;
-    }
-
-    public void setNinstance(Instance ninstance) {
-        this.ninstance = ninstance;
     }
 
     @Override
@@ -138,10 +137,21 @@ public class Planning implements Serializable {
         return nbDays;
     }
 
-    public Map<Demand, Integer> getDemands() {
-        return demands;
+    public double getCost() {
+        return cost;
+    }
+    
+    
+
+    public Map<PlannedDemand, Integer> getDemands() {
+        return plannedDemands;
     }
 
+    public List<DayHorizon> getDays() {
+        return days;
+    }
+
+    
     /**
      * Adds a day in the planning horizon
      *
@@ -168,8 +178,11 @@ public class Planning implements Serializable {
      */
     public boolean addDemand(Demand demand) {
         if (demand != null) {
-            this.demands.put(demand, 0);
-            return true;
+            PlannedDemand plannedDemand = new PlannedDemand(this, demand);
+            this.plannedDemands.put(plannedDemand, 0);
+            if (this.plannedDemands.containsKey(plannedDemand)) {
+                return demand.addPlannedDemand(plannedDemand);
+            }
         }
         return false;
     }
@@ -179,12 +192,12 @@ public class Planning implements Serializable {
      *
      * @param d : demand
      */
-    public void toggleDemand(Demand d) {
+    public void toggleDemand(PlannedDemand d) {
         if (d != null) {
-            if (this.demands.get(d) == 0) { // if is being supplied
-                this.demands.put(d, 1);
-            } else if (this.demands.get(d) == 1) { // if is being installed
-                this.demands.put(d, 2);
+            if (this.plannedDemands.get(d) == 0) { // if is being supplied
+                this.plannedDemands.put(d, 1);
+            } else if (this.plannedDemands.get(d) == 1) { // if is being installed
+                this.plannedDemands.put(d, 2);
             }
         }
     }
@@ -202,7 +215,7 @@ public class Planning implements Serializable {
         Set<Technician> techniciansUsed = new HashSet<>();
         for (DayHorizon day : days) {
             costPlanning += day.getCost();
-            // method compute cost itineraries
+            // @todo : method compute cost itineraries
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof VehicleItinerary) {
                     Vehicle vehicle = ((VehicleItinerary) itinerary).getVehicle();
@@ -220,15 +233,135 @@ public class Planning implements Serializable {
                 }
             }
         }
-        Set<Machine> machinesUsed = new HashSet<>();
-        for (Map.Entry<Demand, Integer> demand : demands.entrySet()) {
+        Set<MachineType> machinesUsed = new HashSet<>();
+        for (Map.Entry<PlannedDemand, Integer> demand : plannedDemands.entrySet()) {
             /**
-             * todo later : take into account penaltys associated to the machines
-             * when they are not used for more than 1 day
-             * so far, machines are always installed the day after the delivery
-             * method "computeMachinesUsed"
+             * @todo later : take into account penaltys associated to the
+             * machines when they are not used for more than 1 day so far,
+             * machines are always installed the day after the delivery method
+             * "computeMachinesUsed"
              */
         }
         this.cost = costPlanning;
+    }
+
+    /**
+     * Computes overall distance travelled by all vehicles
+     *
+     * @return int
+     */
+    public int computeTruckDistance() {
+        int truckDistance = 0;
+        for (DayHorizon day : days) {
+            for (Itinerary itinerary : day.getItineraries()) {
+                if (itinerary instanceof VehicleItinerary) {
+                    truckDistance += ((VehicleItinerary) itinerary).computeDistanceDemands(itinerary.getPoints());
+                }
+            }
+        }
+        return truckDistance;
+    }
+
+    /**
+     * Computes overall distance travelled by all techniciqns
+     *
+     * @return int
+     */
+    public int computeTechnicianDistance() {
+        int technicianDistance = 0;
+        for (DayHorizon day : days) {
+            for (Itinerary itinerary : day.getItineraries()) {
+                if (itinerary instanceof TechnicianItinerary) {
+                    technicianDistance += ((TechnicianItinerary) itinerary).computeDistanceDemands(itinerary.getPoints());
+                }
+            }
+        }
+        return technicianDistance;
+    }
+
+    /**
+     * Computes the number of truck itineraries
+     *
+     * @return int
+     */
+    public int computeNbTruckDays() {
+        int truckDays = 0;
+        for (DayHorizon day : days) {
+            for (Itinerary itinerary : day.getItineraries()) {
+                if (itinerary instanceof VehicleItinerary) {
+                    if (((VehicleItinerary) itinerary).getCost() != 0.0) {
+                        truckDays++;
+                    }
+                }
+            }
+        }
+        return truckDays;
+    }
+
+    /**
+     * Computes the number of technician itineraries
+     *
+     * @return int
+     */
+    public int computeNbTechnicianDays() {
+        int technicianDays = 0;
+        for (DayHorizon day : days) {
+            for (Itinerary itinerary : day.getItineraries()) {
+                if (itinerary instanceof TechnicianItinerary) {
+                    if (((TechnicianItinerary) itinerary).getCost() != 0.0) {
+                        technicianDays++;
+                    }
+                }
+            }
+        }
+        return technicianDays;
+    }
+
+    /**
+     * Computes the maximum number of trucks used in a single day
+     *
+     * @return int
+     */
+    public int computeMaxTrucksUsed() {
+        int maxTrucksUsed = 0, tmpMaxTrucksUsed = 0;
+        for (DayHorizon day : days) {
+            tmpMaxTrucksUsed = 0;
+            for (Itinerary itinerary : day.getItineraries()) {
+                if (itinerary instanceof VehicleItinerary) {
+                    tmpMaxTrucksUsed++;
+                }
+            }
+            if (tmpMaxTrucksUsed > maxTrucksUsed) {
+                maxTrucksUsed = tmpMaxTrucksUsed;
+            }
+        }
+        return maxTrucksUsed;
+    }
+
+    /**
+     * Computes the total number of technicians used
+     *
+     * @return int
+     */
+    public int computeTotalNbTechniciansUsed() {
+        Set<Technician> techniciansList = new HashSet<>();
+        for (DayHorizon day : days) {
+            for (Itinerary itinerary : day.getItineraries()) {
+                if (itinerary instanceof TechnicianItinerary) {
+                    techniciansList.add(((TechnicianItinerary) itinerary).getTechnician());
+                }
+            }
+        }
+        return techniciansList.size();
+    }
+
+    /**
+     * Computes the cost of idle machines
+     *
+     * @todo : next solution
+     * @return int
+     */
+    public int computeIdleMachineCosts() {
+        return 0;
     }
 }

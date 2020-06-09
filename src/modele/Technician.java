@@ -2,7 +2,9 @@ package modele;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -10,6 +12,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -29,11 +34,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 })
 @DiscriminatorValue("3")
 public class Technician extends Point implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
     /**
      * Cost per distance unit covered by the technician
@@ -66,13 +66,14 @@ public class Technician extends Point implements Serializable {
     private int demandMax;
 
     /**
-     * Potential machines the technician can install
+     * Machines the technician can install
      */
-    @OneToMany(mappedBy = "technician",
-            cascade = {
-                CascadeType.PERSIST
-            })
-    private List<Installation> potentialInstallations;
+    @ManyToMany
+    @JoinTable(
+            name = "machineType_technician",
+            joinColumns = @JoinColumn(name = "technician_id"),
+            inverseJoinColumns = @JoinColumn(name = "machineType_id"))
+    private Set<MachineType> authorizedMachines;
 
     @OneToMany(mappedBy = "itinerary",
             cascade = {
@@ -90,7 +91,7 @@ public class Technician extends Point implements Serializable {
         this.usageCost = 0.0;
         this.distMax = 0.0;
         this.demandMax = 0;
-        this.potentialInstallations = new ArrayList<>();
+        this.authorizedMachines = new HashSet<>();
         this.itineraries = new ArrayList<>();
     }
 
@@ -98,6 +99,7 @@ public class Technician extends Point implements Serializable {
      * Parameterized constructor
      *
      * @param id
+     * @param idLocation
      * @param x
      * @param y
      * @param distanceCost
@@ -105,41 +107,23 @@ public class Technician extends Point implements Serializable {
      * @param demandMax
      * @param distanceMax
      * @param usageCost
+     * @param instance
      */
-    public Technician(Integer id, double x, double y, double distanceMax, int demandMax, double usageCost, double distanceCost, double dayCost) {
-        super(id, 3, x, y);
-        this.id = id;
+    public Technician(Integer id, Integer idLocation, double x, double y, double distanceMax, int demandMax, double usageCost, double distanceCost, double dayCost, Instance instance) {
+        super(id, idLocation, 3, x, y, instance);
         this.distanceCost = distanceCost;
         this.dayCost = dayCost;
         this.usageCost = usageCost;
         this.distMax = distanceMax;
         this.demandMax = demandMax;
-        this.potentialInstallations = new ArrayList<>();
+        this.authorizedMachines = new HashSet<>();
         this.itineraries = new ArrayList<>();
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Technician)) {
-            return false;
-        }
-        Technician other = (Technician) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "Technician (" + id + ")";
+        String str = "Technician (" + super.getId() + ") at " + super.toString();
+        return str;
     }
 
     public double getDistanceCost() {
@@ -166,18 +150,54 @@ public class Technician extends Point implements Serializable {
         this.itineraries.add(t);
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.distanceCost) ^ (Double.doubleToLongBits(this.distanceCost) >>> 32));
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.dayCost) ^ (Double.doubleToLongBits(this.dayCost) >>> 32));
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.usageCost) ^ (Double.doubleToLongBits(this.usageCost) >>> 32));
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.distMax) ^ (Double.doubleToLongBits(this.distMax) >>> 32));
+        hash = 41 * hash + this.demandMax;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Technician other = (Technician) obj;
+        if (Double.doubleToLongBits(this.distanceCost) != Double.doubleToLongBits(other.distanceCost)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.dayCost) != Double.doubleToLongBits(other.dayCost)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.usageCost) != Double.doubleToLongBits(other.usageCost)) {
+            return false;
+        }
+        if (this.demandMax != other.demandMax) {
+            return false;
+        }
+        return true;
+    }
+
     /**
-     * Adds a relation entity between this technician and a machine
+     * Adds a machine to the list of machines the technician can install
      *
      * @param machine
      * @return
      */
-    public boolean addPotentialInstallation(Machine machine) {
+    public boolean addAccreditation(MachineType machine) {
         if (machine != null) {
-            Installation installation = new Installation(machine, this);
-            if (!this.potentialInstallations.contains(installation)) {
-                this.potentialInstallations.add(installation);
-                if (machine.addTechnician(installation)) {
+            if (this.authorizedMachines.add(machine)) {
+                if (machine.addTechnician(this)) {
                     return true;
                 }
             }
@@ -195,28 +215,27 @@ public class Technician extends Point implements Serializable {
      * @param dayNumber
      * @return true if success
      */
-    public boolean canInstallDemand(Demand demand, int dayNumber) {
+    public boolean canInstallDemand(PlannedDemand demand, int dayNumber) {
         boolean canInstall = false;
-        for (Installation installation : this.potentialInstallations) {
-            if (installation.getMachine().equals(demand.getMachine())) {
+        for (MachineType machineType : authorizedMachines) {
+            if (machineType.equals(demand.getMachine())) {
                 canInstall = true;
             }
         }
-
         int lastDay = 0;
         int nbStraightWorkingDays = 0;
-        for (TechnicianItinerary itinerary : itineraries) {
-            int currentDayNumber = itinerary.getDayNumber();
-            if (currentDayNumber > lastDay) {
-                if (currentDayNumber == lastDay + 1) {
-                    lastDay = currentDayNumber;
-                    nbStraightWorkingDays++;
-                    if (nbStraightWorkingDays > 4) {
-                        return false;
-                    }
-                }
-            }
-        }
+//        for (TechnicianItinerary itinerary : itineraries) {
+//            int currentDayNumber = itinerary.getDayNumber();
+//            if (currentDayNumber > lastDay) {
+//                if (currentDayNumber == lastDay + 1) {
+//                    lastDay = currentDayNumber;
+//                    nbStraightWorkingDays++;
+//                    if (nbStraightWorkingDays > 4) {
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
 
         return canInstall;
     }

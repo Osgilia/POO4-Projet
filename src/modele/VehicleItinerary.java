@@ -51,7 +51,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             cascade = {
                 CascadeType.PERSIST
             })
-    private List<Demand> customersDemands;
+    private List<PlannedDemand> customersDemands;
 
     /**
      * No-argument constructor
@@ -99,7 +99,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     public String toString() {
         String str = "- Itinerary of " + vehicle + " [Capacity = " + capacityUsed + "/" + this.vehicle.getCapacity() + " | Distance = "
                 + distanceTravelled + "/" + this.vehicle.getDistanceMax() + " | Cost = " + cost + "] :";
-        for (Demand demand : customersDemands) {
+        for (PlannedDemand demand : customersDemands) {
             str += "\n\t\t\t\t " + demand;
         }
         return str;
@@ -121,6 +121,10 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.cost = cost;
     }
 
+    public double getCost() {
+        return cost;
+    }
+    
     public void setDistanceTravelled(double distanceTravelled) {
         this.distanceTravelled = distanceTravelled;
     }
@@ -140,7 +144,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
      */
     public List<Customer> getCustomers() {
         List<Customer> customers = new ArrayList<>();
-        for (Demand d : customersDemands) {
+        for (PlannedDemand d : customersDemands) {
             customers.add(d.getCustomer());
         }
         return customers;
@@ -149,18 +153,36 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     /**
      * Adds a demand to the itinerary
      *
-     * @param d : demand to add
+     * @param d : planned demand to add
      * @return true if success
      */
-    public boolean addDemand(Demand d) {
+    public boolean addDemand(PlannedDemand d) {
         if (d != null) {
             this.customersDemands.add(d);
             if (this.customersDemands.contains(d)) {
                 d.setVehicleItinerary(this);
+                this.addPoint(d.getCustomer());
                 return true;
             }
         }
         return false;
+    }
+    
+    public boolean checkVehicle(PlannedDemand d) {
+        boolean notEnoughVehicles = false;
+        double capacity = this.getVehicleCapacity();
+        int totalSizeMachinesRequested = d.getTotalSizeMachines();
+        if (capacityUsed + totalSizeMachinesRequested > capacity) {
+            notEnoughVehicles = true;
+        }
+        double distanceUpdated = this.computeDistanceDemands(d);
+        if (distanceUpdated > this.vehicle.getDistanceMax()) {
+            notEnoughVehicles = true;
+        }
+        if (this.getDayNumber() < d.getFirstDay() || this.getDayNumber() > d.getLastDay()) {
+            notEnoughVehicles = false;
+        }
+        return notEnoughVehicles;
     }
 
     /**
@@ -170,7 +192,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
      * @param d : demand to assess
      * @return true if possible, false otherwise
      */
-    public boolean addDemandVehicle(Demand d) {
+    public boolean addDemandVehicle(PlannedDemand d) {
         if (d == null) {
             return false;
         }
@@ -182,7 +204,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         if (this.getDayNumber() < d.getFirstDay() || this.getDayNumber() > d.getLastDay()) {
             return false;
         }
-        double distanceUpdated = this.computeDistanceDemands();
+        double distanceUpdated = this.computeDistanceDemands(d);
         if (distanceUpdated > this.vehicle.getDistanceMax()) {
             return false;
         }
@@ -205,7 +227,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
      * @return double
      */
     protected double computeCostItinerary() {
-        double distanceDemands = this.computeDistanceDemands();
+        double distanceDemands = this.computeDistanceDemands(new ArrayList<>(super.getPoints()));
         double newCost = distanceDemands * this.vehicle.getDistanceCost();
         if (distanceDemands != 0.0) { // if used
             newCost += this.vehicle.getDayCost();
@@ -214,24 +236,37 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     }
 
     /**
-     * Compute the distance between each customer in the sequence
+     * Computes the distance between each point in a given sequence
      *
-     * @return double
+     * @param pointsItinerary : points in the sequence
+     * @return the distance
      */
-    protected double computeDistanceDemands() {
-        List<Customer> customers = this.getCustomers();
-        if (customers.isEmpty()) {
+    protected double computeDistanceDemands(List<Point> pointsItinerary) {
+        if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
-        double distance = this.vehicle.getDepot().getDistanceTo(customers.get(0));
-        for (int i = 1; i < customers.size(); i++) {
-            Customer prevCustomer = customers.get(i - 1);
-            if (!prevCustomer.equals(customers.get(i))) {
-                distance += prevCustomer.getDistanceTo(customers.get(i));
+        double distance = this.vehicle.getDepot().getDistanceTo(pointsItinerary.get(0));
+        for (int i = 1; i < pointsItinerary.size(); i++) {
+            Point previousPoint = pointsItinerary.get(i - 1);
+            if (!previousPoint.equals(pointsItinerary.get(i))) {
+                distance += previousPoint.getDistanceTo(pointsItinerary.get(i));
             }
         }
-        distance += customers.get(customers.size() - 1).getDistanceTo(this.vehicle.getDepot());
+        distance += pointsItinerary.get(pointsItinerary.size() - 1).getDistanceTo(this.vehicle.getDepot());
         return distance;
+    }
+    
+    /**
+     * Computes the distance between each point in the sequence with a
+     * subsequent request
+     *
+     * @param d : demand to add
+     * @return the distance
+     */
+    protected double computeDistanceDemands(PlannedDemand d) {
+        List<Point> pointsItinerary = new ArrayList<>(super.getPoints());
+        pointsItinerary.add(d.getCustomer());
+        return this.computeDistanceDemands(pointsItinerary);
     }
 
     /**
@@ -242,4 +277,10 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.distanceTravelled = 0.0;
         this.cost = 0.0;
     }
+
+    public List<PlannedDemand> getCustomersDemands() {
+        return customersDemands;
+    }
+
+    
 }
