@@ -1,5 +1,8 @@
 package algo;
 
+import dao.DaoFactory;
+import dao.InstanceDao;
+import dao.PersistenceType;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import modele.Customer;
@@ -44,13 +47,16 @@ public class ReadInstance {
                 /*for(int i = 0; i < arg.length; i++){
                     System.out.println ("SPLIT: " + arg[i]);
                 }*/
+                DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
                 switch (arg[0]) {
                     case "DATASET":
                         val1 = arg[1];
                         break;
                     case "NAME":
                         if (val1 != "") {
+                            InstanceDao instanceManager = factory.getInstanceDao();
                             instance = new Instance(arg[1], val1);
+                            instanceManager.create(instance);
                             System.out.println("Instance IMPORTED: named '" + arg[1] + "'");
                         } else {
                             System.err.println("Instance ERROR : DATASET value doesn't exist.");

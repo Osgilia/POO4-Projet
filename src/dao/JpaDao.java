@@ -20,7 +20,7 @@ public abstract class JpaDao<T> implements Dao<T> {
 
     private EntityManagerFactory emf;
     private EntityManager em;
-    private static final String UNITE_PERSISTENCE = "TP3_LE4PU";
+    private static final String UNITE_PERSISTENCE = "Machines2IPU";
     private Class<T> classeEntite;
 
     /**

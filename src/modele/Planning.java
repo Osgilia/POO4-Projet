@@ -9,13 +9,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -56,13 +60,18 @@ public class Planning implements Serializable {
     @Column(name = "NBDAYS")
     private int nbDays;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "nplanning")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "planning")
     private List<DayHorizon> days;
 
     @OneToMany(mappedBy = "planning",
             cascade = {
                 CascadeType.PERSIST
             })
+    @ElementCollection
+    @CollectionTable(name = "PLANNED_DEMANDS",
+            joinColumns = @JoinColumn(name = "PLANNED_DEMAND_ID"))
+    @Column(name="plannedDemands")
+    @MapKeyJoinColumn(name="planning")
     private Map<PlannedDemand, Integer> plannedDemands;
 
     /**
@@ -140,8 +149,6 @@ public class Planning implements Serializable {
     public double getCost() {
         return cost;
     }
-    
-    
 
     public Map<PlannedDemand, Integer> getDemands() {
         return plannedDemands;
@@ -151,7 +158,6 @@ public class Planning implements Serializable {
         return days;
     }
 
-    
     /**
      * Adds a day in the planning horizon
      *
