@@ -43,6 +43,7 @@ public class Customer extends Point implements Serializable {
      * Parameterized constructor
      *
      * @param id
+     * @param idLocation
      * @param x
      * @param y
      * @param instance
@@ -68,23 +69,25 @@ public class Customer extends Point implements Serializable {
     /**
      * Adds a demand
      *
+     * @param id
      * @param firstDay : first day of delivery window
      * @param lastDay : last day of delivery window
      * @param m : machine to add
      * @param nbMachines
      * @param p : planning
+     * @param demandManager : Dao demand
      * @return true if demand is added
      */
     public boolean addDemand(int id, int firstDay, int lastDay, MachineType m, int nbMachines, Planning p, DemandDao demandManager) {
         if (firstDay <= lastDay) {
             Demand d = new Demand(id, firstDay, lastDay, this, m, nbMachines);
-            demandManager.create(d);
             m.addDemand(d);
             p.addDemand(d);
             this.customerDemands.add(d);
             if (this.customerDemands.contains(d)) {
                 return true;
             }
+            demandManager.create(d);
         }
         return false;
     }
