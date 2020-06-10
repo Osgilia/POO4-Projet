@@ -49,7 +49,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
     @Column(name = "NBDEMANDS")
     private int nbDemands;
 
-    @OneToMany(mappedBy = "technician_itinerary",
+    @OneToMany(mappedBy = "technicianItinerary",
             cascade = {
                 CascadeType.PERSIST
             })

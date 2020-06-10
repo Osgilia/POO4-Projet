@@ -13,7 +13,7 @@ import modele.*;
 public class Test2 {
 
     public static void main(String[] args) throws IOException {
-        Instance instance = ReadInstance.readInstance("A:\\Lucas\\Desktop\\testInstance.txt");
+        Instance instance = ReadInstance.readInstance("A:\\lucas\\Desktop\\testInstance.txt");
          //System.out.println(instance);
 
         /**

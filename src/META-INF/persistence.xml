@@ -21,10 +21,12 @@
     <class>modele.MachineType</class>
     <class>modele.PlannedDemand</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/machines"/>
-      <property name="javax.persistence.jdbc.user" value=""/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/machines2i"/>
+      <property name="javax.persistence.jdbc.user" value="Henri"/>
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
-      <property name="javax.persistence.jdbc.password" value=""/>
+      <property name="javax.persistence.jdbc.password" value="123"/>
+      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+      <property name="eclipselink.ddl-generation.output-mode" value="both"/>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
   </persistence-unit>

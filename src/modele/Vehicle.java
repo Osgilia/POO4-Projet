@@ -69,7 +69,7 @@ public class Vehicle implements Serializable {
     @ManyToOne
     private Depot depot;
     
-    @OneToMany(mappedBy = "itinerary",
+    @OneToMany(mappedBy = "vehicle",
             cascade = {
                 CascadeType.PERSIST
             })

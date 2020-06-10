@@ -35,7 +35,7 @@ public class PlannedDemand implements Serializable {
     })
     private Planning planning;
     
-    @JoinColumn(name = "NVEHICLEITINERARY", referencedColumnName = "ID")
+    @JoinColumn(name = "VEHICLEITINERARY", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private VehicleItinerary vehicleItinerary;
 

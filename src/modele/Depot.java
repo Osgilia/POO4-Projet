@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @DiscriminatorValue("1")
 public class Depot extends Point implements Serializable {
 
-    @OneToMany(mappedBy = "ndepot")
+    @OneToMany(mappedBy = "depot")
     private Set<Vehicle> vehicleSet;
 
     public Depot() {

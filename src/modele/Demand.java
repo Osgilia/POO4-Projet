@@ -44,11 +44,11 @@ public class Demand implements Serializable {
      */
     private int lastDay;
 
-    @JoinColumn(name = "NCUSTOMER", referencedColumnName = "ID")
+    @JoinColumn(name = "NCUSTOMER")
     @ManyToOne(optional = false)
     private Customer customer;
 
-    @JoinColumn(name = "NMACHINE", referencedColumnName = "ID")
+    @JoinColumn(name = "NMACHINE")
     @ManyToOne(optional = false)
     private MachineType machine;
 
@@ -99,7 +99,7 @@ public class Demand implements Serializable {
     public Integer getId() {
         return id;
     }
-
+    
     @Override
     public int hashCode() {
         int hash = 5;
