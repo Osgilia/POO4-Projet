@@ -47,7 +47,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     @Column(name = "CAPACITYUSED")
     private double capacityUsed;
 
-    @OneToMany(mappedBy = "vehicle_itinerary",
+    @OneToMany(mappedBy = "vehicleItinerary",
             cascade = {
                 CascadeType.PERSIST
             })

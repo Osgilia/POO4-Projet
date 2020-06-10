@@ -1,5 +1,6 @@
 package algo;
 
+import dao.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import modele.Customer;
@@ -31,6 +32,19 @@ public class ReadInstance {
                 truckMaxDistance = -1,
                 truckCapacity = -1;
 
+        //DAO Manager initialisation
+        DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
+
+        InstanceDao instanceManager = factory.getInstanceDao();
+        PlanningDao planningManager = factory.getPlanningDao();
+        MachineTypeDao machineManager = factory.getMachineTypeDao();
+        PointDao pointManager = factory.getPointDao();
+        DepotDao depotManager = factory.getDepotDao();
+        CustomerDao customerManager = factory.getCustomerDao();
+        DemandDao demandManager = factory.getDemandDao();
+        TechnicianDao technicianManager = factory.getTechnicianDao();
+        VehicleDao vehicleManager = factory.getVehicleDao();
+
         try {
             BufferedReader in = new BufferedReader(new FileReader(file));
             String line;
@@ -38,6 +52,7 @@ public class ReadInstance {
             String val1 = "";
             int nbMachines = -1, nbLocations = -1;
             Point points[] = null;
+
             while ((line = in.readLine()) != null) {
                 //System.out.println (line);
                 arg = line.split(" = ");
@@ -51,6 +66,7 @@ public class ReadInstance {
                     case "NAME":
                         if (val1 != "") {
                             instance = new Instance(arg[1], val1);
+                            instanceManager.create(instance);
                             System.out.println("Instance IMPORTED: named '" + arg[1] + "'");
                         } else {
                             System.err.println("Instance ERROR : DATASET value doesn't exist.");
@@ -97,7 +113,9 @@ public class ReadInstance {
                             int id = Integer.parseInt(argument[0]),
                                     size = Integer.parseInt(argument[1]),
                                     penalty = Integer.parseInt(argument[2]);
-                            instance.addMachine(new MachineType(id, size, penalty, instance));
+                            MachineType m = new MachineType(id, size, penalty, instance);
+                            machineManager.create(m);
+                            instance.addMachine(m);
                         }
                         break;
                     case "LOCATIONS":
@@ -110,12 +128,16 @@ public class ReadInstance {
                                     x = Integer.parseInt(argument[1]),
                                     y = Integer.parseInt(argument[2]);
                             points[i] = new Point(id, id, -1, x, y, instance);
+                            pointManager.create(points[i]);
                             if (Integer.parseInt(argument[0]) == 1) {
-                                instance.addPoint(new Depot(1, 1, Integer.parseInt(argument[1]), Integer.parseInt(argument[2]), instance));
+                                Depot d = new Depot(1, 1, Integer.parseInt(argument[1]), Integer.parseInt(argument[2]), instance);
+                                depotManager.create(d);
+                                instance.addPoint(d);
                             }
                         }
                         break;
                     case "REQUESTS":
+
                         for (int i = 0; i < Integer.parseInt(arg[1]); i++) {
                             line = in.readLine();
                             String[] argument = line.split(" ");
@@ -131,10 +153,14 @@ public class ReadInstance {
                                 if (points[j].getIdLocation() == idLocation) {
                                     if (!instance.containsPoint(c)) {
                                         instance.addPoint(c);
-                                        c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, planning);
+                                        c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, planning, demandManager);
+                                        customerManager.create(c);
                                     } else if (instance.getPoint(c) instanceof Customer) {
-                                        ((Customer) instance.getPoint(c)).addDemand(id, firstDay, lastDay, m, nbMachinesRequested, planning);
+                                        ((Customer) instance.getPoint(c)).addDemand(id, firstDay, lastDay, m, nbMachinesRequested, planning, demandManager);
+                                        customerManager.update((Customer) instance.getPoint(c));
                                     }
+
+                                    machineManager.update(m);
                                 }
                             }
                         }
@@ -156,6 +182,7 @@ public class ReadInstance {
                                             t.addAccreditation(instance.getMachineType(k - 3));
                                         }
                                     }
+                                    technicianManager.create(t);
                                 }
                             }
                         }
@@ -181,13 +208,21 @@ public class ReadInstance {
         // VEHICLE TYPE ASSOCIATED TO THE INSTANCE ///////
         Vehicle vehicleType = new Vehicle(1, instance.getDepot(), truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
         vehicleType.setvInstance(instance);
+        vehicleManager.create(vehicleType);
 
+        planningManager.create(planning);
+        
+        RouteDao routeManager = factory.getRouteDao();
         // ROUTES ////////////////////////////////////////
         for (Point p1 : instance.getPointList()) {
             for (Point p2 : instance.getPointList()) {
-                p1.addDestination(p2, p1.computeDistance(p2));
+                p1.addDestination(p2, p1.computeDistance(p2), routeManager);
+
             }
+            pointManager.update(p1);
         }
+
+        instanceManager.update(instance);
 
         return instance;
     }
