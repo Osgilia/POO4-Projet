@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.Collection;
+import modele.Instance;
 import modele.Vehicle;
 
 /**
@@ -16,4 +17,7 @@ public interface VehicleDao extends Dao<Vehicle> {
      * @return
      */
     public Collection<Vehicle> findAllNotUsed();
+
+    public Vehicle findbyInstance(Instance instance);
+
 }

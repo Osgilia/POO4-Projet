@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.Query;
+import modele.Customer;
+import modele.Instance;
 import modele.Vehicle;
 
 /**
@@ -11,14 +13,15 @@ import modele.Vehicle;
  * @author Henri, Lucas, Louis
  */
 public class JpaVehicleDao extends JpaDao<Vehicle> implements VehicleDao {
+
     private static JpaVehicleDao instance;
-    
+
     private JpaVehicleDao() {
         super(Vehicle.class);
     }
-    
+
     public static JpaVehicleDao getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new JpaVehicleDao();
         }
         return instance;
@@ -58,14 +61,23 @@ public class JpaVehicleDao extends JpaDao<Vehicle> implements VehicleDao {
     public boolean create(Vehicle obj) {
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public List<Vehicle> findAllNotUsed() {
         Query query = this.getEm().createNamedQuery("Vehicle.findAllNotUsed");
         List<Vehicle> vehicules = new ArrayList<>();
-        for(Object o : query.getResultList()) {
+        for (Object o : query.getResultList()) {
             vehicules.add((Vehicle) o);
         }
         return vehicules;
     }
+
+    @Override
+    public Vehicle findbyInstance(Instance instance) {
+        Query query = this.getEm().createNamedQuery("Vehicle.findByInstance")
+                .setParameter("instance", instance);
+
+        return (Vehicle) query.getSingleResult();
+    }
+
 }

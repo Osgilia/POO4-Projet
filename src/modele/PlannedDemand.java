@@ -23,16 +23,14 @@ public class PlannedDemand implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @JoinColumn(name = "PLANNED_DEMAND_ID", referencedColumnName = "ID")
+    @JoinColumn(name = "DEMAND_ID", referencedColumnName = "ID")
     @ManyToOne(cascade = {
         CascadeType.PERSIST
     })
     private Demand demand;
 
     @JoinColumn(name = "PLANNNING_ID", referencedColumnName = "ID")
-    @ManyToOne(cascade = {
-        CascadeType.PERSIST
-    })
+    @ManyToOne()
     private Planning planning;
     
     @JoinColumn(name = "VEHICLEITINERARY", referencedColumnName = "ID")

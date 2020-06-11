@@ -23,7 +23,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Customer.findAll", query = "SELECT c FROM Customer c")
-    , @NamedQuery(name = "Customer.findById", query = "SELECT c FROM Customer c WHERE c.id = :id")}
+    , @NamedQuery(name = "Customer.findById", query = "SELECT c FROM Customer c WHERE c.id = :id")
+    , @NamedQuery(name = "Customer.findByInstance", query = "SELECT c FROM Customer c WHERE c.pInstance = :instance")
+}
 )
 @DiscriminatorValue("2")
 public class Customer extends Point implements Serializable {

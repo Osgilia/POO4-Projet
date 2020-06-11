@@ -1,5 +1,6 @@
 package modele;
 
+import dao.DemandDao;
 import dao.PlannedDemandDao;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -64,13 +65,9 @@ public class Planning implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "planning")
     private List<DayHorizon> days;
 
-    @OneToMany(mappedBy = "planning",
-            cascade = {
-                CascadeType.PERSIST
-            })
+    @OneToMany()
     @ElementCollection
-    @CollectionTable(name = "PLANNED_DEMANDS",
-            joinColumns = @JoinColumn(name = "PLANNED_DEMAND_ID"))
+    @CollectionTable(name = "PLANNED_DEMAND")
     @Column(name = "plannedDemands")
     @MapKeyJoinColumn(name = "planning")
     private Map<PlannedDemand, Integer> plannedDemands;
@@ -183,14 +180,15 @@ public class Planning implements Serializable {
      * @param demand
      * @return true if success
      */
-    public boolean addDemand(Demand demand, PlannedDemandDao plannedDemandmanager) {
+    public boolean addDemand(Demand demand, PlannedDemandDao plannedDemandmanager, DemandDao demandManager) {
 
         if (demand != null) {
             PlannedDemand plannedDemand = new PlannedDemand(this, demand);
             this.plannedDemands.put(plannedDemand, 0);
             if (this.plannedDemands.containsKey(plannedDemand)) {
-                plannedDemandmanager.create(plannedDemand);
-                return demand.addPlannedDemand(plannedDemand);
+                boolean success = demand.addPlannedDemand(plannedDemand);
+                demandManager.update(demand);
+                return success;
             }
         }
         return false;
@@ -203,9 +201,10 @@ public class Planning implements Serializable {
      */
     public void toggleDemand(PlannedDemand d) {
         //System.out.println(d);
-        for (Map.Entry<PlannedDemand, Integer> demand : this.getDemands().entrySet()) {
+        for (Map.Entry<PlannedDemand, Integer> demand : this.plannedDemands.entrySet()) {
             System.out.println(demand.getKey());
         }
+        System.out.println(d);
         if (d != null) {
             if (this.plannedDemands.get(d) == 0) { // if is being supplied
                 this.plannedDemands.put(d, 1);

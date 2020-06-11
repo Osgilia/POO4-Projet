@@ -29,24 +29,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Vehicle.findAll", query = "SELECT v FROM Vehicle v")
-    , @NamedQuery(name = "Vehicle.findById", query = "SELECT v FROM Vehicle v WHERE v.id = :id")})
+    , @NamedQuery(name = "Vehicle.findById", query = "SELECT v FROM Vehicle v WHERE v.id = :id")
+    , @NamedQuery(name = "Vehicle.findByInstance", query = "SELECT v FROM Vehicle v WHERE v.vInstance = :instance")})
 public class Vehicle implements Serializable {
 
-    /************************
-     *      ATTRIBUTES      *
-     ***********************/
-    
+    /**
+     * **********************
+     * ATTRIBUTES *
+     **********************
+     */
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+
     @Column(name = "CAPACITY")
     private double capacity;
 
     @Column(name = "DISTANCEMAX")
     private double distanceMax;
-    
+
     /**
      * Cost per distance unit covered by the vehicle
      */
@@ -58,7 +60,7 @@ public class Vehicle implements Serializable {
      */
     @Column(name = "DAYCOST")
     private double dayCost;
-    
+
     /**
      * Cost of using a technician during a day of the planning horizon
      */
@@ -68,24 +70,25 @@ public class Vehicle implements Serializable {
     @JoinColumn(name = "DEPOT", referencedColumnName = "ID")
     @ManyToOne
     private Depot depot;
-    
+
     @OneToMany(mappedBy = "vehicle",
             cascade = {
                 CascadeType.ALL
             })
-    private List<VehicleItinerary> itineraries;    
-    
+    private List<VehicleItinerary> itineraries;
+
     /**
      * Instance using this vehicle
      */
     @JoinColumn(name = "VINSTANCE", referencedColumnName = "ID")
     @OneToOne
     private Instance vInstance;
-    
-    /****************************
-    *       CONSTRUCTORS        *
-    ****************************/
 
+    /**
+     * **************************
+     * CONSTRUCTORS *
+    ***************************
+     */
     /**
      * No-argument constructor
      */
@@ -100,6 +103,7 @@ public class Vehicle implements Serializable {
 
     /**
      * Parameterized constructor
+     *
      * @param id
      * @param depot
      * @param capacity
@@ -121,7 +125,8 @@ public class Vehicle implements Serializable {
 
     /**
      * Copy constructor
-     * @param v 
+     *
+     * @param v
      */
     public Vehicle(Vehicle v) {
         this();
@@ -131,16 +136,16 @@ public class Vehicle implements Serializable {
         this.distanceCost = v.getDistanceCost();
         this.distanceMax = v.getDistanceMax();
     }
-    
-    
-    /********************************
-     *      GETTERS & SETTERS       *
-     *******************************/
 
+    /**
+     * ******************************
+     * GETTERS & SETTERS *
+     ******************************
+     */
     public double getDistanceMax() {
         return distanceMax;
     }
-    
+
     public double getDistanceCost() {
         return distanceCost;
     }
@@ -160,13 +165,13 @@ public class Vehicle implements Serializable {
     public double getUsageCost() {
         return usageCost;
     }
-    
+
     public void setDepot(Depot depot) {
         this.depot = depot;
-    }   
-    
+    }
+
     public void setvInstance(Instance vInstance) {
-        if(vInstance != null) {
+        if (vInstance != null) {
             this.vInstance = vInstance;
             vInstance.setVehicle(this);
         }
@@ -179,9 +184,11 @@ public class Vehicle implements Serializable {
         return hash;
     }
 
-    /************************
-     *       METHODS        *
-     ***********************/
+    /**
+     * **********************
+     * METHODS *
+     **********************
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

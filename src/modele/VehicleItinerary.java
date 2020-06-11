@@ -34,7 +34,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "VEHICLE_ID")
     private Vehicle vehicle;
 
@@ -124,7 +124,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     public double getCost() {
         return cost;
     }
-    
+
     public void setDistanceTravelled(double distanceTravelled) {
         this.distanceTravelled = distanceTravelled;
     }
@@ -167,7 +167,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         }
         return false;
     }
-    
+
     public boolean checkVehicle(PlannedDemand d) {
         boolean notEnoughVehicles = false;
         double capacity = this.getVehicleCapacity();
@@ -216,7 +216,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.setCost(costUpdated);
         this.setCapacityUsed(capacityUsed + totalSizeMachinesRequested);
         this.setDistanceTravelled(distanceUpdated);
-        this.updateCostDay();
+        // this.updateCostDay();
         return true;
     }
 
@@ -255,7 +255,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         distance += pointsItinerary.get(pointsItinerary.size() - 1).getDistanceTo(this.vehicle.getDepot());
         return distance;
     }
-    
+
     /**
      * Computes the distance between each point in the sequence with a
      * subsequent request
@@ -282,5 +282,4 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         return customersDemands;
     }
 
-    
 }
