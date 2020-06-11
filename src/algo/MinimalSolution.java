@@ -24,8 +24,8 @@ public class MinimalSolution {
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
 
         PlanningDao planningManager = factory.getPlanningDao();
-        
-        VehicleDao vehicleManager  = factory.getVehicleDao();
+
+        VehicleDao vehicleManager = factory.getVehicleDao();
         VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
         TechnicianDao technicianManager = factory.getTechnicianDao();
         TechnicianItineraryDao technicianItineraryManager = factory.getTechnicianItineraryDao();
@@ -52,17 +52,18 @@ public class MinimalSolution {
             daysManager.create(day);
             planning.addDayHorizon(day);
             daysManager.update(day);
-               
+
             //vehicle Itinerary creation
             Set<VehicleItinerary> vehicleItineraries = new HashSet<>();
             for (Vehicle v : vehicles) {
                 VehicleItinerary vehicleItinerary = new VehicleItinerary(v);
 
                 day.addItinerary(vehicleItinerary);
+                vehicleItineraries.add(vehicleItinerary);
                 vehicleItineraryManager.create(vehicleItinerary);
 
-                vehicleItineraries.add(vehicleItinerary);
             }
+
             
             //technician itinerary creation
             Set<TechnicianItinerary> technicianItineraries = new HashSet<>();
@@ -72,11 +73,11 @@ public class MinimalSolution {
                 technicianItineraries.add(technicianItinerary);
                 technicianItineraryManager.create(technicianItinerary);
 
-                technicianManager.update(t);
-
             }
+            
 //            System.out.println("GET PLANNING DEMANDS 2 = " + planning.getPlannedDemands());
-             
+
+
             for (PlannedDemand demand : planning.getPlannedDemands()) {
                 if (demand.getStateDemand() == 0) { // if demand is to be supplied
                     boolean notEnoughVehicles = false;
@@ -102,7 +103,7 @@ public class MinimalSolution {
 
                     }
                 }
-                if (demand.getStateDemand() == 1) { // if demand is to be installed
+                else if (demand.getStateDemand() == 1) { // if demand is to be installed
                     for (TechnicianItinerary technicianItinerary : technicianItineraries) {
                         if (technicianItinerary.addDemandTechnician(demand)) {
                             technicianItineraryManager.update(technicianItinerary);
@@ -112,6 +113,8 @@ public class MinimalSolution {
                 }
                 plannedDemandManager.update(demand);
             }
+
+             
             daysManager.update(day);
 
         }
@@ -126,7 +129,6 @@ public class MinimalSolution {
 //                System.err.println("Demand not installed");
 //            }
 //        }
-
         System.out.println(planning);
         PrintSolution.print(instance, planning);
     }
