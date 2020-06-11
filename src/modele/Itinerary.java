@@ -55,7 +55,7 @@ public class Itinerary implements Serializable {
     @JoinColumn(name = "DAYHORIZON_ID")
     private DayHorizon dayHorizon;
 
-    @ManyToMany(mappedBy = "itineraries", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "itineraries")
     private List<Point> points;
 
     /**

@@ -180,15 +180,15 @@ public class Vehicle implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 83 * hash + Objects.hashCode(this.id);
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.capacity) ^ (Double.doubleToLongBits(this.capacity) >>> 32));
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.distanceMax) ^ (Double.doubleToLongBits(this.distanceMax) >>> 32));
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.distanceCost) ^ (Double.doubleToLongBits(this.distanceCost) >>> 32));
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.dayCost) ^ (Double.doubleToLongBits(this.dayCost) >>> 32));
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.usageCost) ^ (Double.doubleToLongBits(this.usageCost) >>> 32));
+        hash = 97 * hash + Objects.hashCode(this.depot);
         return hash;
     }
 
-    /**
-     * **********************
-     * METHODS *
-     **********************
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -201,7 +201,22 @@ public class Vehicle implements Serializable {
             return false;
         }
         final Vehicle other = (Vehicle) obj;
-        if (!Objects.equals(this.id, other.id)) {
+        if (Double.doubleToLongBits(this.capacity) != Double.doubleToLongBits(other.capacity)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.distanceMax) != Double.doubleToLongBits(other.distanceMax)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.distanceCost) != Double.doubleToLongBits(other.distanceCost)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.dayCost) != Double.doubleToLongBits(other.dayCost)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.usageCost) != Double.doubleToLongBits(other.usageCost)) {
+            return false;
+        }
+        if (!Objects.equals(this.depot, other.depot)) {
             return false;
         }
         return true;

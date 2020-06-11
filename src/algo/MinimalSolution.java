@@ -45,13 +45,12 @@ public class MinimalSolution {
 
         Set<Vehicle> vehicles = new HashSet<>();
         vehicles.add(vehicleInstance);
-
+        Set<PlannedDemand> plannedDemands = planning.getPlannedDemands();
         //DayHorizons creation
         for (int i = 1; i <= instance.getNbDays(); i++) {
             DayHorizon day = new DayHorizon(i);
-            daysManager.create(day);
             planning.addDayHorizon(day);
-            daysManager.update(day);
+            daysManager.create(day);
 
             //vehicle Itinerary creation
             Set<VehicleItinerary> vehicleItineraries = new HashSet<>();
@@ -64,7 +63,6 @@ public class MinimalSolution {
 
             }
 
-            
             //technician itinerary creation
             Set<TechnicianItinerary> technicianItineraries = new HashSet<>();
             for (Technician t : technicianManager.findbyInstance(instance)) {
@@ -74,11 +72,9 @@ public class MinimalSolution {
                 technicianItineraryManager.create(technicianItinerary);
 
             }
-            
-//            System.out.println("GET PLANNING DEMANDS 2 = " + planning.getPlannedDemands());
 
-
-            for (PlannedDemand demand : planning.getPlannedDemands()) {
+            System.out.println("GET PLANNING DEMANDS 2 = " + plannedDemands);
+            for (PlannedDemand demand : plannedDemands) {
                 if (demand.getStateDemand() == 0) { // if demand is to be supplied
                     boolean notEnoughVehicles = false;
                     for (VehicleItinerary vehicleItinerary : vehicleItineraries) {
@@ -86,8 +82,7 @@ public class MinimalSolution {
                             notEnoughVehicles = true;
                             continue;
                         }
-                        if (vehicleItinerary.addDemandVehicle(demand)) {
-                            notEnoughVehicles = false;
+                        if (!notEnoughVehicles && vehicleItinerary.addDemandVehicle(demand)) {
                             break;
                         }
                     }
@@ -95,14 +90,12 @@ public class MinimalSolution {
                         //If we don't have enough vehicles to answer the demand
                         vehicles.add(vehicleInstance);
                         VehicleItinerary vehicleItinerary = new VehicleItinerary(vehicleInstance);
-
                         day.addItinerary(vehicleItinerary);
                         vehicleItinerary.addDemandVehicle(demand);
                         vehicleItineraries.add(vehicleItinerary);
-                        vehicleItineraryManager.create(vehicleItinerary);
-
+                        vehicleItineraryManager.update(vehicleItinerary);
                     }
-                }
+                } 
                 else if (demand.getStateDemand() == 1) { // if demand is to be installed
                     for (TechnicianItinerary technicianItinerary : technicianItineraries) {
                         if (technicianItinerary.addDemandTechnician(demand)) {
@@ -114,7 +107,6 @@ public class MinimalSolution {
                 plannedDemandManager.update(demand);
             }
 
-             
             daysManager.update(day);
 
         }

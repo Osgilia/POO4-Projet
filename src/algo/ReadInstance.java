@@ -172,7 +172,7 @@ public class ReadInstance {
                                     demandMax = Integer.parseInt(argument[3]);
                             for (int j = 0; j < points.length; j++) {
                                 if (points[j].getIdLocation() == idLocation) {
-                                    Technician t = new Technician(id, idLocation, points[j].getX(), points[j].getY(), distanceMax, demandMax, technicianCost, technicianDistanceCost, technicianDayCost, instance);
+                                    Technician t = new Technician(id, id, points[j].getX(), points[j].getY(), distanceMax, demandMax, technicianCost, technicianDistanceCost, technicianDayCost, instance);
                                     instance.addPoint(t);
                                     for (int k = 4; k < nbMachines + 4; k++) {
                                         if (Integer.parseInt(argument[k]) == 1) {
@@ -207,13 +207,12 @@ public class ReadInstance {
         vehicleType.setvInstance(instance);
         vehicleManager.create(vehicleType);
 
-
         RouteDao routeManager = factory.getRouteDao();
         // ROUTES ////////////////////////////////////////
         for (Point p1 : instance.getPointList()) {
             for (Point p2 : instance.getPointList()) {
                 p1.addDestination(p2, p1.computeDistance(p2), routeManager);
-
+                pointManager.update(p2);
             }
             pointManager.update(p1);
         }

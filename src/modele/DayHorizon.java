@@ -27,7 +27,7 @@ public class DayHorizon implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JoinColumn(name = "PLANNING", referencedColumnName = "ID")
+    @JoinColumn(name = "planning", referencedColumnName = "ID")
     @ManyToOne
     private Planning planning;
 
@@ -226,7 +226,7 @@ public class DayHorizon implements Serializable {
         for (Itinerary i : itineraries) {
             if (i instanceof TechnicianItinerary) {
                 if (((TechnicianItinerary) i).getCustomersDemands().size() > 0) {
-                    str += ((TechnicianItinerary) i).getTechnician().getId();
+                    str += ((TechnicianItinerary) i).getTechnician().getIdLocation();
                     for (PlannedDemand d : ((TechnicianItinerary) i).getCustomersDemands()) {
                         str += " " + d.getDemand().getId();
                     }

@@ -58,7 +58,7 @@ public class Customer extends Point implements Serializable {
 
     @Override
     public String toString() {
-        String str = "Customer (" + super.getIdLocation() + ")" + " at " + super.toString() + " asking for :\n";
+        String str = "Customer (" + super.getId() + ")" + " at " + super.toString() + " asking for :\n";
         for (Demand d : customerDemands) {
             str += "\t\t\t\t" + d.toString() + "\n";
         }

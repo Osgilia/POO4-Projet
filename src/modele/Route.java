@@ -1,6 +1,7 @@
 package modele;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -70,18 +71,32 @@ public class Route implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.distance);
+        hash = 67 * hash + Objects.hashCode(this.arrivee);
+        hash = 67 * hash + Objects.hashCode(this.depart);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Route)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        Route other = (Route) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Route other = (Route) obj;
+        if (!Objects.equals(this.distance, other.distance)) {
+            return false;
+        }
+        if (!Objects.equals(this.arrivee, other.arrivee)) {
+            return false;
+        }
+        if (!Objects.equals(this.depart, other.depart)) {
             return false;
         }
         return true;

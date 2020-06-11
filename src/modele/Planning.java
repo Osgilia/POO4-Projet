@@ -66,7 +66,7 @@ public class Planning implements Serializable {
     private List<DayHorizon> days;
 
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "planning")
-    private List<PlannedDemand> plannedDemands;
+    private Set<PlannedDemand> plannedDemands;
 
     /**
      * No-argument constructor
@@ -75,7 +75,7 @@ public class Planning implements Serializable {
         this.cost = 0;
         this.nbDays = 0;
         this.days = new ArrayList<>();
-        this.plannedDemands = new ArrayList<>();
+        this.plannedDemands = new HashSet<>();
     }
 
     /**
@@ -144,7 +144,7 @@ public class Planning implements Serializable {
         return cost;
     }
 
-    public List<PlannedDemand> getPlannedDemands() {
+    public Set<PlannedDemand> getPlannedDemands() {
         return plannedDemands;
     }
 
@@ -218,7 +218,6 @@ public class Planning implements Serializable {
         Set<Technician> techniciansUsed = new HashSet<>();
         for (DayHorizon day : days) {
             costPlanning += day.getCost();
-            // @todo : method compute cost itineraries
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof VehicleItinerary) {
                     Vehicle vehicle = ((VehicleItinerary) itinerary).getVehicle();

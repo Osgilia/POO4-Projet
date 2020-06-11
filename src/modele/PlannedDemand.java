@@ -22,7 +22,7 @@ public class PlannedDemand implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @JoinColumn(name = "DEMAND_ID", referencedColumnName = "ID")
     @ManyToOne
@@ -33,9 +33,7 @@ public class PlannedDemand implements Serializable {
     private Planning planning;
 
     @JoinColumn(name = "VEHICLEITINERARY", referencedColumnName = "ID")
-    @ManyToOne(optional = false, cascade = {
-        CascadeType.PERSIST
-    })
+    @ManyToOne
     private VehicleItinerary vehicleItinerary;
 
     @JoinColumn(name = "NTECHNICIANITINERARY", referencedColumnName = "ID")
@@ -120,7 +118,7 @@ public class PlannedDemand implements Serializable {
         return this.demand.getLastDay();
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
     
