@@ -13,7 +13,7 @@ import modele.*;
 public class Test2 {
 
     public static void main(String[] args) throws IOException {
-        Instance instance = ReadInstance.readInstance("A:\\lucas\\Desktop\\testInstance.txt");
+        Instance instance = ReadInstance.readInstance("C:\\Users\\Osgilia\\Desktop\\testInstance.txt");
          //System.out.println(instance);
 
         /**
@@ -22,7 +22,7 @@ public class Test2 {
          * - a technician installs each request the day after it's supplied
          * - no rest days for technicians
          */
-        MinimalSolution.minimalSolution(instance);
+       MinimalSolution.minimalSolution(instance.getId());
         
         // More solutions coming soon
     }

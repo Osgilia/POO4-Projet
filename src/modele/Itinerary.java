@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -54,7 +55,7 @@ public class Itinerary implements Serializable {
     @JoinColumn(name = "DAYHORIZON_ID")
     private DayHorizon dayHorizon;
 
-    @ManyToMany(mappedBy = "itineraries")
+    @ManyToMany(mappedBy = "itineraries", cascade = CascadeType.ALL)
     private List<Point> points;
 
     /**

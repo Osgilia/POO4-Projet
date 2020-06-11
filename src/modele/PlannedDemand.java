@@ -36,11 +36,15 @@ public class PlannedDemand implements Serializable {
     private Planning planning;
     
     @JoinColumn(name = "VEHICLEITINERARY", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = {
+        CascadeType.PERSIST
+    })
     private VehicleItinerary vehicleItinerary;
 
     @JoinColumn(name = "NTECHNICIANITINERARY", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = {
+        CascadeType.PERSIST
+    })
     private TechnicianItinerary technicianItinerary;
 
     /**

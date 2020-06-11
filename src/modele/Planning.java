@@ -1,5 +1,6 @@
 package modele;
 
+import dao.PlannedDemandDao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +61,7 @@ public class Planning implements Serializable {
     @Column(name = "NBDAYS")
     private int nbDays;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "planning")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "planning")
     private List<DayHorizon> days;
 
     @OneToMany(mappedBy = "planning",
@@ -70,8 +71,8 @@ public class Planning implements Serializable {
     @ElementCollection
     @CollectionTable(name = "PLANNED_DEMANDS",
             joinColumns = @JoinColumn(name = "PLANNED_DEMAND_ID"))
-    @Column(name="plannedDemands")
-    @MapKeyJoinColumn(name="planning")
+    @Column(name = "plannedDemands")
+    @MapKeyJoinColumn(name = "planning")
     private Map<PlannedDemand, Integer> plannedDemands;
 
     /**
@@ -182,11 +183,13 @@ public class Planning implements Serializable {
      * @param demand
      * @return true if success
      */
-    public boolean addDemand(Demand demand) {
+    public boolean addDemand(Demand demand, PlannedDemandDao plannedDemandmanager) {
+
         if (demand != null) {
             PlannedDemand plannedDemand = new PlannedDemand(this, demand);
             this.plannedDemands.put(plannedDemand, 0);
             if (this.plannedDemands.containsKey(plannedDemand)) {
+                plannedDemandmanager.create(plannedDemand);
                 return demand.addPlannedDemand(plannedDemand);
             }
         }
@@ -199,6 +202,10 @@ public class Planning implements Serializable {
      * @param d : demand
      */
     public void toggleDemand(PlannedDemand d) {
+        //System.out.println(d);
+        for (Map.Entry<PlannedDemand, Integer> demand : this.getDemands().entrySet()) {
+            System.out.println(demand.getKey());
+        }
         if (d != null) {
             if (this.plannedDemands.get(d) == 0) { // if is being supplied
                 this.plannedDemands.put(d, 1);

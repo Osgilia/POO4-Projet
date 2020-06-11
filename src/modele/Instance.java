@@ -50,6 +50,10 @@ public class Instance implements Serializable {
     @Column(name = "DATASET")
     private String dataset;
 
+    @Basic(optional = false)
+    @Column(name = "NBDAYS")
+    private int nbDays;
+
     @OneToMany(mappedBy = "ninstance")
     private List<Planning> planningList;
 
@@ -78,15 +82,17 @@ public class Instance implements Serializable {
     public Instance() {
         this.name = "DEFAULT NAME";
         this.dataset = "DEFAULT NAME";
+        this.nbDays = 0;
         this.planningList = new ArrayList<>();
         this.pointList = new ArrayList<>();
         this.machineList = new ArrayList<>();
     }
 
-    public Instance(String name, String dataset) {
+    public Instance(String name, String dataset, int nbDays) {
         this();
         this.name = name;
         this.dataset = dataset;
+        this.nbDays = nbDays;
         this.planningList = new ArrayList<>();
         this.pointList = new ArrayList<>();
         this.machineList = new ArrayList<>();
@@ -96,6 +102,14 @@ public class Instance implements Serializable {
      * ******************************
      * GETTERS & SETTERS * *****************************
      */
+    
+    
+    
+    
+    public Integer getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -116,6 +130,12 @@ public class Instance implements Serializable {
         return pointList;
     }
 
+    public int getNbDays() {
+        return nbDays;
+    }
+
+    
+    
     /**
      * **********************
      * METHODS * *********************
@@ -231,6 +251,21 @@ public class Instance implements Serializable {
             }
         }
         return technicians;
+    }
+
+        /**
+     * Scans the list of instantiated points and returns only the technicians
+     *
+     * @return list of Technician
+     */
+    public List<Customer> getCustomers() {
+        List<Customer> customers = new ArrayList<>();
+        for (Point p : this.pointList) {
+            if (p instanceof Customer) {
+                customers.add((Customer) p);
+            }
+        }
+        return customers;
     }
 
     /**

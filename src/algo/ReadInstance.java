@@ -21,7 +21,6 @@ public class ReadInstance {
     public static Instance readInstance(String file) {
         // Init
         Instance instance = null;
-        Planning planning = null;
 
         double technicianDistanceCost = -1,
                 technicianDayCost = -1,
@@ -36,7 +35,6 @@ public class ReadInstance {
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
 
         InstanceDao instanceManager = factory.getInstanceDao();
-        PlanningDao planningManager = factory.getPlanningDao();
         MachineTypeDao machineManager = factory.getMachineTypeDao();
         PointDao pointManager = factory.getPointDao();
         DepotDao depotManager = factory.getDepotDao();
@@ -49,7 +47,8 @@ public class ReadInstance {
             BufferedReader in = new BufferedReader(new FileReader(file));
             String line;
             String[] arg = null;
-            String val1 = "";
+            String instanceName = "", instanceDataSet = "";
+
             int nbMachines = -1, nbLocations = -1;
             Point points[] = null;
 
@@ -61,24 +60,23 @@ public class ReadInstance {
                 }*/
                 switch (arg[0]) {
                     case "DATASET":
-                        val1 = arg[1];
+                        instanceDataSet = arg[1];
                         break;
                     case "NAME":
-                        if (val1 != "") {
-                            instance = new Instance(arg[1], val1);
-                            instanceManager.create(instance);
+                        if (!"".equals(instanceDataSet)) {
+                            instanceName = arg[1];
                             System.out.println("Instance IMPORTED: named '" + arg[1] + "'");
                         } else {
                             System.err.println("Instance ERROR : DATASET value doesn't exist.");
                         }
                         break;
                     case "DAYS":
-                        planning = new Planning(instance, Integer.parseInt(arg[1]));
-                        instance.addPlanning(planning);
-                        if (planning.getNbDays() == Integer.parseInt(arg[1]) && Integer.parseInt(arg[1]) > 0) {
-                            System.out.println("Planning IMPORTED: composed of " + arg[1] + " days.");
+                        instance = new Instance(instanceName, instanceDataSet, Integer.parseInt(arg[1]));
+                        instanceManager.create(instance);
+                        if (instance.getNbDays() == Integer.parseInt(arg[1]) && Integer.parseInt(arg[1]) > 0) {
+                            System.out.println("Instance IMPORTED: composed of " + arg[1] + " days.");
                         } else {
-                            System.err.println("Planning ERROR: during the creation.");
+                            System.err.println("Instance ERROR: during the creation.");
                         }
                         break;
                     case "TRUCK_CAPACITY":
@@ -153,10 +151,10 @@ public class ReadInstance {
                                 if (points[j].getIdLocation() == idLocation) {
                                     if (!instance.containsPoint(c)) {
                                         instance.addPoint(c);
-                                        c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, planning, demandManager);
+                                        c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
                                         customerManager.create(c);
                                     } else if (instance.getPoint(c) instanceof Customer) {
-                                        ((Customer) instance.getPoint(c)).addDemand(id, firstDay, lastDay, m, nbMachinesRequested, planning, demandManager);
+                                        ((Customer) instance.getPoint(c)).addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
                                         customerManager.update((Customer) instance.getPoint(c));
                                     }
 
@@ -210,8 +208,7 @@ public class ReadInstance {
         vehicleType.setvInstance(instance);
         vehicleManager.create(vehicleType);
 
-        planningManager.create(planning);
-        
+
         RouteDao routeManager = factory.getRouteDao();
         // ROUTES ////////////////////////////////////////
         for (Point p1 : instance.getPointList()) {

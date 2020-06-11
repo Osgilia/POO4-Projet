@@ -64,5 +64,12 @@ public class JpaInstanceDao extends JpaDao<Instance> implements InstanceDao {
         
         return (Instance) query.getSingleResult();
     }
+
+    @Override
+    public Instance findById(Integer id) {
+        Query query = this.getEm().createNamedQuery("Instance.findById")
+                .setParameter("id", id);
+        
+        return (Instance) query.getSingleResult();    }
     
 }
