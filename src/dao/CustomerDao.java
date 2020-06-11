@@ -18,5 +18,7 @@ public interface CustomerDao extends Dao<Customer> {
     public Collection<Customer> findNotServed();
     
     public Collection<Customer> findByInstance(Instance instance);
+    
+    public Customer findByInstanceCustomer(Instance instance, Integer id);
 
 }

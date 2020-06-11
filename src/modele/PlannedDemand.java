@@ -3,6 +3,7 @@ package modele;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,17 +23,15 @@ public class PlannedDemand implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @JoinColumn(name = "DEMAND_ID", referencedColumnName = "ID")
-    @ManyToOne(cascade = {
-        CascadeType.PERSIST
-    })
+    @ManyToOne
     private Demand demand;
 
     @JoinColumn(name = "PLANNNING_ID", referencedColumnName = "ID")
-    @ManyToOne()
+    @ManyToOne
     private Planning planning;
-    
+
     @JoinColumn(name = "VEHICLEITINERARY", referencedColumnName = "ID")
     @ManyToOne(optional = false, cascade = {
         CascadeType.PERSIST
@@ -40,10 +39,11 @@ public class PlannedDemand implements Serializable {
     private VehicleItinerary vehicleItinerary;
 
     @JoinColumn(name = "NTECHNICIANITINERARY", referencedColumnName = "ID")
-    @ManyToOne(optional = false, cascade = {
-        CascadeType.PERSIST
-    })
+    @ManyToOne
     private TechnicianItinerary technicianItinerary;
+
+    @Column(name = "STATEDEMAND")
+    private int stateDemand;
 
     /**
      * No-argument constructor
@@ -51,6 +51,7 @@ public class PlannedDemand implements Serializable {
     public PlannedDemand() {
         this.demand = null;
         this.planning = null;
+        this.stateDemand = 0;
     }
 
     /**
@@ -60,6 +61,7 @@ public class PlannedDemand implements Serializable {
      * @param demand
      */
     public PlannedDemand(Planning planning, Demand demand) {
+        this();
         this.demand = demand;
         this.planning = planning;
     }
@@ -92,12 +94,12 @@ public class PlannedDemand implements Serializable {
         }
         return true;
     }
-    
+
     @Override
     public String toString() {
         return this.demand.toString();
     }
-    
+
     public Customer getCustomer() {
         return this.demand.getCustomer();
     }
@@ -109,13 +111,17 @@ public class PlannedDemand implements Serializable {
     public Planning getPlanning() {
         return planning;
     }
-    
+
     public int getFirstDay() {
         return this.demand.getFirstDay();
     }
 
     public int getLastDay() {
         return this.demand.getLastDay();
+    }
+
+    public Long getId() {
+        return id;
     }
     
     public VehicleItinerary getVehicleItinerary() {
@@ -133,12 +139,20 @@ public class PlannedDemand implements Serializable {
     public void setTechnicianItinerary(TechnicianItinerary technicianItinerary) {
         this.technicianItinerary = technicianItinerary;
     }
-    
+
     public int getTotalSizeMachines() {
         return this.demand.getTotalSizeMachines();
     }
-    
+
     public MachineType getMachine() {
         return this.demand.getMachine();
+    }
+
+    public int getStateDemand() {
+        return stateDemand;
+    }
+
+    public void setStateDemand(int stateDemand) {
+        this.stateDemand = stateDemand;
     }
 }

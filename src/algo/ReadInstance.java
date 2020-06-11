@@ -135,7 +135,6 @@ public class ReadInstance {
                         }
                         break;
                     case "REQUESTS":
-
                         for (int i = 0; i < Integer.parseInt(arg[1]); i++) {
                             line = in.readLine();
                             String[] argument = line.split(" ");
@@ -147,17 +146,17 @@ public class ReadInstance {
                                     nbMachinesRequested = Integer.parseInt(argument[5]);
                             MachineType m = instance.getMachineType(machineId);
                             for (int j = 0; j < points.length; j++) {
-                                Customer c = new Customer(id, idLocation, points[j].getX(), points[j].getY(), instance);
+                                Customer c = new Customer(points[j].getId(), idLocation, points[j].getX(), points[j].getY(), instance);
                                 if (points[j].getIdLocation() == idLocation) {
-                                    if (!instance.containsPoint(c)) {
+                                    Customer customerInstance = customerManager.find(points[j].getId());
+                                    if (customerInstance == null) {
                                         instance.addPoint(c);
                                         c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
                                         customerManager.create(c);
-                                    } else if (instance.getPoint(c) instanceof Customer) {
-                                        ((Customer) instance.getPoint(c)).addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
-                                        customerManager.update((Customer) instance.getPoint(c));
+                                    } else {
+                                        customerInstance.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
+                                        customerManager.update(customerInstance);
                                     }
-
                                     machineManager.update(m);
                                 }
                             }

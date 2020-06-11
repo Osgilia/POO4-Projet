@@ -4,6 +4,7 @@ import java.util.Collection;
 import javax.persistence.Query;
 import modele.Customer;
 import modele.Instance;
+import modele.Vehicle;
 
 /**
  *
@@ -71,6 +72,15 @@ public class JpaCustomerDao extends JpaDao<Customer> implements CustomerDao {
                 .setParameter("instance", instance);
 
         return query.getResultList();
+    }
+    
+    @Override
+    public Customer findByInstanceCustomer(Instance instance, Integer id) {
+        Query query = this.getEm().createNamedQuery("Customer.findByInstanceCustomer")
+                .setParameter("instance", instance)
+                .setParameter("id", id);
+
+        return (Customer) query.getSingleResult();
     }
 
 }

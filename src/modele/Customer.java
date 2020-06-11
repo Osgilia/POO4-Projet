@@ -25,14 +25,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Customer.findAll", query = "SELECT c FROM Customer c")
     , @NamedQuery(name = "Customer.findById", query = "SELECT c FROM Customer c WHERE c.id = :id")
     , @NamedQuery(name = "Customer.findByInstance", query = "SELECT c FROM Customer c WHERE c.pInstance = :instance")
+    , @NamedQuery(name = "Customer.findByInstanceCustomer", query = "SELECT c FROM Customer c WHERE c.pInstance = :instance AND c.id = :id")
 }
 )
 @DiscriminatorValue("2")
 public class Customer extends Point implements Serializable {
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer")
     private Set<Demand> customerDemands;
-    
+
     /**
      * No-argument constructor
      */
@@ -57,7 +58,7 @@ public class Customer extends Point implements Serializable {
 
     @Override
     public String toString() {
-        String str = "Customer (" + super.getIdLocation()+ ")" + " at " + super.toString() + " asking for :\n";
+        String str = "Customer (" + super.getIdLocation() + ")" + " at " + super.toString() + " asking for :\n";
         for (Demand d : customerDemands) {
             str += "\t\t\t\t" + d.toString() + "\n";
         }
@@ -67,7 +68,7 @@ public class Customer extends Point implements Serializable {
     public Set<Demand> getCustomerDemands() {
         return customerDemands;
     }
-    
+
     /**
      * Adds a demand
      *

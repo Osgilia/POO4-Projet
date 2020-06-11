@@ -216,7 +216,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.setCost(costUpdated);
         this.setCapacityUsed(capacityUsed + totalSizeMachinesRequested);
         this.setDistanceTravelled(distanceUpdated);
-        // this.updateCostDay();
+        this.updateCostDay();
         return true;
     }
 

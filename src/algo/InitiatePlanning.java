@@ -5,7 +5,6 @@
  */
 package algo;
 
-import dao.DaoFactory;
 import dao.DemandDao;
 import dao.InstanceDao;
 import dao.PlannedDemandDao;

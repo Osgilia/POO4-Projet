@@ -32,7 +32,6 @@ public class MinimalSolution {
         DemandDao demandManager = factory.getDemandDao();
         DayHorizonDao daysManager = factory.getDayHorizonDao();
         PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
-        CustomerDao customerManager = factory.getCustomerDao();
 
         //get instance
         InstanceDao instancemanager = factory.getInstanceDao();
@@ -43,14 +42,8 @@ public class MinimalSolution {
 
         //get vehicle informations
         Vehicle vehicleInstance = vehicleManager.findbyInstance(instance);
-        double truckCost = vehicleInstance.getUsageCost(),
-                truckDayCost = vehicleInstance.getDayCost(),
-                truckDistanceCost = vehicleInstance.getDistanceCost(),
-                truckMaxDistance = vehicleInstance.getDistanceMax(),
-                truckCapacity = vehicleInstance.getCapacity();
 
         Set<Vehicle> vehicles = new HashSet<>();
-        Vehicle firstVehicle = new Vehicle(1, instance.getDepot(), truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
         vehicles.add(vehicleInstance);
 
         //DayHorizons creation
@@ -59,7 +52,7 @@ public class MinimalSolution {
             daysManager.create(day);
             planning.addDayHorizon(day);
             daysManager.update(day);
-
+               
             //vehicle Itinerary creation
             Set<VehicleItinerary> vehicleItineraries = new HashSet<>();
             for (Vehicle v : vehicles) {
@@ -70,76 +63,69 @@ public class MinimalSolution {
 
                 vehicleItineraries.add(vehicleItinerary);
             }
-
+            
             //technician itinerary creation
             Set<TechnicianItinerary> technicianItineraries = new HashSet<>();
-            for (Technician t : instance.getTechnicians()) {
+            for (Technician t : technicianManager.findbyInstance(instance)) {
                 TechnicianItinerary technicianItinerary = new TechnicianItinerary(t);
-                technicianItineraryManager.create(technicianItinerary);
                 day.addItinerary(technicianItinerary);
                 technicianItineraries.add(technicianItinerary);
-                technicianItineraryManager.update(technicianItinerary);
+                technicianItineraryManager.create(technicianItinerary);
 
                 technicianManager.update(t);
 
             }
-            System.out.println("GET PLANNING DEMANDS = " + planning.getDemands());
-
+//            System.out.println("GET PLANNING DEMANDS 2 = " + planning.getPlannedDemands());
              
-            for (Map.Entry<PlannedDemand, Integer> demand : planning.getDemands().entrySet()) {
-                if (demand.getValue() == 0) { // if demand is to be supplied
+            for (PlannedDemand demand : planning.getPlannedDemands()) {
+                if (demand.getStateDemand() == 0) { // if demand is to be supplied
                     boolean notEnoughVehicles = false;
                     for (VehicleItinerary vehicleItinerary : vehicleItineraries) {
-                        if (vehicleItinerary.checkVehicle(demand.getKey())) {
+                        if (vehicleItinerary.checkVehicle(demand)) {
                             notEnoughVehicles = true;
                             continue;
                         }
-                        if (vehicleItinerary.addDemandVehicle(demand.getKey())) {
+                        if (vehicleItinerary.addDemandVehicle(demand)) {
                             notEnoughVehicles = false;
                             break;
                         }
                     }
                     if (notEnoughVehicles) {
                         //If we don't have enough vehicles to answer the demand
-                        // 
-                        // Vehicle lastVehicle = new Vehicle(vehicles.size() + 1, instance.getDepot(), truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
                         vehicles.add(vehicleInstance);
                         VehicleItinerary vehicleItinerary = new VehicleItinerary(vehicleInstance);
 
                         day.addItinerary(vehicleItinerary);
-                        vehicleItinerary.addDemandVehicle(demand.getKey());
+                        vehicleItinerary.addDemandVehicle(demand);
                         vehicleItineraries.add(vehicleItinerary);
-                        System.out.println(vehicleItinerary);
                         vehicleItineraryManager.create(vehicleItinerary);
 
                     }
                 }
-                if (demand.getValue() == 1) { // if demand is to be installed
+                if (demand.getStateDemand() == 1) { // if demand is to be installed
                     for (TechnicianItinerary technicianItinerary : technicianItineraries) {
-                        if (technicianItinerary.addDemandTechnician(demand.getKey())) {
+                        if (technicianItinerary.addDemandTechnician(demand)) {
                             technicianItineraryManager.update(technicianItinerary);
-
                             break;
                         }
                     }
                 }
-                plannedDemandManager.update(demand.getKey());
+                plannedDemandManager.update(demand);
             }
-
             daysManager.update(day);
 
         }
         planningManager.update(planning);
 
         // CHECKS SEQUENCING /////////////////////////////////////////////
-        for (Map.Entry<PlannedDemand, Integer> demand : planning.getDemands().entrySet()) {
-            if (demand.getValue() == 0) {
-                System.err.println("Demand not supplied");
-            }
-            if (demand.getValue() == 1) {
-                System.err.println("Demand not installed");
-            }
-        }
+//        for (Map.Entry<PlannedDemand, Integer> demand : planning.getDemands().entrySet()) {
+//            if (demand.getValue() == 0) {
+//                System.err.println("Demand not supplied");
+//            }
+//            if (demand.getValue() == 1) {
+//                System.err.println("Demand not installed");
+//            }
+//        }
 
         System.out.println(planning);
         PrintSolution.print(instance, planning);
