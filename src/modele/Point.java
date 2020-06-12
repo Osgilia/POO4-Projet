@@ -4,10 +4,9 @@ import dao.RouteDao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -87,7 +86,7 @@ public class Point implements Serializable {
             name = "point_itinerary",
             joinColumns = @JoinColumn(name = "point_id"),
             inverseJoinColumns = @JoinColumn(name = "itinerary_id"))
-    private Set<Itinerary> itineraries;
+    private List<Itinerary> itineraries;
 
     /**
      * **************************
@@ -101,7 +100,7 @@ public class Point implements Serializable {
         this.x = 0;
         this.y = 0;
         this.myRoutes = new HashMap<>();
-        this.itineraries = new HashSet<>();
+        this.itineraries = new ArrayList<>();
     }
 
     /**

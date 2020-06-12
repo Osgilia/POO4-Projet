@@ -45,7 +45,7 @@ public class MinimalSolution {
 
         Set<Vehicle> vehicles = new HashSet<>();
         vehicles.add(vehicleInstance);
-        Set<PlannedDemand> plannedDemands = planning.getPlannedDemands();
+        List<PlannedDemand> plannedDemands = planning.getPlannedDemands();
         //DayHorizons creation
         for (int i = 1; i <= instance.getNbDays(); i++) {
             DayHorizon day = new DayHorizon(i);
@@ -60,7 +60,7 @@ public class MinimalSolution {
                 day.addItinerary(vehicleItinerary);
                 vehicleItineraries.add(vehicleItinerary);
                 vehicleItineraryManager.create(vehicleItinerary);
-
+                                    
             }
 
             //technician itinerary creation
