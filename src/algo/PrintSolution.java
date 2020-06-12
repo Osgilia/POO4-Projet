@@ -23,7 +23,7 @@ public class PrintSolution {
 
     public static void print(Instance instance, Planning planning) throws IOException {
         String dataset = instance.getDataset(), instanceName = instance.getName();
-
+           
         int truckDistance = planning.computeTruckDistance(),
                 truckDays = planning.computeNbTruckDays(),
                 trucksUsed = planning.computeMaxTrucksUsed(),

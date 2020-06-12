@@ -2,8 +2,10 @@ package modele;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -51,9 +53,9 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
 
     @OneToMany(mappedBy = "technicianItinerary",
             cascade = {
-                CascadeType.PERSIST
+                CascadeType.MERGE
             })
-    private List<PlannedDemand> customersDemands;
+    private Set<PlannedDemand> customersDemands;
 
     /**
      * No-argument constructor
@@ -63,7 +65,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         this.cost = 0.0;
         this.nbDemands = 0;
         this.distanceTravelled = 0.0;
-        this.customersDemands = new ArrayList<>();
+        this.customersDemands = new HashSet<>();
     }
 
     /**
@@ -75,7 +77,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         super(2);
         this.technician = technician;
         this.addItineraryToTechnician();
-        this.customersDemands = new ArrayList<>();
+        this.customersDemands = new HashSet<>();
     }
 
     @Override
@@ -141,7 +143,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         return nbDemands;
     }
 
-    public List<PlannedDemand> getCustomersDemands() {
+    public Set<PlannedDemand> getCustomersDemands() {
         return customersDemands;
     }
 

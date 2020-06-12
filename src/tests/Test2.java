@@ -22,7 +22,7 @@ public class Test2 {
          * - a technician installs each request the day after it's supplied
          * - no rest days for technicians
          */
-        MinimalSolution.minimalSolution(instance);
+       MinimalSolution.minimalSolution(instance.getId());
         
         // More solutions coming soon
     }

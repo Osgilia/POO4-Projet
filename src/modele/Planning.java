@@ -1,5 +1,7 @@
 package modele;
 
+import dao.DemandDao;
+import dao.PlannedDemandDao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,19 +62,11 @@ public class Planning implements Serializable {
     @Column(name = "NBDAYS")
     private int nbDays;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "planning")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "planning")
     private List<DayHorizon> days;
 
-    @OneToMany(mappedBy = "planning",
-            cascade = {
-                CascadeType.PERSIST
-            })
-    @ElementCollection
-    @CollectionTable(name = "PLANNED_DEMANDS",
-            joinColumns = @JoinColumn(name = "PLANNED_DEMAND_ID"))
-    @Column(name="plannedDemands")
-    @MapKeyJoinColumn(name="planning")
-    private Map<PlannedDemand, Integer> plannedDemands;
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "planning")
+    private Set<PlannedDemand> plannedDemands;
 
     /**
      * No-argument constructor
@@ -81,7 +75,7 @@ public class Planning implements Serializable {
         this.cost = 0;
         this.nbDays = 0;
         this.days = new ArrayList<>();
-        this.plannedDemands = new HashMap<>();
+        this.plannedDemands = new HashSet<>();
     }
 
     /**
@@ -150,7 +144,7 @@ public class Planning implements Serializable {
         return cost;
     }
 
-    public Map<PlannedDemand, Integer> getDemands() {
+    public Set<PlannedDemand> getPlannedDemands() {
         return plannedDemands;
     }
 
@@ -182,12 +176,15 @@ public class Planning implements Serializable {
      * @param demand
      * @return true if success
      */
-    public boolean addDemand(Demand demand) {
+    public boolean addDemand(Demand demand, PlannedDemandDao plannedDemandmanager, DemandDao demandManager) {
         if (demand != null) {
-            PlannedDemand plannedDemand = new PlannedDemand(this, demand);
-            this.plannedDemands.put(plannedDemand, 0);
-            if (this.plannedDemands.containsKey(plannedDemand)) {
-                return demand.addPlannedDemand(plannedDemand);
+            Demand realDemand = demandManager.find(demand.getId());
+            PlannedDemand plannedDemand = new PlannedDemand(this, realDemand);
+            this.plannedDemands.add(plannedDemand);
+            if (this.plannedDemands.contains(plannedDemand)) {
+                boolean success = realDemand.addPlannedDemand(plannedDemand);
+                demandManager.create(realDemand);
+                return success;
             }
         }
         return false;
@@ -200,10 +197,10 @@ public class Planning implements Serializable {
      */
     public void toggleDemand(PlannedDemand d) {
         if (d != null) {
-            if (this.plannedDemands.get(d) == 0) { // if is being supplied
-                this.plannedDemands.put(d, 1);
-            } else if (this.plannedDemands.get(d) == 1) { // if is being installed
-                this.plannedDemands.put(d, 2);
+            if (d.getStateDemand() == 0) { // if is being supplied
+                d.setStateDemand(1);
+            } else if (d.getStateDemand() == 1) { // if is being installed
+                d.setStateDemand(2);
             }
         }
     }
@@ -221,7 +218,6 @@ public class Planning implements Serializable {
         Set<Technician> techniciansUsed = new HashSet<>();
         for (DayHorizon day : days) {
             costPlanning += day.getCost();
-            // @todo : method compute cost itineraries
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof VehicleItinerary) {
                     Vehicle vehicle = ((VehicleItinerary) itinerary).getVehicle();
@@ -240,14 +236,14 @@ public class Planning implements Serializable {
             }
         }
         Set<MachineType> machinesUsed = new HashSet<>();
-        for (Map.Entry<PlannedDemand, Integer> demand : plannedDemands.entrySet()) {
+//        for (Map.Entry<PlannedDemand, Integer> demand : plannedDemands.entrySet()) {
             /**
              * @todo later : take into account penaltys associated to the
              * machines when they are not used for more than 1 day so far,
              * machines are always installed the day after the delivery method
              * "computeMachinesUsed"
              */
-        }
+//        }
         this.cost = costPlanning;
     }
 

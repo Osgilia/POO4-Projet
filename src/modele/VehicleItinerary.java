@@ -2,7 +2,10 @@ package modele;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -34,7 +37,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "VEHICLE_ID")
     private Vehicle vehicle;
 
@@ -49,9 +52,9 @@ public class VehicleItinerary extends Itinerary implements Serializable {
 
     @OneToMany(mappedBy = "vehicleItinerary",
             cascade = {
-                CascadeType.PERSIST
+                CascadeType.MERGE
             })
-    private List<PlannedDemand> customersDemands;
+    private Set<PlannedDemand> customersDemands;
 
     /**
      * No-argument constructor
@@ -61,7 +64,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.cost = 0.0;
         this.capacityUsed = 0.0;
         this.distanceTravelled = 0.0;
-        this.customersDemands = new ArrayList<>();
+        this.customersDemands = new HashSet<>();
     }
 
     /**
@@ -72,24 +75,30 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     public VehicleItinerary(Vehicle vehicle) {
         super(1);
         this.vehicle = vehicle;
-        this.customersDemands = new ArrayList<>();
+        this.customersDemands = new HashSet<>();
         this.addItineraryToVehicle();
     }
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 7;
+        hash = 71 * hash + Objects.hashCode(this.vehicle);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof VehicleItinerary)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        VehicleItinerary other = (VehicleItinerary) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final VehicleItinerary other = (VehicleItinerary) obj;
+        if (!Objects.equals(this.vehicle, other.vehicle)) {
             return false;
         }
         return true;
@@ -124,7 +133,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     public double getCost() {
         return cost;
     }
-    
+
     public void setDistanceTravelled(double distanceTravelled) {
         this.distanceTravelled = distanceTravelled;
     }
@@ -160,6 +169,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         if (d != null) {
             this.customersDemands.add(d);
             if (this.customersDemands.contains(d)) {
+                this.toggleDemand(d);
                 d.setVehicleItinerary(this);
                 this.addPoint(d.getCustomer());
                 return true;
@@ -167,7 +177,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         }
         return false;
     }
-    
+
     public boolean checkVehicle(PlannedDemand d) {
         boolean notEnoughVehicles = false;
         double capacity = this.getVehicleCapacity();
@@ -211,7 +221,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         if (!this.addDemand(d)) {
             return false;
         }
-        this.toggleDemand(d);
         double costUpdated = this.computeCostItinerary();
         this.setCost(costUpdated);
         this.setCapacityUsed(capacityUsed + totalSizeMachinesRequested);
@@ -255,7 +264,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         distance += pointsItinerary.get(pointsItinerary.size() - 1).getDistanceTo(this.vehicle.getDepot());
         return distance;
     }
-    
+
     /**
      * Computes the distance between each point in the sequence with a
      * subsequent request
@@ -278,9 +287,8 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.cost = 0.0;
     }
 
-    public List<PlannedDemand> getCustomersDemands() {
+    public Set<PlannedDemand> getCustomersDemands() {
         return customersDemands;
     }
 
-    
 }

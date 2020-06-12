@@ -2,6 +2,7 @@ package dao;
 
 import java.util.Collection;
 import modele.Demand;
+import modele.Instance;
 
 /**
  *
@@ -9,5 +10,6 @@ import modele.Demand;
  */
 public interface DemandDao extends Dao<Demand> {
 
+    public Collection<Demand> findByInstance(Instance instance);
 
 }

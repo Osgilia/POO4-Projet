@@ -1,7 +1,10 @@
 package dao;
 
 import java.util.Collection;
+import javax.persistence.Query;
+import modele.Customer;
 import modele.Demand;
+import modele.Instance;
 
 /**
  *
@@ -30,6 +33,8 @@ public class JpaDemandDao extends JpaDao<Demand> implements DemandDao {
     public Collection<Demand> findAll() {
         return super.findAll(); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    
 
     @Override
     public Demand find(Integer id) {
@@ -55,4 +60,12 @@ public class JpaDemandDao extends JpaDao<Demand> implements DemandDao {
     public boolean create(Demand obj) {
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
     } 
+
+    @Override
+    public Collection<Demand> findByInstance(Instance instance) {
+        Query query = this.getEm().createNamedQuery("Demand.findByInstance")
+                .setParameter("instance", instance);
+
+        return query.getResultList();
+    }
 }

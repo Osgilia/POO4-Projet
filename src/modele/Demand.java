@@ -14,6 +14,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,6 +28,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "DEMAND")
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Demand.findByInstance", query = "SELECT d FROM Demand d WHERE d.customer.pInstance = :instance")
+}
+)
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Demand implements Serializable {
 

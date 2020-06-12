@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Technician.findAll", query = "SELECT t FROM Technician t")
+    , @NamedQuery(name = "Technician.findByInstance", query = "SELECT t FROM Technician t WHERE t.pInstance = :instance")
 })
 @DiscriminatorValue("3")
 public class Technician extends Point implements Serializable {
@@ -122,7 +123,7 @@ public class Technician extends Point implements Serializable {
 
     @Override
     public String toString() {
-        String str = "Technician (" + super.getId() + ") at " + super.toString();
+        String str = "Technician (" + super.getIdLocation() + ") at " + super.toString();
         return str;
     }
 

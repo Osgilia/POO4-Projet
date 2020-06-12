@@ -15,4 +15,12 @@ public interface InstanceDao extends Dao<Instance> {
      * @return
      */
     public Instance findByName(String name);
+
+    /**
+     * 
+     * @param id
+     * @return 
+     */
+    public Instance findById(Integer id);
+
 }

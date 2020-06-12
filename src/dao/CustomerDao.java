@@ -2,6 +2,7 @@ package dao;
 
 import java.util.Collection;
 import modele.Customer;
+import modele.Instance;
 
 /**
  *
@@ -15,4 +16,9 @@ public interface CustomerDao extends Dao<Customer> {
      * @return une collection de clients
      */
     public Collection<Customer> findNotServed();
+    
+    public Collection<Customer> findByInstance(Instance instance);
+    
+    public Customer findByInstanceCustomer(Instance instance, Integer id);
+
 }
