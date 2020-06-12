@@ -66,7 +66,7 @@ public class Planning implements Serializable {
     private List<DayHorizon> days;
 
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "planning")
-    private Set<PlannedDemand> plannedDemands;
+    private List<PlannedDemand> plannedDemands;
 
     /**
      * No-argument constructor
@@ -75,7 +75,7 @@ public class Planning implements Serializable {
         this.cost = 0;
         this.nbDays = 0;
         this.days = new ArrayList<>();
-        this.plannedDemands = new HashSet<>();
+        this.plannedDemands = new ArrayList<>();
     }
 
     /**
@@ -144,12 +144,16 @@ public class Planning implements Serializable {
         return cost;
     }
 
-    public Set<PlannedDemand> getPlannedDemands() {
+    public List<PlannedDemand> getPlannedDemands() {
         return plannedDemands;
     }
 
     public List<DayHorizon> getDays() {
         return days;
+    }
+    
+    private Vehicle getVehicleInstance() {
+        return this.ninstance.getVehicle();
     }
 
     /**
@@ -214,27 +218,20 @@ public class Planning implements Serializable {
      */
     public void updateCost() {
         double costPlanning = 0.0;
-        Set<Vehicle> vehiclesUsed = new HashSet<>();
-        Set<Technician> techniciansUsed = new HashSet<>();
+        List<Integer> techniciansUsed = new ArrayList<>();
         for (DayHorizon day : days) {
             costPlanning += day.getCost();
             for (Itinerary itinerary : day.getItineraries()) {
-                if (itinerary instanceof VehicleItinerary) {
-                    Vehicle vehicle = ((VehicleItinerary) itinerary).getVehicle();
-                    if (!vehiclesUsed.contains(vehicle)) {
-                        costPlanning += vehicle.getUsageCost();
-                        vehiclesUsed.add(vehicle);
-                    }
-                }
                 if (itinerary instanceof TechnicianItinerary) {
                     Technician technician = ((TechnicianItinerary) itinerary).getTechnician();
-                    if (!techniciansUsed.contains(technician)) {
+                    if (!techniciansUsed.contains(technician.getIdLocation()) && ((TechnicianItinerary) itinerary).getCost() != 0.0) {
                         costPlanning += technician.getUsageCost();
-                        techniciansUsed.add(technician);
+                        techniciansUsed.add(technician.getIdLocation());
                     }
                 }
             }
         }
+        costPlanning += this.getVehicleInstance().getUsageCost() * this.computeNbTruckDays();
         Set<MachineType> machinesUsed = new HashSet<>();
 //        for (Map.Entry<PlannedDemand, Integer> demand : plannedDemands.entrySet()) {
             /**
@@ -257,7 +254,7 @@ public class Planning implements Serializable {
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof VehicleItinerary) {
-                    truckDistance += ((VehicleItinerary) itinerary).computeDistanceDemands(itinerary.getPoints());
+                    truckDistance += ((VehicleItinerary) itinerary).computeDistanceDemands();
                 }
             }
         }

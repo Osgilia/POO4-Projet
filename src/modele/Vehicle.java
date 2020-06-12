@@ -73,7 +73,7 @@ public class Vehicle implements Serializable {
 
     @OneToMany(mappedBy = "vehicle",
             cascade = {
-                CascadeType.ALL
+                CascadeType.PERSIST
             })
     private List<VehicleItinerary> itineraries;
 

@@ -1,9 +1,9 @@
 package modele;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -68,7 +68,7 @@ public class Demand implements Serializable {
             cascade = {
                 CascadeType.PERSIST
             })
-    private Set<PlannedDemand> plannedDemands;
+    private List<PlannedDemand> plannedDemands;
 
     /**
      * No-argument constructor
@@ -79,7 +79,7 @@ public class Demand implements Serializable {
         this.customer = null;
         this.machine = null;
         this.nbMachines = 0;
-        this.plannedDemands = new HashSet<>();
+        this.plannedDemands = new ArrayList<>();
     }
 
     /**

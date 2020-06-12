@@ -37,7 +37,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "VEHICLE_ID")
     private Vehicle vehicle;
 
@@ -54,7 +54,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             cascade = {
                 CascadeType.MERGE
             })
-    private Set<PlannedDemand> customersDemands;
+    private List<PlannedDemand> customersDemands;
 
     /**
      * No-argument constructor
@@ -64,7 +64,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.cost = 0.0;
         this.capacityUsed = 0.0;
         this.distanceTravelled = 0.0;
-        this.customersDemands = new HashSet<>();
+        this.customersDemands = new ArrayList<>();
     }
 
     /**
@@ -75,7 +75,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     public VehicleItinerary(Vehicle vehicle) {
         super(1);
         this.vehicle = vehicle;
-        this.customersDemands = new HashSet<>();
+        this.customersDemands = new ArrayList<>();
         this.addItineraryToVehicle();
     }
 
@@ -262,6 +262,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             }
         }
         distance += pointsItinerary.get(pointsItinerary.size() - 1).getDistanceTo(this.vehicle.getDepot());
+
         return distance;
     }
 
@@ -277,6 +278,10 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         pointsItinerary.add(d.getCustomer());
         return this.computeDistanceDemands(pointsItinerary);
     }
+    
+    public double computeDistanceDemands() {
+        return this.computeDistanceDemands(super.getPoints());
+    }
 
     /**
      * Clears data related to the vehicle itinerary
@@ -287,7 +292,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.cost = 0.0;
     }
 
-    public Set<PlannedDemand> getCustomersDemands() {
+    public List<PlannedDemand> getCustomersDemands() {
         return customersDemands;
     }
 
