@@ -103,7 +103,7 @@ public class Itinerary implements Serializable {
     }
 
     public List<Point> getPoints() {
-        return points;
+        return new ArrayList<>(points);
     }
 
     public Integer getItineraryType() {

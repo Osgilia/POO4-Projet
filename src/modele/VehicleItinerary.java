@@ -255,14 +255,25 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             return 0.0;
         }
         double distance = this.vehicle.getDepot().getDistanceTo(pointsItinerary.get(0));
+        if (this.getDayNumber() == 1) {
+            System.out.println(pointsItinerary.get(0));
+            System.out.println(distance);
+        }
         for (int i = 1; i < pointsItinerary.size(); i++) {
             Point previousPoint = pointsItinerary.get(i - 1);
             if (!previousPoint.equals(pointsItinerary.get(i))) {
                 distance += previousPoint.getDistanceTo(pointsItinerary.get(i));
+                if (this.getDayNumber() == 1) {
+                    System.out.println(pointsItinerary.get(i));
+                    System.out.println(distance);
+                }
             }
         }
         distance += pointsItinerary.get(pointsItinerary.size() - 1).getDistanceTo(this.vehicle.getDepot());
-
+        if (this.getDayNumber() == 1) {
+            System.out.println(pointsItinerary.get(pointsItinerary.size() - 1));
+            System.out.println(distance);
+        }
         return distance;
     }
 
@@ -278,7 +289,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         pointsItinerary.add(d.getCustomer());
         return this.computeDistanceDemands(pointsItinerary);
     }
-    
+
     public double computeDistanceDemands() {
         return this.computeDistanceDemands(super.getPoints());
     }

@@ -4,6 +4,7 @@ import dao.*;
 import dao.PersistenceType;
 import dao.PlanningDao;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -22,9 +23,8 @@ public class MinimalSolution {
 
         //DAO Manager initialisation
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
-
+        InstanceDao instancemanager = factory.getInstanceDao();
         PlanningDao planningManager = factory.getPlanningDao();
-
         VehicleDao vehicleManager = factory.getVehicleDao();
         VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
         TechnicianDao technicianManager = factory.getTechnicianDao();
@@ -34,7 +34,6 @@ public class MinimalSolution {
         PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
 
         //get instance
-        InstanceDao instancemanager = factory.getInstanceDao();
         Instance instance = instancemanager.findById(instanceId);
 
         //Initiate planning
@@ -42,9 +41,10 @@ public class MinimalSolution {
 
         //get vehicle informations
         Vehicle vehicleInstance = vehicleManager.findbyInstance(instance);
-
-        Set<Vehicle> vehicles = new HashSet<>();
+        //create the first sued vehicle
+        List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicleInstance);
+
         List<PlannedDemand> plannedDemands = planning.getPlannedDemands();
         //DayHorizons creation
         for (int i = 1; i <= instance.getNbDays(); i++) {
@@ -53,17 +53,21 @@ public class MinimalSolution {
             daysManager.create(day);
 
             //vehicle Itinerary creation
+            //for each vehicle we create a vehicleItinerary for this day
             Set<VehicleItinerary> vehicleItineraries = new HashSet<>();
+            int index = 0;
+
             for (Vehicle v : vehicles) {
                 VehicleItinerary vehicleItinerary = new VehicleItinerary(v);
 
                 day.addItinerary(vehicleItinerary);
                 vehicleItineraries.add(vehicleItinerary);
                 vehicleItineraryManager.create(vehicleItinerary);
-                                    
+
             }
 
             //technician itinerary creation
+            //for each technician we create a technicianItinerary for this day
             Set<TechnicianItinerary> technicianItineraries = new HashSet<>();
             for (Technician t : technicianManager.findbyInstance(instance)) {
                 TechnicianItinerary technicianItinerary = new TechnicianItinerary(t);
@@ -73,19 +77,26 @@ public class MinimalSolution {
 
             }
 
-            System.out.println("GET PLANNING DEMANDS 2 = " + plannedDemands);
             for (PlannedDemand demand : plannedDemands) {
+
                 if (demand.getStateDemand() == 0) { // if demand is to be supplied
+
                     boolean notEnoughVehicles = false;
+
+                    //we check each vehicleItinerary of the day
+                    // if there is enough room in the truck we add the demand to this itinerary
+                    // else we create a new used vehicle to carry the demand
                     for (VehicleItinerary vehicleItinerary : vehicleItineraries) {
                         if (vehicleItinerary.checkVehicle(demand)) {
                             notEnoughVehicles = true;
                             continue;
                         }
                         if (!notEnoughVehicles && vehicleItinerary.addDemandVehicle(demand)) {
+
                             break;
                         }
                     }
+
                     if (notEnoughVehicles) {
                         //If we don't have enough vehicles to answer the demand
                         vehicles.add(vehicleInstance);
@@ -93,10 +104,9 @@ public class MinimalSolution {
                         day.addItinerary(vehicleItinerary);
                         vehicleItinerary.addDemandVehicle(demand);
                         vehicleItineraries.add(vehicleItinerary);
-                        vehicleItineraryManager.update(vehicleItinerary);
+                        vehicleItineraryManager.create(vehicleItinerary);
                     }
-                } 
-                else if (demand.getStateDemand() == 1) { // if demand is to be installed
+                } else if (demand.getStateDemand() == 1) { // if demand is to be installed
                     for (TechnicianItinerary technicianItinerary : technicianItineraries) {
                         if (technicianItinerary.addDemandTechnician(demand)) {
                             technicianItineraryManager.update(technicianItinerary);

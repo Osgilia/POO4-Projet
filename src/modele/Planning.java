@@ -151,7 +151,7 @@ public class Planning implements Serializable {
     public List<DayHorizon> getDays() {
         return days;
     }
-    
+
     private Vehicle getVehicleInstance() {
         return this.ninstance.getVehicle();
     }
@@ -234,12 +234,12 @@ public class Planning implements Serializable {
         costPlanning += this.getVehicleInstance().getUsageCost() * this.computeNbTruckDays();
         Set<MachineType> machinesUsed = new HashSet<>();
 //        for (Map.Entry<PlannedDemand, Integer> demand : plannedDemands.entrySet()) {
-            /**
-             * @todo later : take into account penaltys associated to the
-             * machines when they are not used for more than 1 day so far,
-             * machines are always installed the day after the delivery method
-             * "computeMachinesUsed"
-             */
+        /**
+         * @todo later : take into account penaltys associated to the machines
+         * when they are not used for more than 1 day so far, machines are
+         * always installed the day after the delivery method
+         * "computeMachinesUsed"
+         */
 //        }
         this.cost = costPlanning;
     }
@@ -253,10 +253,14 @@ public class Planning implements Serializable {
         int truckDistance = 0;
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
+                if (day.getDayNumber() == 1) {
+                    System.err.println(itinerary);
+                }
                 if (itinerary instanceof VehicleItinerary) {
                     truckDistance += ((VehicleItinerary) itinerary).computeDistanceDemands();
                 }
             }
+            System.out.println(truckDistance);
         }
         return truckDistance;
     }
