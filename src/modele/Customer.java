@@ -2,7 +2,9 @@ package modele;
 
 import dao.DemandDao;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -32,14 +34,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Customer extends Point implements Serializable {
 
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer")
-    private Set<Demand> customerDemands;
+    private List<Demand> customerDemands;
 
     /**
      * No-argument constructor
      */
     public Customer() {
         super();
-        this.customerDemands = new HashSet<>();
+        this.customerDemands = new ArrayList<>();
     }
 
     /**
@@ -53,7 +55,7 @@ public class Customer extends Point implements Serializable {
      */
     public Customer(Integer id, Integer idLocation, double x, double y, Instance instance) {
         super(id, idLocation, 2, x, y, instance);
-        this.customerDemands = new HashSet<>();
+        this.customerDemands = new ArrayList<>();
     }
 
     @Override
@@ -65,7 +67,7 @@ public class Customer extends Point implements Serializable {
         return str;
     }
 
-    public Set<Demand> getCustomerDemands() {
+    public List<Demand> getCustomerDemands() {
         return customerDemands;
     }
 
@@ -77,7 +79,6 @@ public class Customer extends Point implements Serializable {
      * @param lastDay : last day of delivery window
      * @param m : machine to add
      * @param nbMachines
-     * @param p : planning
      * @param demandManager : Dao demand
      * @return true if demand is added
      */

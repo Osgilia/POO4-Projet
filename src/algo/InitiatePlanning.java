@@ -31,9 +31,9 @@ public class InitiatePlanning {
         //get customers by instance
         Collection<Demand> demands = demandManager.findByInstance(instance);
         System.out.println(demands);
+        
         //set Planning Demands
         for (Demand d : demands) {
-            
             planning.addDemand(d, plannedDemandManager, demandManager);
         }
         return planning;

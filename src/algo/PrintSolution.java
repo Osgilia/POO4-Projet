@@ -1,5 +1,9 @@
 package algo;
 
+import dao.DaoFactory;
+import dao.PersistenceType;
+import dao.PlannedDemandDao;
+import dao.VehicleItineraryDao;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,8 +27,12 @@ public class PrintSolution {
 
     public static void print(Instance instance, Planning planning) throws IOException {
         String dataset = instance.getDataset(), instanceName = instance.getName();
-           
-        int truckDistance = planning.computeTruckDistance(),
+        DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
+
+        VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
+        PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
+        
+        int truckDistance = planning.computeTruckDistance(vehicleItineraryManager, plannedDemandManager),
                 truckDays = planning.computeNbTruckDays(),
                 trucksUsed = planning.computeMaxTrucksUsed(),
                 technicianDistance = planning.computeTechnicianDistance(),
@@ -35,7 +43,7 @@ public class PrintSolution {
 
         // Outputs the solution in text file
         // For each day in planning ..
-        FileWriter fileToPrint = new FileWriter("A:\\lucas\\Desktop\\solution.txt");
+        FileWriter fileToPrint = new FileWriter("C:\\Users\\Osgilia\\Desktop\\solution.txt");
         PrintWriter printWriter = new PrintWriter(fileToPrint);
         try {
 

@@ -26,6 +26,7 @@ import javax.persistence.MapKey;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -80,13 +81,15 @@ public class Point implements Serializable {
     @JoinColumn(name = "PINSTANCE", referencedColumnName = "ID")
     @ManyToOne
     private Instance pInstance;
-
-    @ManyToMany
-    @JoinTable(
-            name = "point_itinerary",
-            joinColumns = @JoinColumn(name = "point_id"),
-            inverseJoinColumns = @JoinColumn(name = "itinerary_id"))
-    private List<Itinerary> itineraries;
+    
+    /**
+     * Itineraries linked to this point with a position
+     */
+    @OneToMany(mappedBy = "point",
+            cascade = {
+                CascadeType.MERGE
+            })
+    private List<ItineraryPoint> itineraries;
 
     /**
      * **************************
@@ -243,10 +246,10 @@ public class Point implements Serializable {
      * @param itinerary
      * @return true if success
      */
-    public boolean addItineraryPoint(Itinerary itinerary) {
+    public boolean addItineraryPoint(ItineraryPoint itinerary) {
         if (itinerary != null) {
             if (this.itineraries.add(itinerary)) {
-                return itinerary.addPoint(this);
+                return true;
             }
         }
         return false;
