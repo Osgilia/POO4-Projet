@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -55,7 +56,8 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
             cascade = {
                 CascadeType.MERGE
             })
-    private Set<PlannedDemand> customersDemands;
+    @OrderBy("positionTechnician ASC")
+    private List<PlannedDemand> customersDemands;
 
     /**
      * No-argument constructor
@@ -65,7 +67,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         this.cost = 0.0;
         this.nbDemands = 0;
         this.distanceTravelled = 0.0;
-        this.customersDemands = new HashSet<>();
+        this.customersDemands = new ArrayList<>();
     }
 
     /**
@@ -77,7 +79,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         super(2);
         this.technician = technician;
         this.addItineraryToTechnician();
-        this.customersDemands = new HashSet<>();
+        this.customersDemands = new ArrayList<>();
     }
 
     @Override
@@ -143,7 +145,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         return nbDemands;
     }
 
-    public Set<PlannedDemand> getCustomersDemands() {
+    public List<PlannedDemand> getCustomersDemands() {
         return customersDemands;
     }
 
@@ -159,7 +161,8 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      */
     public boolean addDemand(PlannedDemand d) {
         if (d != null) {
-            this.customersDemands.add(d);
+            d.setPositionTechnician(this.customersDemands.size());
+            this.customersDemands.add(this.customersDemands.size(), d);
             if (this.customersDemands.contains(d)) {
                 this.toggleDemand(d);
                 d.setTechnicianItinerary(this);
@@ -216,21 +219,21 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      * @param pointsItinerary : points in the sequence
      * @return the distance
      */
-    protected double computeDistanceDemands(List<Point> pointsItinerary) {
+    protected double computeDistanceDemands(List<ItineraryPoint> pointsItinerary) {
         if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
-        double distance = this.technician.getDistanceTo(pointsItinerary.get(0));
+        double distance = this.technician.getDistanceTo(pointsItinerary.get(0).getPoint());
         for (int i = 1; i < pointsItinerary.size(); i++) {
-            Point previousPoint = pointsItinerary.get(i - 1);
+            Point previousPoint = pointsItinerary.get(i - 1).getPoint();
             if (!previousPoint.equals(pointsItinerary.get(i))) {
-                distance += previousPoint.getDistanceTo(pointsItinerary.get(i));
+                distance += previousPoint.getDistanceTo(pointsItinerary.get(i).getPoint());
             }
         }
         if (pointsItinerary.size() == 1) {
             distance += distance;
         } else {
-            distance += pointsItinerary.get(pointsItinerary.size() - 1).getDistanceTo(this.technician);
+            distance += pointsItinerary.get(pointsItinerary.size() - 1).getPoint().getDistanceTo(this.technician);
         }
 
         return distance;
@@ -244,8 +247,8 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      * @return the distance
      */
     protected double computeDistanceDemands(PlannedDemand d) {
-        List<Point> pointsItinerary = new ArrayList<>(super.getPoints());
-        pointsItinerary.add(d.getCustomer());
+        List<ItineraryPoint> pointsItinerary = new ArrayList<>(super.getPoints());
+        pointsItinerary.add(new ItineraryPoint(this,d.getCustomer(),pointsItinerary.size()));
         return this.computeDistanceDemands(pointsItinerary);
     }
 

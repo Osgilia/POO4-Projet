@@ -1,21 +1,25 @@
 package dao;
 
 import java.util.Collection;
+import javax.persistence.Query;
+import modele.Instance;
 import modele.PlannedDemand;
+import modele.VehicleItinerary;
 
 /**
  *
  * @author Henri, Lucas, Louis
  */
 public class JpaPlannedDemandDao extends JpaDao<PlannedDemand> implements PlannedDemandDao {
+
     private static JpaPlannedDemandDao instance;
-    
+
     private JpaPlannedDemandDao() {
         super(PlannedDemand.class);
     }
-    
+
     public static JpaPlannedDemandDao getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new JpaPlannedDemandDao();
         }
         return instance;
@@ -50,9 +54,10 @@ public class JpaPlannedDemandDao extends JpaDao<PlannedDemand> implements Planne
     public boolean update(PlannedDemand obj) {
         return super.update(obj); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public boolean create(PlannedDemand obj) {
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
-    } 
+    }
+
 }
