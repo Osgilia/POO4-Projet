@@ -257,10 +257,14 @@ public class Planning implements Serializable {
         int truckDistance = 0;
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
+                if (day.getDayNumber() == 1) {
+                    System.err.println(itinerary);
+                }
                 if (itinerary instanceof VehicleItinerary) {
                     truckDistance += ((VehicleItinerary) itinerary).computeDistanceDemands(itinerary.getPoints());
                 }
             }
+            System.out.println(truckDistance);
         }
         return truckDistance;
     }
