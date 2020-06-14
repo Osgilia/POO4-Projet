@@ -10,6 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Demands that are associated to a planning
@@ -17,6 +21,10 @@ import javax.persistence.ManyToOne;
  * @author Henri, Lucas, Louis
  */
 @Entity
+@Table(name = "PLANNEDDEMAND")
+@XmlRootElement
+@NamedQueries({
+})
 public class PlannedDemand implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -43,6 +51,12 @@ public class PlannedDemand implements Serializable {
     @Column(name = "STATEDEMAND")
     private int stateDemand;
 
+    @Column(name = "POSITIONVEHICLE")
+    private int positionVehicle;
+
+    @Column(name = "POSITIONTECHNICIAN")
+    private int positionTechnician;
+
     /**
      * No-argument constructor
      */
@@ -50,6 +64,8 @@ public class PlannedDemand implements Serializable {
         this.demand = null;
         this.planning = null;
         this.stateDemand = 0;
+        this.positionVehicle = -1;
+        this.positionTechnician = -1;
     }
 
     /**
@@ -106,6 +122,22 @@ public class PlannedDemand implements Serializable {
         return demand;
     }
 
+    public int getPositionVehicle() {
+        return positionVehicle;
+    }
+
+    public void setPositionVehicle(int positionVehicle) {
+        this.positionVehicle = positionVehicle;
+    }
+
+    public int getPositionTechnician() {
+        return positionTechnician;
+    }
+
+    public void setPositionTechnician(int positionTechnician) {
+        this.positionTechnician = positionTechnician;
+    }
+
     public Planning getPlanning() {
         return planning;
     }
@@ -121,7 +153,7 @@ public class PlannedDemand implements Serializable {
     public Integer getId() {
         return id;
     }
-    
+
     public VehicleItinerary getVehicleItinerary() {
         return vehicleItinerary;
     }

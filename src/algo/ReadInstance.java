@@ -53,11 +53,7 @@ public class ReadInstance {
             Point points[] = null;
 
             while ((line = in.readLine()) != null) {
-                //System.out.println (line);
                 arg = line.split(" = ");
-                /*for(int i = 0; i < arg.length; i++){
-                    System.out.println ("SPLIT: " + arg[i]);
-                }*/
                 switch (arg[0]) {
                     case "DATASET":
                         instanceDataSet = arg[1];

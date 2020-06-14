@@ -2,10 +2,8 @@ package modele;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -15,8 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -28,7 +26,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "VEHICLEITINERARY")
 @XmlRootElement
-@NamedQueries({})
 @DiscriminatorValue("1")
 public class VehicleItinerary extends Itinerary implements Serializable {
 
@@ -54,6 +51,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             cascade = {
                 CascadeType.MERGE
             })
+    @OrderBy("positionVehicle ASC")
     private List<PlannedDemand> customersDemands;
 
     /**
@@ -142,6 +140,10 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.capacityUsed = capacityUsed;
     }
 
+    public List<PlannedDemand> getCustomersDemands() {
+        return new ArrayList<>(customersDemands);
+    }
+
     private void addItineraryToVehicle() {
         this.vehicle.addItinerary(this);
     }
@@ -167,9 +169,10 @@ public class VehicleItinerary extends Itinerary implements Serializable {
      */
     public boolean addDemand(PlannedDemand d) {
         if (d != null) {
-            this.customersDemands.add(d);
+            this.customersDemands.add(this.customersDemands.size(), d);
             if (this.customersDemands.contains(d)) {
                 this.toggleDemand(d);
+                d.setPositionVehicle(this.customersDemands.size());
                 d.setVehicleItinerary(this);
                 this.addPoint(d.getCustomer());
                 return true;
@@ -178,6 +181,12 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         return false;
     }
 
+    /**
+     * Preliminary check of the vehicle depending on the inserted demand
+     *
+     * @param d : planned demand
+     * @return boolean
+     */
     public boolean checkVehicle(PlannedDemand d) {
         boolean notEnoughVehicles = false;
         double capacity = this.getVehicleCapacity();
@@ -221,6 +230,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         if (!this.addDemand(d)) {
             return false;
         }
+
         double costUpdated = this.computeCostItinerary();
         this.setCost(costUpdated);
         this.setCapacityUsed(capacityUsed + totalSizeMachinesRequested);
@@ -250,30 +260,20 @@ public class VehicleItinerary extends Itinerary implements Serializable {
      * @param pointsItinerary : points in the sequence
      * @return the distance
      */
-    protected double computeDistanceDemands(List<Point> pointsItinerary) {
+    protected double computeDistanceDemands(List<ItineraryPoint> pointsItinerary) {
         if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
-        double distance = this.vehicle.getDepot().getDistanceTo(pointsItinerary.get(0));
-        if (this.getDayNumber() == 1) {
-            System.out.println(pointsItinerary.get(0));
-            System.out.println(distance);
-        }
+        double distance = this.vehicle.getDepot().getDistanceTo(pointsItinerary.get(0).getPoint());
+
         for (int i = 1; i < pointsItinerary.size(); i++) {
-            Point previousPoint = pointsItinerary.get(i - 1);
+            Point previousPoint = pointsItinerary.get(i - 1).getPoint();
             if (!previousPoint.equals(pointsItinerary.get(i))) {
-                distance += previousPoint.getDistanceTo(pointsItinerary.get(i));
-                if (this.getDayNumber() == 1) {
-                    System.out.println(pointsItinerary.get(i));
-                    System.out.println(distance);
-                }
+                distance += previousPoint.getDistanceTo(pointsItinerary.get(i).getPoint());
             }
         }
-        distance += pointsItinerary.get(pointsItinerary.size() - 1).getDistanceTo(this.vehicle.getDepot());
-        if (this.getDayNumber() == 1) {
-            System.out.println(pointsItinerary.get(pointsItinerary.size() - 1));
-            System.out.println(distance);
-        }
+        distance += pointsItinerary.get(pointsItinerary.size() - 1).getPoint().getDistanceTo(this.vehicle.getDepot());
+
         return distance;
     }
 
@@ -285,14 +285,11 @@ public class VehicleItinerary extends Itinerary implements Serializable {
      * @return the distance
      */
     protected double computeDistanceDemands(PlannedDemand d) {
-        List<Point> pointsItinerary = new ArrayList<>(super.getPoints());
-        pointsItinerary.add(d.getCustomer());
+        List<ItineraryPoint> pointsItinerary = new ArrayList<>(super.getPoints());
+        pointsItinerary.add(new ItineraryPoint(this, d.getCustomer(), pointsItinerary.size()));
         return this.computeDistanceDemands(pointsItinerary);
     }
 
-    public double computeDistanceDemands() {
-        return this.computeDistanceDemands(super.getPoints());
-    }
 
     /**
      * Clears data related to the vehicle itinerary
@@ -302,9 +299,4 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         this.distanceTravelled = 0.0;
         this.cost = 0.0;
     }
-
-    public List<PlannedDemand> getCustomersDemands() {
-        return customersDemands;
-    }
-
 }

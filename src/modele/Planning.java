@@ -2,26 +2,21 @@ package modele;
 
 import dao.DemandDao;
 import dao.PlannedDemandDao;
+import dao.VehicleItineraryDao;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapKey;
-import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -144,6 +139,14 @@ public class Planning implements Serializable {
         return cost;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public Instance getNinstance() {
+        return ninstance;
+    }
+
     public List<PlannedDemand> getPlannedDemands() {
         return plannedDemands;
     }
@@ -247,9 +250,10 @@ public class Planning implements Serializable {
     /**
      * Computes overall distance travelled by all vehicles
      *
+     * @param vehicleItineraryManager
      * @return int
      */
-    public int computeTruckDistance() {
+    public int computeTruckDistance(VehicleItineraryDao vehicleItineraryManager, PlannedDemandDao plannedDemandManager) {
         int truckDistance = 0;
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
@@ -257,7 +261,7 @@ public class Planning implements Serializable {
                     System.err.println(itinerary);
                 }
                 if (itinerary instanceof VehicleItinerary) {
-                    truckDistance += ((VehicleItinerary) itinerary).computeDistanceDemands();
+                    truckDistance += ((VehicleItinerary) itinerary).computeDistanceDemands(itinerary.getPoints());
                 }
             }
             System.out.println(truckDistance);

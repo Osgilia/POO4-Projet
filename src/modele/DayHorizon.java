@@ -206,8 +206,21 @@ public class DayHorizon implements Serializable {
                 index++;
                 if (((VehicleItinerary) i).getCustomersDemands().size() > 0) {
                     str += index;
-                    for (PlannedDemand d : ((VehicleItinerary) i).getCustomersDemands()) {
-                        str += " " + d.getDemand().getId();
+                    List<PlannedDemand> plannedDemands = ((VehicleItinerary) i).getCustomersDemands();
+                    List<PlannedDemand> demandsDisplayed = new ArrayList<>();
+                    for (ItineraryPoint p : i.getPoints()) {
+                        if (p.getPoint() instanceof Depot) {
+                            str += " 0";
+                        } else {
+                            for (PlannedDemand d : plannedDemands) {
+                                for (PlannedDemand d2 : plannedDemands) {
+                                    if (d2.getDemand().getCustomer().equals(p.getPoint()) && !demandsDisplayed.contains(d2)) {
+                                        demandsDisplayed.add(d2);
+                                        str += " " + d2.getDemand().getId();
+                                    }
+                                }
+                            }
+                        }
                     }
                     str += "\n";
                 }
@@ -227,8 +240,17 @@ public class DayHorizon implements Serializable {
             if (i instanceof TechnicianItinerary) {
                 if (((TechnicianItinerary) i).getCustomersDemands().size() > 0) {
                     str += ((TechnicianItinerary) i).getTechnician().getIdLocation();
-                    for (PlannedDemand d : ((TechnicianItinerary) i).getCustomersDemands()) {
-                        str += " " + d.getDemand().getId();
+                    List<PlannedDemand> plannedDemands = ((TechnicianItinerary) i).getCustomersDemands();
+                    List<PlannedDemand> demandsDisplayed = new ArrayList<>();
+                    for (ItineraryPoint p : i.getPoints()) {
+                        for (PlannedDemand d : plannedDemands) {
+                            for (PlannedDemand d2 : plannedDemands) {
+                                if (d2.getDemand().getCustomer().equals(p.getPoint()) && !demandsDisplayed.contains(d2)) {
+                                    demandsDisplayed.add(d2);
+                                    str += " " + d2.getDemand().getId();
+                                }
+                            }
+                        }
                     }
                     str += "\n";
                 }

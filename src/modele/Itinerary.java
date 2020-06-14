@@ -17,6 +17,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -55,9 +57,16 @@ public class Itinerary implements Serializable {
     @JoinColumn(name = "DAYHORIZON_ID")
     private DayHorizon dayHorizon;
 
-    @ManyToMany(mappedBy = "itineraries")
-    private List<Point> points;
-
+    /**
+     * Points linked to this itinerary with a position
+     */
+    @OneToMany(mappedBy = "itinerary",
+            cascade = {
+                CascadeType.ALL
+            })
+    @OrderBy("position ASC")
+    private List<ItineraryPoint> points;
+    
     /**
      * **************************
      * CONSTRUCTORS * **************************
@@ -84,6 +93,10 @@ public class Itinerary implements Serializable {
      * ******************************
      * GETTERS & SETTERS * *****************************
      */
+    public Integer getId() {
+        return id;
+    }
+
     public void setDayHorizon(DayHorizon dayHorizon) {
         if (dayHorizon != null) {
             this.dayHorizon = dayHorizon;
@@ -102,8 +115,9 @@ public class Itinerary implements Serializable {
         this.dayHorizon.updateCost();
     }
 
-    public List<Point> getPoints() {
-        return new ArrayList<>(points);
+    public List<ItineraryPoint> getPoints() {
+        return points;
+
     }
 
     public Integer getItineraryType() {
@@ -169,7 +183,10 @@ public class Itinerary implements Serializable {
      */
     public boolean addPoint(Point point) {
         if (point != null) {
-            return this.points.add(point);
+            ItineraryPoint itineraryPoint = new ItineraryPoint(this, point, this.points.size());
+            this.points.add(itineraryPoint);
+            point.addItineraryPoint(itineraryPoint);
+            return true;
         }
         return false;
     }
