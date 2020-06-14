@@ -25,7 +25,7 @@ import modele.VehicleItinerary;
  */
 public class PrintSolution {
 
-    public static void print(Instance instance, Planning planning) throws IOException {
+    public static void print(Instance instance, Planning planning, String path) throws IOException {
         String dataset = instance.getDataset(), instanceName = instance.getName();
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
 
@@ -43,7 +43,7 @@ public class PrintSolution {
 
         // Outputs the solution in text file
         // For each day in planning ..
-        FileWriter fileToPrint = new FileWriter("D:\\OneDrive\\Documents\\solution.txt");
+        FileWriter fileToPrint = new FileWriter(path);
         PrintWriter printWriter = new PrintWriter(fileToPrint);
         try {
 

@@ -73,9 +73,9 @@ public class JpaVehicleDao extends JpaDao<Vehicle> implements VehicleDao {
     }
 
     @Override
-    public Vehicle findbyInstance(Instance instance) {
+    public Vehicle findbyInstance(Integer instanceId) {
         Query query = this.getEm().createNamedQuery("Vehicle.findByInstance")
-                .setParameter("instance", instance);
+                .setParameter("instanceId", instanceId);
 
         return (Vehicle) query.getSingleResult();
     }

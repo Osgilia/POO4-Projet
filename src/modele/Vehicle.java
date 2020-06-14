@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Vehicle.findAll", query = "SELECT v FROM Vehicle v")
     , @NamedQuery(name = "Vehicle.findById", query = "SELECT v FROM Vehicle v WHERE v.id = :id")
-    , @NamedQuery(name = "Vehicle.findByInstance", query = "SELECT v FROM Vehicle v WHERE v.vInstance = :instance")})
+    , @NamedQuery(name = "Vehicle.findByInstance", query = "SELECT v FROM Vehicle v WHERE v.vInstance.id = :instanceId")})
 public class Vehicle implements Serializable {
 
     /**

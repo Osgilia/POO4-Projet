@@ -206,10 +206,10 @@ public class Interface extends javax.swing.JFrame {
                 if (result == JFileChooser.APPROVE_OPTION) {
                     String path = input.getSelectedFile().getAbsolutePath();
                     System.out.println(path);
-                    path = path + "\\solution.txt";
+                    path = path + "\\" + instance.getName() + "-" + planning.getAlgoName()+ ".txt";
                     System.out.println(path);
                     try {
-                        PrintSolution.print(instance, planning);
+                        PrintSolution.print(instance, planning, path);
                         JOptionPane d = new JOptionPane();
                         d.showMessageDialog(this, "File created :\n"+path);
                     } catch (IOException ex) {
@@ -263,13 +263,14 @@ public class Interface extends javax.swing.JFrame {
             PlanningDao planningManager = factory.getPlanningDao();
             
             Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
+            System.out.println(instance);
             Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(),instance);
             // This solution doesn't exist yet for this instance
             if(planning == null){
                 switch(jComboBoxSolutions.getSelectedItem().toString()){
                     case "MinimalSolution":
                         try {
-                            minimalSolution(instance.getId());
+                            minimalSolution(instance);
                         } catch (IOException ex) {
                             System.err.println("ERROR : "+ex);
                         }
