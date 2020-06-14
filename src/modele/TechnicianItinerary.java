@@ -243,7 +243,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      */
     protected double computeDistanceDemands(PlannedDemand d) {
         List<ItineraryPoint> pointsItinerary = new ArrayList<>(super.getPoints());
-        pointsItinerary.add(new ItineraryPoint(this,d.getCustomer(),pointsItinerary.size()));
+        pointsItinerary.add(new ItineraryPoint(this, d.getCustomer(), pointsItinerary.size()));
         return this.computeDistanceDemands(pointsItinerary);
     }
 

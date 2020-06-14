@@ -216,31 +216,50 @@ public class Technician extends Point implements Serializable {
      * @return true if success
      */
     public boolean canInstallDemand(PlannedDemand demand, int dayNumber) {
+
         boolean canInstall = false;
         for (MachineType machineType : authorizedMachines) {
             if (machineType.equals(demand.getMachine())) {
                 canInstall = true;
             }
         }
-        int lastDay = 0;
-        int nbStraightWorkingDays = 0;
-        for (TechnicianItinerary itinerary : itineraries) {
-            if (itinerary.getCost() != 0.0) {
-                int currentDayNumber = itinerary.getDayNumber();
-                if (currentDayNumber > lastDay) {
-                    if (currentDayNumber == lastDay + 1) {
-                        lastDay = currentDayNumber;
-                        nbStraightWorkingDays++;
-                        if (nbStraightWorkingDays > 4) {
-                            canInstall = false;
-                        }
-                    } else {
-                        nbStraightWorkingDays = 0;
+
+        if (canInstall) {
+
+            int straightWorkedDay = 0;
+            int straightNotWorkedDay = 0;
+            boolean shouldRest = false;
+
+            //on regarde les itineraires precedents du technicien
+            //Le but est de voir si le technicien doit travailler ou se reposer
+            for (int i = 0; i < (itineraries.size() - 1); i++) {
+                //Si c'est un jour non travaillé
+                if (itineraries.get(i).getCustomersDemands().isEmpty()) {
+                    //Si c'est un congé suite à 5j de travail
+                    //on verifie a combien de jour de congé il est
+                    if (straightNotWorkedDay == 1 && straightWorkedDay == 5) {
+                        //le technicien doit se reposer un jour de plus
+                        straightNotWorkedDay++;
+                    } else if (straightNotWorkedDay == 2 || straightWorkedDay < 5) {
+                        //Si c'est un jour de congé qui ne fait pas suite à 5j de boulot
+                        //on remet le compteur à 0
+                        straightWorkedDay = 0;
+                        straightNotWorkedDay = 0;
+
                     }
+                    straightNotWorkedDay++;
+                } else {
+                    //Si c'est un jour de travail
+                    straightWorkedDay++;
                 }
+
+            }
+
+            //si à la fin nous sommes à 5j consecutif de travail
+            if (straightWorkedDay == 5) {
+                canInstall = false;
             }
         }
-
         return canInstall;
     }
 }
