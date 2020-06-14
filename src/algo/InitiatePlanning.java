@@ -21,9 +21,16 @@ import modele.Planning;
  */
 public class InitiatePlanning {
 
-    public static Planning createPlanning(Instance instance, InstanceDao instanceManager, PlanningDao planningManager, DemandDao demandManager, PlannedDemandDao plannedDemandManager) throws IOException {
+    public static Planning createPlanning(
+            Instance instance,
+            InstanceDao instanceManager,
+            PlanningDao planningManager,
+            DemandDao demandManager,
+            PlannedDemandDao plannedDemandManager,
+            String algoName
+    ) throws IOException {
 
-        Planning planning = new Planning(instance, instance.getNbDays());
+        Planning planning = new Planning(instance, instance.getNbDays(), algoName);
         instance.addPlanning(planning);
         planningManager.create(planning);
         instanceManager.update(instance);
@@ -31,7 +38,7 @@ public class InitiatePlanning {
         //get customers by instance
         Collection<Demand> demands = demandManager.findByInstance(instance);
         System.out.println(demands);
-        
+
         //set Planning Demands
         for (Demand d : demands) {
             planning.addDemand(d, plannedDemandManager, demandManager);
