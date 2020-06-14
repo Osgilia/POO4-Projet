@@ -59,8 +59,8 @@ public class JpaInstanceDao extends JpaDao<Instance> implements InstanceDao {
     
     @Override
     public Instance findByName(String name) {
-        Query query = this.getEm().createNamedQuery("Instance.findByNom")
-                .setParameter("nom", name);
+        Query query = this.getEm().createNamedQuery("Instance.findByName")
+                .setParameter("name", name);
         
         return (Instance) query.getSingleResult();
     }
@@ -71,5 +71,13 @@ public class JpaInstanceDao extends JpaDao<Instance> implements InstanceDao {
                 .setParameter("id", id);
         
         return (Instance) query.getSingleResult();    }
+    
+    @Override
+    public Collection<Instance> findByDataset(String dataset) {
+        Query query = this.getEm().createNamedQuery("Instance.findByDataset")
+                .setParameter("dataset", dataset);
+        
+        return query.getResultList();
+    }
     
 }

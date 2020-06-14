@@ -28,7 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Instance.findAll", query = "SELECT i FROM Instance i")
     , @NamedQuery(name = "Instance.findById", query = "SELECT i FROM Instance i WHERE i.id = :id")
-    , @NamedQuery(name = "Instance.findByName", query = "SELECT i FROM Instance i WHERE i.name = :name")})
+    , @NamedQuery(name = "Instance.findByName", query = "SELECT i FROM Instance i WHERE i.name = :name")
+    , @NamedQuery(name = "Instance.findByDataset", query = "SELECT i FROM Instance i WHERE i.dataset = :dataset")})
 public class Instance implements Serializable {
 
     /**
@@ -203,7 +204,7 @@ public class Instance implements Serializable {
      */
     public MachineType getMachineType(int id) {
         for (MachineType m : machineList) {
-            if (m.getId() == id) {
+            if (m.getIdMachine() == id) {
                 return m;
             }
         }

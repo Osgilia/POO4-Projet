@@ -57,6 +57,9 @@ public class Point implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "IDPOINT")
+    private Integer idPoint;
+    
     @Column(name = "IDLOCATION")
     private Integer idLocation;
 
@@ -100,6 +103,7 @@ public class Point implements Serializable {
      */
     public Point() {
         this.pointType = 1;
+        this.idPoint = -1;
         this.x = 0;
         this.y = 0;
         this.myRoutes = new HashMap<>();
@@ -118,7 +122,7 @@ public class Point implements Serializable {
      */
     public Point(Integer id, Integer idLocation, Integer pointType, double x, double y, Instance instance) {
         this();
-        this.id = id;
+        this.idPoint = id;
         this.idLocation = idLocation;
         this.pointType = pointType;
         this.x = x;
@@ -193,8 +197,10 @@ public class Point implements Serializable {
 
     @Override
     public String toString() {
-        return "[x = " + this.x + ", y = " + this.y + "]";
+        return "Point{" + "id=" + idPoint + ", idLocation=" + idLocation + ", x=" + x + ", y=" + y + '}';
     }
+
+    
 
     /**
      * Adds a route between this and p
@@ -206,8 +212,9 @@ public class Point implements Serializable {
     public boolean addDestination(Point p, double distance, RouteDao routeManager) {
         if (p != null) {
             Route r = new Route(this, p, distance);
-            routeManager.create(r);this.myRoutes.put(p, r);
+            this.myRoutes.put(p, r);
             if (this.myRoutes.containsKey(r)) {
+                routeManager.create(r);
                 return true;
             }
         }

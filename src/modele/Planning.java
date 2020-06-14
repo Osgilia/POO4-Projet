@@ -34,7 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Planning.findAll", query = "SELECT p FROM Planning p")
     , @NamedQuery(name = "Planning.findById", query = "SELECT p FROM Planning p WHERE p.id = :id")
-    , @NamedQuery(name = "Planning.findByCost", query = "SELECT p FROM Planning p WHERE p.cost = :cost")})
+    , @NamedQuery(name = "Planning.findByCost", query = "SELECT p FROM Planning p WHERE p.cost = :cost")
+    , @NamedQuery(name = "Planning.findByAlgoNameAndInstance", query = "SELECT p FROM Planning p WHERE p.algoName = :algoName AND p.ninstance = :ninstance")})
 public class Planning implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -97,9 +98,9 @@ public class Planning implements Serializable {
      */
     public Planning(Instance ninstance, int nbDays, String algoName) {
         this();
+        this.algoName = algoName;
         this.ninstance = ninstance;
         this.nbDays = nbDays;
-        this.algoName = algoName;
     }
 
     @Override

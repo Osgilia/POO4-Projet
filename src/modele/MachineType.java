@@ -34,6 +34,12 @@ public class MachineType implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+     /**
+     * Id of a machine of this type for a specific instance
+     */
+    @Column(name = "IDMACHINE")
+    private int idMachine;
+    
     /**
      * Size of a machine of this type
      */
@@ -76,6 +82,7 @@ public class MachineType implements Serializable {
      * No-argument constructor
      */
     public MachineType() {
+        this.idMachine = 0;
         this.size = 0;
         this.penalty = 0.0;
         this.certifiedTechnicians = new HashSet<>();
@@ -92,7 +99,7 @@ public class MachineType implements Serializable {
      */
     public MachineType(Integer id, int size, double penalty, Instance instance) {
         this();
-        this.id = id;
+        this.idMachine = id;
         this.size = size;
         this.penalty = penalty;
         this.mInstance = instance;
@@ -148,9 +155,11 @@ public class MachineType implements Serializable {
         return "[size = " + size + " and penalty = " + penalty + "]";
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getIdMachine() {
+        return idMachine;
     }
+    
+    
     
     /**
      * Adds a technician to the list of technicians that can install this machine

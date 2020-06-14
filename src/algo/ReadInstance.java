@@ -18,6 +18,29 @@ import modele.Vehicle;
  */
 public class ReadInstance {
 
+    public static String formattingOrtec(String S){
+        if (S.contains("\t")){
+            S = S.replaceAll("\t", " ");
+        }
+        System.out.println(S);
+        char chars[] = S.toCharArray();
+        char prev = '\0';
+        int k = 0;
+        for (char c: chars) {
+                if (prev != c || c != ' ') {
+                        chars[k++] = c;
+                        prev = c;
+                }
+        }
+        String S2 = new String(chars).substring(0, k);
+        char chars2[] = S2.toCharArray();
+        if(chars2[0] == ' '){
+            S2 = S2.substring(1);
+        }
+        //System.out.println(S2);
+        return S2;
+    }
+    
     public static Instance readInstance(String file) {
         // Init
         Instance instance = null;
@@ -103,6 +126,7 @@ public class ReadInstance {
                         nbMachines = Integer.parseInt(arg[1]);
                         for (int i = 0; i < nbMachines; i++) {
                             line = in.readLine();
+                            line = formattingOrtec(line);
                             String[] argument = line.split(" ");
                             int id = Integer.parseInt(argument[0]),
                                     size = Integer.parseInt(argument[1]),
@@ -117,6 +141,7 @@ public class ReadInstance {
                         points = new Point[nbLocations];
                         for (int i = 0; i < nbLocations; i++) {
                             line = in.readLine();
+                            line = formattingOrtec(line);
                             String[] argument = line.split(" ");
                             int id = Integer.parseInt(argument[0]),
                                     x = Integer.parseInt(argument[1]),
@@ -133,6 +158,7 @@ public class ReadInstance {
                     case "REQUESTS":
                         for (int i = 0; i < Integer.parseInt(arg[1]); i++) {
                             line = in.readLine();
+                            line = formattingOrtec(line);
                             String[] argument = line.split(" ");
                             int id = Integer.parseInt(argument[0]),
                                     idLocation = Integer.parseInt(argument[1]),
@@ -161,6 +187,7 @@ public class ReadInstance {
                     case "TECHNICIANS":
                         for (int i = 0; i < Integer.parseInt(arg[1]); i++) {
                             line = in.readLine();
+                            line = formattingOrtec(line);
                             String[] argument = line.split(" ");
                             int id = Integer.parseInt(argument[0]),
                                     idLocation = Integer.parseInt(argument[1]),
@@ -193,7 +220,7 @@ public class ReadInstance {
             } else {
                 System.out.println("TECHNICIAN CHARACTERISTICS IMPORTED");
             }
-//            System.out.println(instance);
+ //           System.out.println(instance);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -207,8 +234,10 @@ public class ReadInstance {
         // ROUTES ////////////////////////////////////////
         for (Point p1 : instance.getPointList()) {
             for (Point p2 : instance.getPointList()) {
-                p1.addDestination(p2, p1.computeDistance(p2), routeManager);
-                pointManager.update(p2);
+                if(!p1.equals(p2)){
+                    p1.addDestination(p2, p1.computeDistance(p2), routeManager);
+                    //pointManager.update(p2);
+                }
             }
             pointManager.update(p1);
         }

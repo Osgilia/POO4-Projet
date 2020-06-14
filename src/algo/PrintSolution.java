@@ -43,7 +43,7 @@ public class PrintSolution {
 
         // Outputs the solution in text file
         // For each day in planning ..
-        FileWriter fileToPrint = new FileWriter("C:\\Users\\Osgilia\\Desktop\\solution.txt");
+        FileWriter fileToPrint = new FileWriter("D:\\OneDrive\\Documents\\solution.txt");
         PrintWriter printWriter = new PrintWriter(fileToPrint);
         try {
 
