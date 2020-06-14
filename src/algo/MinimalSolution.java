@@ -19,7 +19,7 @@ import modele.*;
  */
 public class MinimalSolution {
 
-    public static void minimalSolution(Integer instanceId) throws IOException {
+    public static void minimalSolution(Instance instance) throws IOException {
 
         //DAO Manager initialisation
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
@@ -34,13 +34,16 @@ public class MinimalSolution {
         PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
 
 
-        Instance instance = instancemanager.findById(instanceId);
+        // Instance instance = instancemanager.findById(instanceId);
 
         // Initiate planning
-        Planning planning = InitiatePlanning.createPlanning(instance, instancemanager, planningManager, demandManager, plannedDemandManager, "MinimalSolution");
-
+        Planning planning = InitiatePlanning.createPlanning(instance, instancemanager, planningManager, demandManager, plannedDemandManager, "MinimalSolution");    
+        
         // Get vehicle information
-        Vehicle vehicleInstance = vehicleManager.findbyInstance(instance);
+        Vehicle vehicleInstance = instance.getVehicle();
+        
+        
+        System.out.println(vehicleInstance);
         //create the first sued vehicle
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicleInstance);
@@ -118,6 +121,6 @@ public class MinimalSolution {
 
         planningManager.update(planning);
         System.out.println(planning);
-        PrintSolution.print(instance, planning);
+        // PrintSolution.print(instance, planning);
     }
 }

@@ -167,6 +167,11 @@ public class Planning implements Serializable {
         return this.ninstance.getVehicle();
     }
 
+    public String getAlgoName() {
+        return algoName;
+    }
+
+    
     /**
      * Adds a day in the planning horizon
      *
@@ -198,7 +203,7 @@ public class Planning implements Serializable {
             this.plannedDemands.add(plannedDemand);
             if (this.plannedDemands.contains(plannedDemand)) {
                 boolean success = realDemand.addPlannedDemand(plannedDemand);
-                demandManager.create(realDemand);
+                plannedDemandmanager.create(plannedDemand);
                 return success;
             }
         }

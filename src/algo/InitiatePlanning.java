@@ -33,9 +33,10 @@ public class InitiatePlanning {
         Planning planning = new Planning(instance, instance.getNbDays(), algoName);
         instance.addPlanning(planning);
         planningManager.create(planning);
-        instanceManager.update(instance);
+        //instanceManager.update(instance);
 
         //get customers by instance
+        
         Collection<Demand> demands = demandManager.findByInstance(instance);
         System.out.println(demands);
 

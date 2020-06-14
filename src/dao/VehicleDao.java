@@ -18,6 +18,6 @@ public interface VehicleDao extends Dao<Vehicle> {
      */
     public Collection<Vehicle> findAllNotUsed();
 
-    public Vehicle findbyInstance(Instance instance);
+    public Vehicle findbyInstance(Integer  instanceId);
 
 }

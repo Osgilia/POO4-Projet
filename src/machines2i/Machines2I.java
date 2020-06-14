@@ -5,6 +5,8 @@
  */
 package machines2i;
 
+import vuecontrole.Interface;
+
 /**
  *
  * @author Osgilia
@@ -16,6 +18,8 @@ public class Machines2I {
      */
     public static void main(String[] args) {
         // Essai commit
+        Interface.main(args);
+    
     }
     
 }
