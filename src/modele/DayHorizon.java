@@ -65,9 +65,6 @@ public class DayHorizon implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 71 * hash + Objects.hashCode(this.id);
-        hash = 71 * hash + Objects.hashCode(this.planning);
-        hash = 71 * hash + this.dayNumber;
         return hash;
     }
 

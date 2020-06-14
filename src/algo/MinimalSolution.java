@@ -45,7 +45,6 @@ public class MinimalSolution {
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicleInstance);
         List<PlannedDemand> plannedDemands = planning.getPlannedDemands();
-
         // Starts requests sequencing
         for (int i = 1; i <= instance.getNbDays(); i++) {
             DayHorizon day = new DayHorizon(i);
@@ -54,7 +53,6 @@ public class MinimalSolution {
 
             // Vehicle Itineraries setup depending on available vehicles
             Set<VehicleItinerary> vehicleItineraries = new HashSet<>();
-
             for (Vehicle v : vehicles) {
                 VehicleItinerary vehicleItinerary = new VehicleItinerary(v);
                 day.addItinerary(vehicleItinerary);
@@ -68,7 +66,6 @@ public class MinimalSolution {
                 TechnicianItinerary technicianItinerary = new TechnicianItinerary(t);
                 day.addItinerary(technicianItinerary);
                 technicianItineraries.add(technicianItinerary);
-                technicianItineraryManager.create(technicianItinerary);
             }
 
             for (PlannedDemand demand : plannedDemands) {
@@ -101,7 +98,7 @@ public class MinimalSolution {
                 } else if (demand.getStateDemand() == 1) { // if demand is to be installed
                     for (TechnicianItinerary technicianItinerary : technicianItineraries) {
                         if (technicianItinerary.addDemandTechnician(demand)) {
-                            technicianItineraryManager.update(technicianItinerary);
+                            technicianItineraryManager.create(technicianItinerary);
                             break;
                         }
                     }

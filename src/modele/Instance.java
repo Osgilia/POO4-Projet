@@ -2,11 +2,15 @@ package modele;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -67,14 +71,21 @@ public class Instance implements Serializable {
     /**
      * Point(s) affected to this instance
      */
-    @OneToMany(mappedBy = "pInstance")
-    private List<Point> pointList;
+    @OneToMany(
+            mappedBy = "pInstance",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+             cascade = {
+                CascadeType.MERGE
+            }
+    )
+    private Set<Point> pointList;
 
     /**
      * MachineType(s) affected to this instance
      */
     @OneToMany(mappedBy = "mInstance")
-    private List<MachineType> machineList;
+    private Set<MachineType> machineList;
 
     /**
      * **************************
@@ -85,8 +96,8 @@ public class Instance implements Serializable {
         this.dataset = "DEFAULT NAME";
         this.nbDays = 0;
         this.planningList = new ArrayList<>();
-        this.pointList = new ArrayList<>();
-        this.machineList = new ArrayList<>();
+        this.pointList = new HashSet<>();
+        this.machineList = new HashSet<>();
     }
 
     public Instance(String name, String dataset, int nbDays) {
@@ -95,18 +106,14 @@ public class Instance implements Serializable {
         this.dataset = dataset;
         this.nbDays = nbDays;
         this.planningList = new ArrayList<>();
-        this.pointList = new ArrayList<>();
-        this.machineList = new ArrayList<>();
+        this.pointList = new HashSet<>();
+        this.machineList = new HashSet<>();
     }
 
     /**
      * ******************************
      * GETTERS & SETTERS * *****************************
      */
-    
-    
-    
-    
     public Integer getId() {
         return id;
     }
@@ -127,7 +134,7 @@ public class Instance implements Serializable {
         return vehicle;
     }
 
-    public List<Point> getPointList() {
+    public Set<Point> getPointList() {
         return pointList;
     }
 
@@ -135,8 +142,6 @@ public class Instance implements Serializable {
         return nbDays;
     }
 
-    
-    
     /**
      * **********************
      * METHODS * *********************
@@ -254,7 +259,7 @@ public class Instance implements Serializable {
         return technicians;
     }
 
-        /**
+    /**
      * Scans the list of instantiated points and returns only the technicians
      *
      * @return list of Technician

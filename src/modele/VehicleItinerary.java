@@ -75,10 +75,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.vehicle);
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.cost) ^ (Double.doubleToLongBits(this.cost) >>> 32));
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.distanceTravelled) ^ (Double.doubleToLongBits(this.distanceTravelled) >>> 32));
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.capacityUsed) ^ (Double.doubleToLongBits(this.capacityUsed) >>> 32));
         return hash;
     }
 

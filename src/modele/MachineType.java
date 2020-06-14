@@ -125,7 +125,6 @@ public class MachineType implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 23 * hash + Objects.hashCode(this.id);
         return hash;
     }
 

@@ -1,32 +1,29 @@
 package modele;
 
-import dao.RouteDao;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -74,7 +71,7 @@ public class Point implements Serializable {
     @Column(name = "Y")
     private double y;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "depart")
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "depart")
     @MapKey(name = "arrivee")
     private Map<Point, Route> myRoutes;
 
@@ -88,11 +85,12 @@ public class Point implements Serializable {
     /**
      * Itineraries linked to this point with a position
      */
-    @OneToMany(mappedBy = "point",
-            cascade = {
-                CascadeType.MERGE
-            })
-    private List<ItineraryPoint> itineraries;
+    @OneToMany(mappedBy = "point", fetch = FetchType.LAZY
+//            cascade = {
+//                CascadeType.MERGE
+//            }
+    )
+    private Set<ItineraryPoint> itineraries;
 
     /**
      * **************************
@@ -107,7 +105,7 @@ public class Point implements Serializable {
         this.x = 0;
         this.y = 0;
         this.myRoutes = new HashMap<>();
-        this.itineraries = new ArrayList<>();
+        this.itineraries = new HashSet<>();
     }
 
     /**
@@ -138,6 +136,10 @@ public class Point implements Serializable {
         return idLocation;
     }
 
+    public Integer getPointType() {
+        return pointType;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -161,11 +163,6 @@ public class Point implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 67 * hash + Objects.hashCode(this.id);
-        hash = 67 * hash + Objects.hashCode(this.idLocation);
-        hash = 67 * hash + Objects.hashCode(this.pointType);
-        hash = 67 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
-        hash = 67 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
         return hash;
     }
 
@@ -213,12 +210,11 @@ public class Point implements Serializable {
      * @param distance
      * @return true if success
      */
-    public boolean addDestination(Point p, double distance, RouteDao routeManager) {
+    public boolean addDestination(Point p, double distance) {
         if (p != null) {
             Route r = new Route(this, p, distance);
             this.myRoutes.put(p, r);
             if (this.myRoutes.containsKey(r)) {
-                routeManager.create(r);
                 return true;
             }
         }
