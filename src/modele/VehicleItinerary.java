@@ -29,11 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @DiscriminatorValue("1")
 public class VehicleItinerary extends Itinerary implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @ManyToOne
     @JoinColumn(name = "VEHICLE_ID")
     private Vehicle vehicle;
@@ -80,7 +75,10 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 71 * hash + Objects.hashCode(this.vehicle);
+        hash = 97 * hash + Objects.hashCode(this.vehicle);
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.cost) ^ (Double.doubleToLongBits(this.cost) >>> 32));
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.distanceTravelled) ^ (Double.doubleToLongBits(this.distanceTravelled) >>> 32));
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.capacityUsed) ^ (Double.doubleToLongBits(this.capacityUsed) >>> 32));
         return hash;
     }
 
@@ -96,6 +94,15 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             return false;
         }
         final VehicleItinerary other = (VehicleItinerary) obj;
+        if (Double.doubleToLongBits(this.cost) != Double.doubleToLongBits(other.cost)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.distanceTravelled) != Double.doubleToLongBits(other.distanceTravelled)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.capacityUsed) != Double.doubleToLongBits(other.capacityUsed)) {
+            return false;
+        }
         if (!Objects.equals(this.vehicle, other.vehicle)) {
             return false;
         }

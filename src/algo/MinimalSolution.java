@@ -33,21 +33,17 @@ public class MinimalSolution {
         DayHorizonDao daysManager = factory.getDayHorizonDao();
         PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
 
-
         // Instance instance = instancemanager.findById(instanceId);
-
         // Initiate planning
-        Planning planning = InitiatePlanning.createPlanning(instance, instancemanager, planningManager, demandManager, plannedDemandManager, "MinimalSolution");    
-        
+        Planning planning = InitiatePlanning.createPlanning(instance, instancemanager, planningManager, demandManager, plannedDemandManager, "MinimalSolution");
+
         // Get vehicle information
         Vehicle vehicleInstance = instance.getVehicle();
-        
-        
-        System.out.println(vehicleInstance);
+
+//        System.out.println(vehicleInstance);
         //create the first sued vehicle
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicleInstance);
-
         List<PlannedDemand> plannedDemands = planning.getPlannedDemands();
 
         // Starts requests sequencing
@@ -57,9 +53,7 @@ public class MinimalSolution {
             daysManager.create(day);
 
             // Vehicle Itineraries setup depending on available vehicles
-
             Set<VehicleItinerary> vehicleItineraries = new HashSet<>();
-            int index = 0;
 
             for (Vehicle v : vehicles) {
                 VehicleItinerary vehicleItinerary = new VehicleItinerary(v);
@@ -69,7 +63,6 @@ public class MinimalSolution {
             }
 
             // technician itineraries setup
-
             Set<TechnicianItinerary> technicianItineraries = new HashSet<>();
             for (Technician t : technicianManager.findbyInstance(instance)) {
                 TechnicianItinerary technicianItinerary = new TechnicianItinerary(t);
@@ -93,7 +86,6 @@ public class MinimalSolution {
                             continue;
                         }
                         if (!notEnoughVehicles && vehicleItinerary.addDemandVehicle(demand)) {
-
                             break;
                         }
                     }
@@ -114,7 +106,7 @@ public class MinimalSolution {
                         }
                     }
                 }
-                plannedDemandManager.update(demand);
+//                plannedDemandManager.update(demand);
             }
             daysManager.update(day);
         }

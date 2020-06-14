@@ -22,7 +22,7 @@ public class ReadInstance {
         if (S.contains("\t")){
             S = S.replaceAll("\t", " ");
         }
-        System.out.println(S);
+//        System.out.println(S);
         char chars[] = S.toCharArray();
         char prev = '\0';
         int k = 0;
@@ -168,7 +168,7 @@ public class ReadInstance {
                                     nbMachinesRequested = Integer.parseInt(argument[5]);
                             MachineType m = instance.getMachineType(machineId);
                             for (int j = 0; j < points.length; j++) {
-                                Customer c = new Customer(points[j].getId(), idLocation, points[j].getX(), points[j].getY(), instance);
+                                Customer c = new Customer(points[j].getIdPoint(), idLocation, points[j].getX(), points[j].getY(), instance);
                                 if (points[j].getIdLocation() == idLocation) {
                                     Customer customerInstance = customerManager.find(points[j].getId());
                                     if (customerInstance == null) {

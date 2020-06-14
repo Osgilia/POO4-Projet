@@ -154,6 +154,10 @@ public class Point implements Serializable {
         return pInstance;
     }
 
+    public Integer getIdPoint() {
+        return idPoint;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;

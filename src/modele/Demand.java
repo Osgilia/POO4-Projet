@@ -39,6 +39,9 @@ public class Demand implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    
+    @Column(name = "IDDEMAND")
+    private Integer idDemand;
 
     /**
      * First day of the delivery window
@@ -94,7 +97,7 @@ public class Demand implements Serializable {
      */
     public Demand(int id, int firstDay, int lastDay, Customer customer, MachineType machine, int nbMachines) {
         this();
-        this.id = id;
+        this.idDemand = id;
         this.firstDay = firstDay;
         this.lastDay = lastDay;
         this.customer = customer;
@@ -104,6 +107,10 @@ public class Demand implements Serializable {
 
     public Integer getId() {
         return id;
+    }
+
+    public Integer getIdDemand() {
+        return idDemand;
     }
     
     @Override

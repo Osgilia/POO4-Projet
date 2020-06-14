@@ -9,15 +9,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -80,6 +78,7 @@ public class Technician extends Point implements Serializable {
             cascade = {
                 CascadeType.PERSIST
             })
+    @OrderBy("dayHorizon ASC")
     private List<TechnicianItinerary> itineraries;
 
     /**
@@ -225,18 +224,22 @@ public class Technician extends Point implements Serializable {
         }
         int lastDay = 0;
         int nbStraightWorkingDays = 0;
-//        for (TechnicianItinerary itinerary : itineraries) {
-//            int currentDayNumber = itinerary.getDayNumber();
-//            if (currentDayNumber > lastDay) {
-//                if (currentDayNumber == lastDay + 1) {
-//                    lastDay = currentDayNumber;
-//                    nbStraightWorkingDays++;
-//                    if (nbStraightWorkingDays > 4) {
-//                        return false;
-//                    }
-//                }
-//            }
-//        }
+        for (TechnicianItinerary itinerary : itineraries) {
+            if (itinerary.getCost() != 0.0) {
+                int currentDayNumber = itinerary.getDayNumber();
+                if (currentDayNumber > lastDay) {
+                    if (currentDayNumber == lastDay + 1) {
+                        lastDay = currentDayNumber;
+                        nbStraightWorkingDays++;
+                        if (nbStraightWorkingDays > 4) {
+                            canInstall = false;
+                        }
+                    } else {
+                        nbStraightWorkingDays = 0;
+                    }
+                }
+            }
+        }
 
         return canInstall;
     }

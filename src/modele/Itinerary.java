@@ -62,7 +62,7 @@ public class Itinerary implements Serializable {
      */
     @OneToMany(mappedBy = "itinerary",
             cascade = {
-                CascadeType.ALL
+                CascadeType.PERSIST
             })
     @OrderBy("position ASC")
     private List<ItineraryPoint> points;
