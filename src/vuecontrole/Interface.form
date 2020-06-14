@@ -52,6 +52,7 @@
                           <Component id="jButtonRefresh" max="32767" attributes="0"/>
                           <Component id="jButtonUpload" max="32767" attributes="0"/>
                           <Component id="jButtonGenerate" max="32767" attributes="0"/>
+                          <Component id="jButtonRefreshTree" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -81,8 +82,14 @@
                   <Component id="jButtonGenerate" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="31" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Component id="jButtonRefreshTree" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+                  <Component id="jScrollPane1" pref="347" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="jButtonDownload" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -192,5 +199,13 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="jButtonRefreshTree">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Refresh Tree"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonRefreshTreeActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
