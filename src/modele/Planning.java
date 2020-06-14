@@ -44,6 +44,9 @@ public class Planning implements Serializable {
     @Column(name = "ID")
     private Integer id;
 
+    @Column(name = "ALGONAME")
+    private String algoName;
+
     @Column(name = "COST")
     private double cost;
 
@@ -71,6 +74,7 @@ public class Planning implements Serializable {
         this.nbDays = 0;
         this.days = new ArrayList<>();
         this.plannedDemands = new ArrayList<>();
+        this.algoName = "MinimalSolution";
     }
 
     /**
@@ -78,9 +82,11 @@ public class Planning implements Serializable {
      *
      * @param nbDays
      */
-    public Planning(int nbDays) {
+    public Planning(int nbDays, String algoName) {
         this();
         this.nbDays = nbDays;
+        this.algoName = algoName;
+
     }
 
     /**
@@ -89,10 +95,11 @@ public class Planning implements Serializable {
      * @param ninstance
      * @param nbDays
      */
-    public Planning(Instance ninstance, int nbDays) {
+    public Planning(Instance ninstance, int nbDays, String algoName) {
         this();
         this.ninstance = ninstance;
         this.nbDays = nbDays;
+        this.algoName = algoName;
     }
 
     @Override

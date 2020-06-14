@@ -37,7 +37,7 @@ public class MinimalSolution {
         Instance instance = instancemanager.findById(instanceId);
 
         // Initiate planning
-        Planning planning = InitiatePlanning.createPlanning(instance, instancemanager, planningManager, demandManager, plannedDemandManager);
+        Planning planning = InitiatePlanning.createPlanning(instance, instancemanager, planningManager, demandManager, plannedDemandManager, "MinimalSolution");
 
         // Get vehicle information
         Vehicle vehicleInstance = vehicleManager.findbyInstance(instance);
