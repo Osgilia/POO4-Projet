@@ -198,10 +198,8 @@ public class Point implements Serializable {
 
     @Override
     public String toString() {
-        return "Point{" + "id=" + idPoint + ", idLocation=" + idLocation + ", x=" + x + ", y=" + y + '}';
+        return "Point{" + "id=" + id + ", idLocation=" + idLocation + ", x=" + x + ", y=" + y + '}';
     }
-
-    
 
     /**
      * Adds a route between this and p

@@ -5,10 +5,8 @@ import dao.PersistenceType;
 import dao.PlanningDao;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import modele.*;
 
@@ -44,6 +42,7 @@ public class MinimalSolution {
         //create the first sued vehicle
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicleInstance);
+        System.out.println(vehicles);
         List<PlannedDemand> plannedDemands = planning.getPlannedDemands();
         // Starts requests sequencing
         for (int i = 1; i <= instance.getNbDays(); i++) {
@@ -69,11 +68,8 @@ public class MinimalSolution {
             }
 
             for (PlannedDemand demand : plannedDemands) {
-
                 if (demand.getStateDemand() == 0) { // if demand is to be supplied
-
                     boolean notEnoughVehicles = false;
-
                     //we check each vehicleItinerary of the day
                     // if there is enough room in the truck we add the demand to this itinerary
                     // else we create a new used vehicle to carry the demand

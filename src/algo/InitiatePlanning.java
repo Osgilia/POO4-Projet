@@ -34,10 +34,10 @@ public class InitiatePlanning {
         
         Collection<Demand> demands = demandManager.findByInstance(instance);
 //        System.out.println(demands);
-
+        
         //set Planning Demands
         for (Demand d : demands) {
-            planning.addDemand(d, plannedDemandManager, demandManager);
+            planning.addDemand(d, plannedDemandManager);
         }
         return planning;
     }

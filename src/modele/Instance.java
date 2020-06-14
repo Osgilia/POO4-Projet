@@ -69,19 +69,6 @@ public class Instance implements Serializable {
     private Vehicle vehicle;
 
     /**
-     * Point(s) affected to this instance
-     */
-    @OneToMany(
-            mappedBy = "pInstance",
-            fetch = FetchType.LAZY,
-            orphanRemoval = true,
-             cascade = {
-                CascadeType.MERGE
-            }
-    )
-    private Set<Point> pointList;
-
-    /**
      * MachineType(s) affected to this instance
      */
     @OneToMany(mappedBy = "mInstance")
@@ -96,7 +83,6 @@ public class Instance implements Serializable {
         this.dataset = "DEFAULT NAME";
         this.nbDays = 0;
         this.planningList = new ArrayList<>();
-        this.pointList = new HashSet<>();
         this.machineList = new HashSet<>();
     }
 
@@ -106,7 +92,6 @@ public class Instance implements Serializable {
         this.dataset = dataset;
         this.nbDays = nbDays;
         this.planningList = new ArrayList<>();
-        this.pointList = new HashSet<>();
         this.machineList = new HashSet<>();
     }
 
@@ -132,10 +117,6 @@ public class Instance implements Serializable {
 
     public Vehicle getVehicle() {
         return vehicle;
-    }
-
-    public Set<Point> getPointList() {
-        return pointList;
     }
 
     public int getNbDays() {
@@ -180,10 +161,6 @@ public class Instance implements Serializable {
         for (MachineType m : machineList) {
             str += "\n\t" + m;
         }
-        str += "\n\nPoints :";
-        for (Point p : pointList) {
-            str += "\n\t" + p;
-        }
         return str;
     }
 
@@ -217,78 +194,6 @@ public class Instance implements Serializable {
     }
 
     /**
-     * Checks if instance contains given point
-     *
-     * @param point
-     * @return true if success
-     */
-    public boolean containsPoint(Point point) {
-        if (this.pointList.contains(point)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Gets point from the list of points of this instance
-     *
-     * @param point
-     * @return Point
-     */
-    public Point getPoint(Point point) {
-        for (Point p : this.pointList) {
-            if (p.equals(point)) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Scans the list of instantiated points and returns only the technicians
-     *
-     * @return list of Technician
-     */
-    public List<Technician> getTechnicians() {
-        List<Technician> technicians = new ArrayList<>();
-        for (Point p : this.pointList) {
-            if (p instanceof Technician) {
-                technicians.add((Technician) p);
-            }
-        }
-        return technicians;
-    }
-
-    /**
-     * Scans the list of instantiated points and returns only the technicians
-     *
-     * @return list of Technician
-     */
-    public List<Customer> getCustomers() {
-        List<Customer> customers = new ArrayList<>();
-        for (Point p : this.pointList) {
-            if (p instanceof Customer) {
-                customers.add((Customer) p);
-            }
-        }
-        return customers;
-    }
-
-    /**
-     * Gets depot from a list of instantiated points
-     *
-     * @return Depot
-     */
-    public Depot getDepot() {
-        for (Point p : this.pointList) {
-            if (p instanceof Depot) {
-                return (Depot) p;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Add a machine that represents one of the machines of this instance
      *
      * @param m : MachineType
@@ -297,21 +202,6 @@ public class Instance implements Serializable {
     public boolean addMachine(MachineType m) {
         if (m != null) {
             if (this.machineList.add(m)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Add a point that represents one of the points of this instance
-     *
-     * @param p : point
-     * @return true if success
-     */
-    public boolean addPoint(Point p) {
-        if (p != null) {
-            if (this.pointList.add(p)) {
                 return true;
             }
         }

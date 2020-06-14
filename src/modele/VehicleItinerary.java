@@ -268,7 +268,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             return 0.0;
         }
         double distance = this.vehicle.getDepot().getDistanceTo(pointsItinerary.get(0).getPoint());
-
         for (int i = 1; i < pointsItinerary.size(); i++) {
             Point previousPoint = pointsItinerary.get(i - 1).getPoint();
             if (!previousPoint.equals(pointsItinerary.get(i))) {
@@ -276,7 +275,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             }
         }
         distance += pointsItinerary.get(pointsItinerary.size() - 1).getPoint().getDistanceTo(this.vehicle.getDepot());
-
         return distance;
     }
 

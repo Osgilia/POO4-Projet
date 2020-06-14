@@ -86,11 +86,11 @@ public class Customer extends Point implements Serializable {
         if (firstDay <= lastDay) {
             Demand d = new Demand(id, firstDay, lastDay, this, m, nbMachines);
 //            System.out.println("m = "+m.toString());
-            m.addDemand(d);
-            this.customerDemands.add(d);
-            if (this.customerDemands.contains(d)) {
-                return true;
-            }
+//            m.addDemand(d);
+//            this.customerDemands.add(d);
+//            if (this.customerDemands.contains(d)) {
+//                return true;
+//            }
             demandManager.create(d);
         }
         return false;

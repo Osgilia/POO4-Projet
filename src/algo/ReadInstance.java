@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import modele.Customer;
 import modele.Depot;
 import modele.Instance;
@@ -67,6 +66,10 @@ public class ReadInstance {
         DemandDao demandManager = factory.getDemandDao();
         TechnicianDao technicianManager = factory.getTechnicianDao();
         VehicleDao vehicleManager = factory.getVehicleDao();
+        Point points[] = null;
+        Depot d = null;
+        List<Customer> customersAdded = new ArrayList<>();
+        List<Technician> techniciansAdded = new ArrayList<>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(file));
             String line;
@@ -74,7 +77,7 @@ public class ReadInstance {
             String instanceName = "", instanceDataSet = "";
 
             int nbMachines = -1, nbLocations = -1;
-            Point points[] = null;
+//            Point points[] = null;
 
             while ((line = in.readLine()) != null) {
                 arg = line.split(" = ");
@@ -124,8 +127,6 @@ public class ReadInstance {
                         technicianCost = Integer.parseInt(arg[1]);
                         break;
                     case "MACHINES":
-                        System.out.println("MAINTENANT MACH");
-
                         nbMachines = Integer.parseInt(arg[1]);
                         for (int i = 0; i < nbMachines; i++) {
                             line = in.readLine();
@@ -140,8 +141,6 @@ public class ReadInstance {
                         }
                         break;
                     case "LOCATIONS":
-                        System.out.println("MAINTENANT LOC");
-
                         nbLocations = Integer.parseInt(arg[1]);
                         points = new Point[nbLocations];
                         for (int i = 0; i < nbLocations; i++) {
@@ -154,16 +153,13 @@ public class ReadInstance {
                             points[i] = new Point(id, id, -1, x, y, instance);
                             pointManager.create(points[i]);
                             if (Integer.parseInt(argument[0]) == 1) {
-                                Depot d = new Depot(1, 1, Integer.parseInt(argument[1]), Integer.parseInt(argument[2]), instance);
-                                instance.addPoint(d);
+                                d = new Depot(1, 1, Integer.parseInt(argument[1]), Integer.parseInt(argument[2]), instance);
                                 depotManager.create(d);
+                                points[i] = d;
                             }
                         }
                         break;
                     case "REQUESTS":
-                        System.out.println("MAINTENANT REQ");
-
-                        List<Customer> customersAdded = new ArrayList<>();
                         for (int i = 0; i < Integer.parseInt(arg[1]); i++) {
                             line = in.readLine();
                             line = formattingOrtec(line);
@@ -179,9 +175,9 @@ public class ReadInstance {
                                 Customer c = new Customer(points[j].getIdPoint(), idLocation, points[j].getX(), points[j].getY(), instance);
                                 if (points[j].getIdLocation() == idLocation) {
                                     if (!customersAdded.contains(c)) {
-                                        instance.addPoint(c);
-                                        c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
                                         customerManager.create(c);
+
+                                        c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
                                         customersAdded.add(c);
                                     } else {
 //                                        Customer customerInstance = customerManager.find(points[j].getId());
@@ -190,14 +186,12 @@ public class ReadInstance {
 //                                        customerInstance.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
 //                                        customerManager.update(customerInstance);
                                     }
-                                    machineManager.update(m);
+//                                    machineManager.update(m);
                                 }
                             }
                         }
                         break;
                     case "TECHNICIANS":
-                        System.out.println("MAINTENANT TECHS");
-
                         for (int i = 0; i < Integer.parseInt(arg[1]); i++) {
                             line = in.readLine();
                             line = formattingOrtec(line);
@@ -209,13 +203,13 @@ public class ReadInstance {
                             for (int j = 0; j < points.length; j++) {
                                 if (points[j].getIdLocation() == idLocation) {
                                     Technician t = new Technician(id, id, points[j].getX(), points[j].getY(), distanceMax, demandMax, technicianCost, technicianDistanceCost, technicianDayCost, instance);
-                                    instance.addPoint(t);
                                     for (int k = 4; k < nbMachines + 4; k++) {
                                         if (Integer.parseInt(argument[k]) == 1) {
                                             t.addAccreditation(instance.getMachineType(k - 3));
                                         }
                                     }
                                     technicianManager.create(t);
+                                    techniciansAdded.add(t);
                                 }
                             }
                         }
@@ -239,24 +233,28 @@ public class ReadInstance {
         }
 
         // VEHICLE TYPE ASSOCIATED TO THE INSTANCE ///////
-        Vehicle vehicleType = new Vehicle(1, instance.getDepot(), truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
+        Vehicle vehicleType = new Vehicle(1, d, truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
         vehicleType.setvInstance(instance);
         vehicleManager.create(vehicleType);
         System.out.println("MAINTENANT ROUTES");
 
         // ROUTES ////////////////////////////////////////
-        Set<Point> points = instance.getPointList();
-        for (Point p1 : points) {
-            if (p1.getPointType() != null) {
-                for (Point p2 : points) {
-                    if (!p1.equals(p2) && (p1.getPointType() != null)) {
-                        p1.addDestination(p2, p1.computeDistance(p2));
-                    }
-//                pointManager.update(p2);
+        List<Point> pointsAdded = new ArrayList<>();
+        pointsAdded.add(d);
+        for (Customer c : customersAdded) {
+            pointsAdded.add(c);
+        }
+        for (Technician t : techniciansAdded) {
+            pointsAdded.add(t);
+        }
+        System.out.println("UPDATE POINTS");
+        for (Point p1 : pointsAdded) {
+            for (Point p2 : pointsAdded) {
+                if (!p1.equals(p2)) {
+                    p1.addDestination(p2, p1.computeDistance(p2));
                 }
-//                pointManager.update(p1);
             }
-
+            pointManager.update(p1);
         }
         System.out.println("MAINTENANT INSTANCE");
 

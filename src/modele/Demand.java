@@ -54,11 +54,11 @@ public class Demand implements Serializable {
     private int lastDay;
 
     @JoinColumn(name = "NCUSTOMER")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Customer customer;
 
     @JoinColumn(name = "NMACHINE")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private MachineType machine;
 
     @Column(name = "NBMACHINES")
@@ -70,7 +70,8 @@ public class Demand implements Serializable {
     @OneToMany(mappedBy = "demand",
             cascade = {
                 CascadeType.PERSIST
-            })
+            }
+    )
     private List<PlannedDemand> plannedDemands;
 
     /**
@@ -138,6 +139,12 @@ public class Demand implements Serializable {
             return false;
         }
         if (this.nbMachines != other.nbMachines) {
+            return false;
+        }
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.idDemand, other.idDemand)) {
             return false;
         }
         if (!Objects.equals(this.customer, other.customer)) {
