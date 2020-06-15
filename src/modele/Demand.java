@@ -106,6 +106,11 @@ public class Demand implements Serializable {
         this.machine = machine;
     }
 
+    public int getNbMachines() {
+        return nbMachines;
+    }
+
+    
     public Integer getId() {
         return id;
     }

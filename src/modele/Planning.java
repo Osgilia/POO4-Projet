@@ -381,6 +381,15 @@ public class Planning implements Serializable {
      * @return int
      */
     public int computeIdleMachineCosts() {
-        return 0;
+        int idleMachinesCost = 0;
+        for(PlannedDemand demand : plannedDemands) {
+            int deliveryDay = demand.getVehicleItinerary().getDayNumber();
+            int installationDay = demand.getTechnicianItinerary().getDayNumber();
+            int uselessDays = installationDay - deliveryDay;
+            if(uselessDays > 1) {
+                idleMachinesCost += (uselessDays - 1) * demand.getMachine().getPenalty() * demand.getDemand().getNbMachines();
+            }
+        }
+        return idleMachinesCost;
     }
 }
