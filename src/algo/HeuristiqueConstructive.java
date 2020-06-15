@@ -9,15 +9,16 @@ import dao.PlannedDemandDao;
 import dao.PlanningDao;
 import dao.TechnicianDao;
 import dao.TechnicianItineraryDao;
-import dao.VehicleDao;
 import dao.VehicleItineraryDao;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import modele.DayHorizon;
 import modele.Instance;
+import modele.Itinerary;
 import modele.PlannedDemand;
 import modele.Planning;
 import modele.Technician;
@@ -41,8 +42,8 @@ public class HeuristiqueConstructive {
     public HeuristiqueConstructive(Instance instance) {
         this.instance = instance;
     }
-    
-    public void minimalSolution() throws IOException{
+
+    public void minimalSolution() throws IOException {
         //DAO Manager initialisation
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
         InstanceDao instancemanager = factory.getInstanceDao();
@@ -64,7 +65,7 @@ public class HeuristiqueConstructive {
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicleInstance);
         List<PlannedDemand> plannedDemands = planning.getPlannedDemands();
-        
+
         // Starts requests sequencing
         for (int i = 1; i <= instance.getNbDays(); i++) {
             DayHorizon day = new DayHorizon(i);
@@ -124,6 +125,7 @@ public class HeuristiqueConstructive {
             }
             daysManager.update(day);
         }
+        
         planningManager.update(planning);
         System.out.println(planning);
     }
