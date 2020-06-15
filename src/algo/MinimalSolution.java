@@ -99,7 +99,7 @@ public class MinimalSolution {
                         }
                     }
                 }
-//                plannedDemandManager.update(demand);
+                plannedDemandManager.create(demand);
             }
             daysManager.update(day);
         }

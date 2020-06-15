@@ -82,6 +82,12 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
+        jComboBoxInstances.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxInstancesActionPerformed(evt);
+            }
+        });
+
         jButtonRefresh.setText("Refresh All");
         jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -102,6 +108,11 @@ public class Interface extends javax.swing.JFrame {
         jLabelDataset.setText("Dataset :");
 
         jComboBoxSolutions.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "MinimalSolution" }));
+        jComboBoxSolutions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxSolutionsActionPerformed(evt);
+            }
+        });
 
         jLabelSolution.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabelSolution.setText("Solution :");
@@ -209,10 +220,7 @@ public class Interface extends javax.swing.JFrame {
             
             Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
             Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(),instance);
-            if(planning == null){
-                JOptionPane d = new JOptionPane();
-                d.showMessageDialog(this, "This solution is not generated");
-            }else{
+            if(planning != null){
                 //the solution is already calculated
                 JFileChooser input = new JFileChooser();
                 input.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -231,6 +239,11 @@ public class Interface extends javax.swing.JFrame {
                         System.err.println("ERROR : "+ex);
                     }
                 }
+            }else{
+                JOptionPane d = new JOptionPane();
+                d.showMessageDialog(this, "This solution is not generated");
+            
+                
             }
         }
     }//GEN-LAST:event_jButtonDownloadActionPerformed
@@ -258,8 +271,9 @@ public class Interface extends javax.swing.JFrame {
                 System.out.println(path);
                 Instance instance = ReadInstance.readInstance(path);
                 refreshComboBox();
-                //displayTree();
-                //jButton2.setEnabled(true);
+                path = path.replace("\\\\","\\");
+                JOptionPane d = new JOptionPane();
+                d.showMessageDialog(this, "Instance uploaded from :\n"+path);
             }
         }
     }//GEN-LAST:event_jButtonUploadActionPerformed
@@ -268,6 +282,27 @@ public class Interface extends javax.swing.JFrame {
         refreshComboBox();
     }//GEN-LAST:event_jButtonRefreshActionPerformed
 
+    /**
+     * Check if every commands had been installed
+     * @param planning 
+     */
+    public void checkPlannedDemand(Planning planning){
+        if(jComboBoxInstances.getSelectedItem() != null &&
+           jComboBoxSolutions.getSelectedItem() != null){
+            
+            DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
+            PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
+            
+            Collection<PlannedDemand> plannedDemand = plannedDemandManager.findByStatedemandAndPlanning(0, planning);
+            if(!plannedDemand.isEmpty()){
+                JOptionPane d = new JOptionPane();
+                d.showMessageDialog(this, "WARNING : Every commands are not installed.");
+            }
+            
+            
+        }
+    }
+    
     private void jButtonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateActionPerformed
         if(jComboBoxInstances.getSelectedItem() != null &&
            jComboBoxSolutions.getSelectedItem() != null){
@@ -285,10 +320,12 @@ public class Interface extends javax.swing.JFrame {
                 switch(jComboBoxSolutions.getSelectedItem().toString()){
                     case "MinimalSolution":
                         try {
-                            d.showMessageDialog(this, "MinimalSolution generated");
-                            JOptionPane d = new JOptionPane();
-                            displayTree();
                             minimalSolution(instance);
+                            displayTree();
+                            generateButtonStatus();
+                            JOptionPane d = new JOptionPane();
+                            d.showMessageDialog(this, "MinimalSolution generated");
+                            checkPlannedDemand(planning);
                         } catch (IOException ex) {
                             System.err.println("ERROR : "+ex);
                         }
@@ -307,7 +344,43 @@ public class Interface extends javax.swing.JFrame {
         displayTree();
     }//GEN-LAST:event_jButtonRefreshTreeActionPerformed
 
-    private void fillComboBoxDataset(){
+    private void jComboBoxSolutionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxSolutionsActionPerformed
+        // TODO add your handling code here:
+        generateButtonStatus();
+    }//GEN-LAST:event_jComboBoxSolutionsActionPerformed
+
+    private void jComboBoxInstancesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxInstancesActionPerformed
+        // TODO add your handling code here:
+        generateButtonStatus();
+    }//GEN-LAST:event_jComboBoxInstancesActionPerformed
+
+    /**
+     * If the solution is already generated then return true
+     * @return 
+     */
+    public void generateButtonStatus(){
+        
+        if(jComboBoxInstances.getSelectedItem() != null &&
+           jComboBoxSolutions.getSelectedItem() != null){
+            
+            DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
+            InstanceDao instancemanager = factory.getInstanceDao();
+            PlanningDao planningManager = factory.getPlanningDao();
+            Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
+            Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(),instance);
+            // This solution for this instance is already generated
+            if(planning != null){
+                jButtonGenerate.setEnabled(false);
+                jButtonGenerate.setText("Already Generated");
+            }else{
+                jButtonGenerate.setEnabled(true);
+                jButtonGenerate.setText("Generate");
+            }
+                
+        }
+    }
+    
+    public void fillComboBoxDataset(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
         InstanceDao instancemanager = factory.getInstanceDao();
@@ -322,17 +395,18 @@ public class Interface extends javax.swing.JFrame {
         jComboBoxDataset.setModel(dcbm);
     }
     
-    private void fillComboBoxInstances(){
+    public void fillComboBoxInstances(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
         InstanceDao instancemanager = factory.getInstanceDao();
         if(jComboBoxDataset.getSelectedItem() != null){
             Collection<Instance> instanceList = instancemanager.findByDataset(jComboBoxDataset.getSelectedItem().toString());
-        for(Instance i : instanceList){
-            dcbm.addElement(i.getName());
+            for(Instance i : instanceList){
+                dcbm.addElement(i.getName());
+            }
+            jComboBoxInstances.setModel(dcbm);
         }
-        jComboBoxInstances.setModel(dcbm);
-        }
+        generateButtonStatus();
     }
     
     public void refreshComboBox(){
