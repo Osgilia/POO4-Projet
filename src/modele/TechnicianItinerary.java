@@ -180,11 +180,9 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
             return false;
         }
         int dayNumber = this.getDayNumber();
-        if (dayNumber < d.getFirstDay() || dayNumber > d.getLastDay()) {
-            return false;
-        }
         int deliveryDayNumber = d.getVehicleItinerary().getDayNumber();
         if (dayNumber <= deliveryDayNumber) { // installation possible the day after the delivery
+
             return false;
         }
         if (nbDemands + 1 > this.technician.getDemandMax()) {
@@ -195,6 +193,9 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
             return false;
         }
         if (!this.technician.canInstallDemand(d, dayNumber)) {
+            if (dayNumber > 10) {
+                System.err.println(" DAY " + dayNumber + " DEMAND " + d.getId() + " TECHNICIAN IS ON VACATION");
+            }
             return false;
         }
         if (!this.addDemand(d)) {

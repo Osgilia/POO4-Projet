@@ -171,7 +171,6 @@ public class Planning implements Serializable {
         return algoName;
     }
 
-    
     /**
      * Adds a day in the planning horizon
      *
@@ -302,10 +301,11 @@ public class Planning implements Serializable {
      */
     public int computeNbTruckDays() {
         int truckDays = 0;
+
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof VehicleItinerary) {
-                    if (((VehicleItinerary) itinerary).getCost() != 0.0) {
+                    if (((VehicleItinerary) itinerary).getCustomersDemands().size() > 0) {
                         truckDays++;
                     }
                 }
@@ -324,7 +324,7 @@ public class Planning implements Serializable {
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof TechnicianItinerary) {
-                    if (((TechnicianItinerary) itinerary).getCost() != 0.0) {
+                    if (((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0) {
                         technicianDays++;
                     }
                 }
@@ -344,10 +344,13 @@ public class Planning implements Serializable {
             tmpMaxTrucksUsed = 0;
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof VehicleItinerary) {
-                    tmpMaxTrucksUsed++;
+                    if (((VehicleItinerary) itinerary).getCustomersDemands().size() > 0) {
+                        tmpMaxTrucksUsed++;
+                    }
                 }
             }
             if (tmpMaxTrucksUsed > maxTrucksUsed) {
+                System.err.println(maxTrucksUsed + " " + tmpMaxTrucksUsed);
                 maxTrucksUsed = tmpMaxTrucksUsed;
             }
         }
@@ -363,11 +366,13 @@ public class Planning implements Serializable {
         Set<Technician> techniciansList = new HashSet<>();
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
-                if (itinerary instanceof TechnicianItinerary) {
+                if (itinerary instanceof TechnicianItinerary && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0) {
                     techniciansList.add(((TechnicianItinerary) itinerary).getTechnician());
                 }
             }
         }
+        System.err.println(techniciansList);
+
         return techniciansList.size();
     }
 

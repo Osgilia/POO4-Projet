@@ -228,8 +228,6 @@ public class Technician extends Point implements Serializable {
 
             int straightWorkedDay = 0;
             int straightNotWorkedDay = 0;
-            boolean shouldRest = false;
-
             //on regarde les itineraires precedents du technicien
             //Le but est de voir si le technicien doit travailler ou se reposer
             for (int i = 0; i < (itineraries.size() - 1); i++) {
@@ -237,10 +235,7 @@ public class Technician extends Point implements Serializable {
                 if (itineraries.get(i).getCustomersDemands().isEmpty()) {
                     //Si c'est un congé suite à 5j de travail
                     //on verifie a combien de jour de congé il est
-                    if (straightNotWorkedDay == 1 && straightWorkedDay == 5) {
-                        //le technicien doit se reposer un jour de plus
-                        straightNotWorkedDay++;
-                    } else if (straightNotWorkedDay == 2 || straightWorkedDay < 5) {
+                    if (straightNotWorkedDay == 2 || straightWorkedDay < 5) {
                         //Si c'est un jour de congé qui ne fait pas suite à 5j de boulot
                         //on remet le compteur à 0
                         straightWorkedDay = 0;
@@ -251,8 +246,8 @@ public class Technician extends Point implements Serializable {
                 } else {
                     //Si c'est un jour de travail
                     straightWorkedDay++;
+                    straightNotWorkedDay = 0;
                 }
-
             }
 
             //si à la fin nous sommes à 5j consecutif de travail

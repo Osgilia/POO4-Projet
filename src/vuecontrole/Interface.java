@@ -263,7 +263,7 @@ public class Interface extends javax.swing.JFrame {
             PlanningDao planningManager = factory.getPlanningDao();
             
             Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
-            System.out.println(instance);
+            //System.out.println(instance);
             Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(),instance);
             // This solution doesn't exist yet for this instance
             if(planning == null){
