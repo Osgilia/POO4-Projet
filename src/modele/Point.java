@@ -71,7 +71,7 @@ public class Point implements Serializable {
     @Column(name = "Y")
     private double y;
 
-    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "depart")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "depart")
     @MapKey(name = "arrivee")
     private Map<Point, Route> myRoutes;
 

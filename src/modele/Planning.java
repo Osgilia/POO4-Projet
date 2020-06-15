@@ -242,6 +242,7 @@ public class Planning implements Serializable {
             for (Itinerary itinerary : day.getItineraries()) {
                 //if it's a technician Itinerary
                 if (itinerary instanceof TechnicianItinerary) {
+
                     //if the itinerary is used and the technician is not already in the list
                     if (!(((TechnicianItinerary) itinerary).getCustomersDemands().isEmpty())) {
                         //we add the technician to the list
@@ -250,6 +251,7 @@ public class Planning implements Serializable {
                 }
             }
         }
+
 
         for (Technician t : techniciansUsed) {
             costPlanning += t.getUsageCost();
@@ -363,11 +365,13 @@ public class Planning implements Serializable {
      * @return int
      */
     public int computeTotalNbTechniciansUsed() {
-        Set<Technician> techniciansList = new HashSet<>();
+        List<Integer> techniciansList = new ArrayList<>();
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
-                if (itinerary instanceof TechnicianItinerary && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0) {
-                    techniciansList.add(((TechnicianItinerary) itinerary).getTechnician());
+                if (itinerary instanceof TechnicianItinerary 
+                        && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0
+                        && !techniciansList.contains(((TechnicianItinerary) itinerary).getTechnician().getIdPoint())) {
+                    techniciansList.add(((TechnicianItinerary) itinerary).getTechnician().getIdPoint());
                 }
             }
         }
