@@ -180,11 +180,9 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
             return false;
         }
         int dayNumber = this.getDayNumber();
-        if (dayNumber < d.getFirstDay() || dayNumber > d.getLastDay()) {
-            return false;
-        }
         int deliveryDayNumber = d.getVehicleItinerary().getDayNumber();
         if (dayNumber <= deliveryDayNumber) { // installation possible the day after the delivery
+
             return false;
         }
         if (nbDemands + 1 > this.technician.getDemandMax()) {
@@ -195,6 +193,9 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
             return false;
         }
         if (!this.technician.canInstallDemand(d, dayNumber)) {
+            if (dayNumber > 10) {
+                System.err.println(" DAY " + dayNumber + " DEMAND " + d.getId() + " TECHNICIAN IS ON VACATION");
+            }
             return false;
         }
         if (!this.addDemand(d)) {
@@ -218,16 +219,20 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
+        this.technician.addDestination(pointsItinerary.get(0).getPoint(), this.technician.computeDistance(pointsItinerary.get(0).getPoint()));
+
         double distance = this.technician.getDistanceTo(pointsItinerary.get(0).getPoint());
         for (int i = 1; i < pointsItinerary.size(); i++) {
             Point previousPoint = pointsItinerary.get(i - 1).getPoint();
             if (!previousPoint.equals(pointsItinerary.get(i))) {
+                previousPoint.addDestination(pointsItinerary.get(i).getPoint(), previousPoint.computeDistance(pointsItinerary.get(i).getPoint()));
                 distance += previousPoint.getDistanceTo(pointsItinerary.get(i).getPoint());
             }
         }
         if (pointsItinerary.size() == 1) {
             distance += distance;
         } else {
+            pointsItinerary.get(pointsItinerary.size() - 1).getPoint().addDestination(this.technician, pointsItinerary.get(pointsItinerary.size() - 1).getPoint().computeDistance(this.technician));
             distance += pointsItinerary.get(pointsItinerary.size() - 1).getPoint().getDistanceTo(this.technician);
         }
 
@@ -243,7 +248,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      */
     protected double computeDistanceDemands(PlannedDemand d) {
         List<ItineraryPoint> pointsItinerary = new ArrayList<>(super.getPoints());
-        pointsItinerary.add(new ItineraryPoint(this,d.getCustomer(),pointsItinerary.size()));
+        pointsItinerary.add(new ItineraryPoint(this, d.getCustomer(), pointsItinerary.size()));
         return this.computeDistanceDemands(pointsItinerary);
     }
 

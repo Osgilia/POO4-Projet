@@ -31,10 +31,7 @@ public class DayHorizon implements Serializable {
     @ManyToOne
     private Planning planning;
 
-    @OneToMany(mappedBy = "dayHorizon", cascade = {
-                CascadeType.PERSIST
-            }
-    )
+    @OneToMany(mappedBy = "dayHorizon")
     private List<Itinerary> itineraries;
 
     @Column(name = "NUMBER")
