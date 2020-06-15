@@ -127,7 +127,7 @@ public class HeuristiqueConstructive {
         }
 
         planningManager.update(planning);
-        System.out.println(planning);
+        // System.out.println(planning);
 
         for (PlannedDemand demand : plannedDemands) {
             if (demand.getStateDemand() != 2) {
@@ -226,7 +226,7 @@ public class HeuristiqueConstructive {
         }
 
         planningManager.update(planning);
-        System.out.println(planning);
+        //System.out.println(planning);
 
         for (PlannedDemand demand : plannedDemands) {
             if (demand.getStateDemand() != 2) {
@@ -427,7 +427,7 @@ public class HeuristiqueConstructive {
         }
 
         planningManager.update(planning);
-        System.out.println(planning);
+        //System.out.println(planning);
 
         for (PlannedDemand demand : plannedDemands) {
             if (demand.getStateDemand() != 2) {

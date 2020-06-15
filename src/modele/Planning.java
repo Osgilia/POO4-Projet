@@ -232,7 +232,7 @@ public class Planning implements Serializable {
     public void updateCost() {
         double costPlanning = 0.0;
 
-        Set<Technician> techniciansUsed = new HashSet<>();
+        Set<Integer> techniciansUsed = new HashSet<>();
 
         for (DayHorizon day : days) {
             //we get the day costs
@@ -240,21 +240,13 @@ public class Planning implements Serializable {
 
             //we want to know the used cost
             for (Itinerary itinerary : day.getItineraries()) {
-                //if it's a technician Itinerary
-                if (itinerary instanceof TechnicianItinerary) {
-
-                    //if the itinerary is used and the technician is not already in the list
-                    if (!(((TechnicianItinerary) itinerary).getCustomersDemands().isEmpty())) {
-                        //we add the technician to the list
-                        techniciansUsed.add(((TechnicianItinerary) itinerary).getTechnician());
-                    }
+                if (itinerary instanceof TechnicianItinerary
+                        && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0
+                        && !techniciansUsed.contains(((TechnicianItinerary) itinerary).getTechnician().getIdPoint())) {
+                     techniciansUsed.add(((TechnicianItinerary) itinerary).getTechnician().getIdPoint());
+                    costPlanning += (((TechnicianItinerary) itinerary).getTechnician()).getUsageCost();
                 }
             }
-        }
-
-
-        for (Technician t : techniciansUsed) {
-            costPlanning += t.getUsageCost();
         }
         //on recupere le cout journalier des camions
         costPlanning += this.getVehicleInstance().getUsageCost() * this.computeMaxTrucksUsed();
@@ -368,7 +360,7 @@ public class Planning implements Serializable {
         List<Integer> techniciansList = new ArrayList<>();
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
-                if (itinerary instanceof TechnicianItinerary 
+                if (itinerary instanceof TechnicianItinerary
                         && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0
                         && !techniciansList.contains(((TechnicianItinerary) itinerary).getTechnician().getIdPoint())) {
                     techniciansList.add(((TechnicianItinerary) itinerary).getTechnician().getIdPoint());
@@ -386,6 +378,7 @@ public class Planning implements Serializable {
      */
     public int computeIdleMachineCosts() {
         int idleMachinesCost = 0;
+
         for (PlannedDemand demand : plannedDemands) {
             int deliveryDay = demand.getVehicleItinerary().getDayNumber();
             int installationDay = demand.getTechnicianItinerary().getDayNumber();
