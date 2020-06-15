@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "PLANNEDDEMAND")
 @XmlRootElement
 @NamedQueries({
+    @NamedQuery(name = "PlannedDemand.findByStatedemandAndPlanning", query = "SELECT p FROM PlannedDemand p WHERE p.stateDemand = :stateDemand AND p.planning = :planning")
 })
 public class PlannedDemand implements Serializable {
 
@@ -83,8 +84,6 @@ public class PlannedDemand implements Serializable {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 23 * hash + Objects.hashCode(this.demand);
-        hash = 23 * hash + Objects.hashCode(this.planning);
         return hash;
     }
 

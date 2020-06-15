@@ -1,5 +1,6 @@
 package dao;
 
+import java.util.Collection;
 import modele.Instance;
 
 /**
@@ -22,5 +23,12 @@ public interface InstanceDao extends Dao<Instance> {
      * @return 
      */
     public Instance findById(Integer id);
+    
+    /**
+     * 
+     * @param id
+     * @return 
+     */
+    public Collection<Instance> findByDataset(String dataset);
 
 }

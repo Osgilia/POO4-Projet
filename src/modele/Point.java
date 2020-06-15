@@ -1,32 +1,29 @@
 package modele;
 
-import dao.RouteDao;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -57,6 +54,9 @@ public class Point implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "IDPOINT")
+    private Integer idPoint;
+    
     @Column(name = "IDLOCATION")
     private Integer idLocation;
 
@@ -71,7 +71,7 @@ public class Point implements Serializable {
     @Column(name = "Y")
     private double y;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "depart")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "depart")
     @MapKey(name = "arrivee")
     private Map<Point, Route> myRoutes;
 
@@ -85,11 +85,12 @@ public class Point implements Serializable {
     /**
      * Itineraries linked to this point with a position
      */
-    @OneToMany(mappedBy = "point",
-            cascade = {
-                CascadeType.MERGE
-            })
-    private List<ItineraryPoint> itineraries;
+    @OneToMany(mappedBy = "point", fetch = FetchType.LAZY
+//            cascade = {
+//                CascadeType.MERGE
+//            }
+    )
+    private Set<ItineraryPoint> itineraries;
 
     /**
      * **************************
@@ -100,10 +101,11 @@ public class Point implements Serializable {
      */
     public Point() {
         this.pointType = 1;
+        this.idPoint = -1;
         this.x = 0;
         this.y = 0;
         this.myRoutes = new HashMap<>();
-        this.itineraries = new ArrayList<>();
+        this.itineraries = new HashSet<>();
     }
 
     /**
@@ -118,7 +120,7 @@ public class Point implements Serializable {
      */
     public Point(Integer id, Integer idLocation, Integer pointType, double x, double y, Instance instance) {
         this();
-        this.id = id;
+        this.idPoint = id;
         this.idLocation = idLocation;
         this.pointType = pointType;
         this.x = x;
@@ -132,6 +134,10 @@ public class Point implements Serializable {
      */
     public Integer getIdLocation() {
         return idLocation;
+    }
+
+    public Integer getPointType() {
+        return pointType;
     }
 
     public Integer getId() {
@@ -150,14 +156,13 @@ public class Point implements Serializable {
         return pInstance;
     }
 
+    public Integer getIdPoint() {
+        return idPoint;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 67 * hash + Objects.hashCode(this.id);
-        hash = 67 * hash + Objects.hashCode(this.idLocation);
-        hash = 67 * hash + Objects.hashCode(this.pointType);
-        hash = 67 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
-        hash = 67 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
         return hash;
     }
 
@@ -193,7 +198,7 @@ public class Point implements Serializable {
 
     @Override
     public String toString() {
-        return "[x = " + this.x + ", y = " + this.y + "]";
+        return "Point{" + "id=" + id + ", idLocation=" + idLocation + ", x=" + x + ", y=" + y + '}';
     }
 
     /**
@@ -203,10 +208,10 @@ public class Point implements Serializable {
      * @param distance
      * @return true if success
      */
-    public boolean addDestination(Point p, double distance, RouteDao routeManager) {
+    public boolean addDestination(Point p, double distance) {
         if (p != null) {
             Route r = new Route(this, p, distance);
-            routeManager.create(r);this.myRoutes.put(p, r);
+            this.myRoutes.put(p, r);
             if (this.myRoutes.containsKey(r)) {
                 return true;
             }

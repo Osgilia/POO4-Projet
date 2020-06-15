@@ -2,11 +2,15 @@ package modele;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,7 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Instance.findAll", query = "SELECT i FROM Instance i")
     , @NamedQuery(name = "Instance.findById", query = "SELECT i FROM Instance i WHERE i.id = :id")
-    , @NamedQuery(name = "Instance.findByName", query = "SELECT i FROM Instance i WHERE i.name = :name")})
+    , @NamedQuery(name = "Instance.findByName", query = "SELECT i FROM Instance i WHERE i.name = :name")
+    , @NamedQuery(name = "Instance.findByDataset", query = "SELECT i FROM Instance i WHERE i.dataset = :dataset")})
 public class Instance implements Serializable {
 
     /**
@@ -64,16 +69,10 @@ public class Instance implements Serializable {
     private Vehicle vehicle;
 
     /**
-     * Point(s) affected to this instance
-     */
-    @OneToMany(mappedBy = "pInstance")
-    private List<Point> pointList;
-
-    /**
      * MachineType(s) affected to this instance
      */
     @OneToMany(mappedBy = "mInstance")
-    private List<MachineType> machineList;
+    private Set<MachineType> machineList;
 
     /**
      * **************************
@@ -84,8 +83,7 @@ public class Instance implements Serializable {
         this.dataset = "DEFAULT NAME";
         this.nbDays = 0;
         this.planningList = new ArrayList<>();
-        this.pointList = new ArrayList<>();
-        this.machineList = new ArrayList<>();
+        this.machineList = new HashSet<>();
     }
 
     public Instance(String name, String dataset, int nbDays) {
@@ -94,18 +92,13 @@ public class Instance implements Serializable {
         this.dataset = dataset;
         this.nbDays = nbDays;
         this.planningList = new ArrayList<>();
-        this.pointList = new ArrayList<>();
-        this.machineList = new ArrayList<>();
+        this.machineList = new HashSet<>();
     }
 
     /**
      * ******************************
      * GETTERS & SETTERS * *****************************
      */
-    
-    
-    
-    
     public Integer getId() {
         return id;
     }
@@ -126,16 +119,10 @@ public class Instance implements Serializable {
         return vehicle;
     }
 
-    public List<Point> getPointList() {
-        return pointList;
-    }
-
     public int getNbDays() {
         return nbDays;
     }
 
-    
-    
     /**
      * **********************
      * METHODS * *********************
@@ -174,10 +161,6 @@ public class Instance implements Serializable {
         for (MachineType m : machineList) {
             str += "\n\t" + m;
         }
-        str += "\n\nPoints :";
-        for (Point p : pointList) {
-            str += "\n\t" + p;
-        }
         return str;
     }
 
@@ -203,80 +186,8 @@ public class Instance implements Serializable {
      */
     public MachineType getMachineType(int id) {
         for (MachineType m : machineList) {
-            if (m.getId() == id) {
+            if (m.getIdMachine() == id) {
                 return m;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Checks if instance contains given point
-     *
-     * @param point
-     * @return true if success
-     */
-    public boolean containsPoint(Point point) {
-        if (this.pointList.contains(point)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Gets point from the list of points of this instance
-     *
-     * @param point
-     * @return Point
-     */
-    public Point getPoint(Point point) {
-        for (Point p : this.pointList) {
-            if (p.equals(point)) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Scans the list of instantiated points and returns only the technicians
-     *
-     * @return list of Technician
-     */
-    public List<Technician> getTechnicians() {
-        List<Technician> technicians = new ArrayList<>();
-        for (Point p : this.pointList) {
-            if (p instanceof Technician) {
-                technicians.add((Technician) p);
-            }
-        }
-        return technicians;
-    }
-
-        /**
-     * Scans the list of instantiated points and returns only the technicians
-     *
-     * @return list of Technician
-     */
-    public List<Customer> getCustomers() {
-        List<Customer> customers = new ArrayList<>();
-        for (Point p : this.pointList) {
-            if (p instanceof Customer) {
-                customers.add((Customer) p);
-            }
-        }
-        return customers;
-    }
-
-    /**
-     * Gets depot from a list of instantiated points
-     *
-     * @return Depot
-     */
-    public Depot getDepot() {
-        for (Point p : this.pointList) {
-            if (p instanceof Depot) {
-                return (Depot) p;
             }
         }
         return null;
@@ -291,21 +202,6 @@ public class Instance implements Serializable {
     public boolean addMachine(MachineType m) {
         if (m != null) {
             if (this.machineList.add(m)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Add a point that represents one of the points of this instance
-     *
-     * @param p : point
-     * @return true if success
-     */
-    public boolean addPoint(Point p) {
-        if (p != null) {
-            if (this.pointList.add(p)) {
                 return true;
             }
         }

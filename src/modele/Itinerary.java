@@ -62,7 +62,7 @@ public class Itinerary implements Serializable {
      */
     @OneToMany(mappedBy = "itinerary",
             cascade = {
-                CascadeType.ALL
+                CascadeType.PERSIST
             })
     @OrderBy("position ASC")
     private List<ItineraryPoint> points;
@@ -131,9 +131,6 @@ public class Itinerary implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + Objects.hashCode(this.id);
-        hash = 41 * hash + Objects.hashCode(this.itineraryType);
-        hash = 41 * hash + Objects.hashCode(this.dayHorizon);
         return hash;
     }
 

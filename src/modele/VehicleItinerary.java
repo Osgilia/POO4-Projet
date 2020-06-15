@@ -29,11 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @DiscriminatorValue("1")
 public class VehicleItinerary extends Itinerary implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @ManyToOne
     @JoinColumn(name = "VEHICLE_ID")
     private Vehicle vehicle;
@@ -80,7 +75,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 71 * hash + Objects.hashCode(this.vehicle);
         return hash;
     }
 
@@ -96,6 +90,15 @@ public class VehicleItinerary extends Itinerary implements Serializable {
             return false;
         }
         final VehicleItinerary other = (VehicleItinerary) obj;
+        if (Double.doubleToLongBits(this.cost) != Double.doubleToLongBits(other.cost)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.distanceTravelled) != Double.doubleToLongBits(other.distanceTravelled)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.capacityUsed) != Double.doubleToLongBits(other.capacityUsed)) {
+            return false;
+        }
         if (!Objects.equals(this.vehicle, other.vehicle)) {
             return false;
         }
@@ -203,7 +206,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         }
         return notEnoughVehicles;
     }
-
+    
     /**
      * Assess the possibility of adding a vehicle itinerary associated to a
      * customer + Checks size of machines requested and distance to travel
@@ -230,7 +233,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         if (!this.addDemand(d)) {
             return false;
         }
-
         double costUpdated = this.computeCostItinerary();
         this.setCost(costUpdated);
         this.setCapacityUsed(capacityUsed + totalSizeMachinesRequested);
@@ -246,11 +248,12 @@ public class VehicleItinerary extends Itinerary implements Serializable {
      * @return double
      */
     protected double computeCostItinerary() {
+        //we get the sum of the itinerary distances
         double distanceDemands = this.computeDistanceDemands(new ArrayList<>(super.getPoints()));
+        //we calculate the distance cost for the itinerary
         double newCost = distanceDemands * this.vehicle.getDistanceCost();
-        if (distanceDemands != 0.0) { // if used
-            newCost += this.vehicle.getDayCost();
-        }
+        //we add the Day Cost of the related vehicle (cost for the use of this technician for a day)
+        newCost += this.vehicle.getDayCost();
         return newCost;
     }
 
@@ -264,16 +267,17 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
+        this.vehicle.getDepot().addDestination(pointsItinerary.get(0).getPoint(), this.vehicle.getDepot().computeDistance(pointsItinerary.get(0).getPoint()));
         double distance = this.vehicle.getDepot().getDistanceTo(pointsItinerary.get(0).getPoint());
-
         for (int i = 1; i < pointsItinerary.size(); i++) {
             Point previousPoint = pointsItinerary.get(i - 1).getPoint();
             if (!previousPoint.equals(pointsItinerary.get(i))) {
+                previousPoint.addDestination(pointsItinerary.get(i).getPoint(), previousPoint.computeDistance(pointsItinerary.get(i).getPoint()));
                 distance += previousPoint.getDistanceTo(pointsItinerary.get(i).getPoint());
             }
         }
+        pointsItinerary.get(pointsItinerary.size() - 1).getPoint().addDestination(this.vehicle.getDepot(), pointsItinerary.get(pointsItinerary.size() - 1).getPoint().computeDistance(this.vehicle.getDepot()));
         distance += pointsItinerary.get(pointsItinerary.size() - 1).getPoint().getDistanceTo(this.vehicle.getDepot());
-
         return distance;
     }
 
@@ -284,12 +288,11 @@ public class VehicleItinerary extends Itinerary implements Serializable {
      * @param d : demand to add
      * @return the distance
      */
-    protected double computeDistanceDemands(PlannedDemand d) {
+    public double computeDistanceDemands(PlannedDemand d) {
         List<ItineraryPoint> pointsItinerary = new ArrayList<>(super.getPoints());
         pointsItinerary.add(new ItineraryPoint(this, d.getCustomer(), pointsItinerary.size()));
         return this.computeDistanceDemands(pointsItinerary);
     }
-
 
     /**
      * Clears data related to the vehicle itinerary

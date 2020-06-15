@@ -25,25 +25,27 @@ import modele.VehicleItinerary;
  */
 public class PrintSolution {
 
-    public static void print(Instance instance, Planning planning) throws IOException {
+    public static void print(Instance instance, Planning planning, String path) throws IOException {
         String dataset = instance.getDataset(), instanceName = instance.getName();
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
 
         VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
         PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
-        
-        int truckDistance = planning.computeTruckDistance(vehicleItineraryManager, plannedDemandManager),
+
+
+        int truckDistance = planning.computeTruckDistance(),
                 truckDays = planning.computeNbTruckDays(),
                 trucksUsed = planning.computeMaxTrucksUsed(),
                 technicianDistance = planning.computeTechnicianDistance(),
                 technicianDays = planning.computeNbTechnicianDays(),
                 techniciansUsed = planning.computeTotalNbTechniciansUsed(),
-                idleMachineCosts = planning.computeIdleMachineCosts(),
-                totalCost = (int) (planning.getCost());
+                idleMachineCosts = planning.computeIdleMachineCosts();
+        
+        double totalCost = planning.getCost() + (double) idleMachineCosts;
 
-        // Outputs the solution in text file
+      // Outputs the solution in text file
         // For each day in planning ..
-        FileWriter fileToPrint = new FileWriter("C:\\Users\\Osgilia\\Desktop\\solution.txt");
+        FileWriter fileToPrint = new FileWriter(path);
         PrintWriter printWriter = new PrintWriter(fileToPrint);
         try {
 
@@ -56,7 +58,7 @@ public class PrintSolution {
             printWriter.printf("NUMBER_OF_TECHNICIAN_DAYS = %d\n", technicianDays);
             printWriter.printf("NUMBER_OF_TECHNICIANS_USED = %d\n", techniciansUsed);
             printWriter.printf("IDLE_MACHINE_COSTS  = %d\n", idleMachineCosts);
-            printWriter.printf("TOTAL_COST = %d\n", totalCost);
+            printWriter.printf("TOTAL_COST = %s\n", String.format("%.0f", totalCost));
 
             for (DayHorizon day : planning.getDays()) {
                 printWriter.printf("DAY = %d\n", day.getDayNumber());

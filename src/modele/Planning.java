@@ -34,7 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Planning.findAll", query = "SELECT p FROM Planning p")
     , @NamedQuery(name = "Planning.findById", query = "SELECT p FROM Planning p WHERE p.id = :id")
-    , @NamedQuery(name = "Planning.findByCost", query = "SELECT p FROM Planning p WHERE p.cost = :cost")})
+    , @NamedQuery(name = "Planning.findByCost", query = "SELECT p FROM Planning p WHERE p.cost = :cost")
+    , @NamedQuery(name = "Planning.findByAlgoNameAndInstance", query = "SELECT p FROM Planning p WHERE p.algoName = :algoName AND p.ninstance = :ninstance")})
 public class Planning implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,7 +64,7 @@ public class Planning implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "planning")
     private List<DayHorizon> days;
 
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "planning")
+    @OneToMany(mappedBy = "planning")
     private List<PlannedDemand> plannedDemands;
 
     /**
@@ -97,9 +98,9 @@ public class Planning implements Serializable {
      */
     public Planning(Instance ninstance, int nbDays, String algoName) {
         this();
+        this.algoName = algoName;
         this.ninstance = ninstance;
         this.nbDays = nbDays;
-        this.algoName = algoName;
     }
 
     @Override
@@ -166,6 +167,10 @@ public class Planning implements Serializable {
         return this.ninstance.getVehicle();
     }
 
+    public String getAlgoName() {
+        return algoName;
+    }
+
     /**
      * Adds a day in the planning horizon
      *
@@ -190,15 +195,13 @@ public class Planning implements Serializable {
      * @param demand
      * @return true if success
      */
-    public boolean addDemand(Demand demand, PlannedDemandDao plannedDemandmanager, DemandDao demandManager) {
+    public boolean addDemand(Demand demand, PlannedDemandDao plannedDemandmanager) {
         if (demand != null) {
-            Demand realDemand = demandManager.find(demand.getId());
-            PlannedDemand plannedDemand = new PlannedDemand(this, realDemand);
+            PlannedDemand plannedDemand = new PlannedDemand(this, demand);
             this.plannedDemands.add(plannedDemand);
             if (this.plannedDemands.contains(plannedDemand)) {
-                boolean success = realDemand.addPlannedDemand(plannedDemand);
-                demandManager.create(realDemand);
-                return success;
+                plannedDemandmanager.create(plannedDemand);
+                return true;
             }
         }
         return false;
@@ -228,50 +231,43 @@ public class Planning implements Serializable {
      */
     public void updateCost() {
         double costPlanning = 0.0;
-        List<Integer> techniciansUsed = new ArrayList<>();
+
+        Set<Integer> techniciansUsed = new HashSet<>();
+
         for (DayHorizon day : days) {
+            //we get the day costs
             costPlanning += day.getCost();
+
+            //we want to know the used cost
             for (Itinerary itinerary : day.getItineraries()) {
-                if (itinerary instanceof TechnicianItinerary) {
-                    Technician technician = ((TechnicianItinerary) itinerary).getTechnician();
-                    if (!techniciansUsed.contains(technician.getIdLocation()) && ((TechnicianItinerary) itinerary).getCost() != 0.0) {
-                        costPlanning += technician.getUsageCost();
-                        techniciansUsed.add(technician.getIdLocation());
-                    }
+                if (itinerary instanceof TechnicianItinerary
+                        && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0
+                        && !techniciansUsed.contains(((TechnicianItinerary) itinerary).getTechnician().getIdPoint())) {
+                     techniciansUsed.add(((TechnicianItinerary) itinerary).getTechnician().getIdPoint());
+                    costPlanning += (((TechnicianItinerary) itinerary).getTechnician()).getUsageCost();
                 }
             }
         }
-        costPlanning += this.getVehicleInstance().getUsageCost() * this.computeNbTruckDays();
-        Set<MachineType> machinesUsed = new HashSet<>();
-//        for (Map.Entry<PlannedDemand, Integer> demand : plannedDemands.entrySet()) {
-        /**
-         * @todo later : take into account penaltys associated to the machines
-         * when they are not used for more than 1 day so far, machines are
-         * always installed the day after the delivery method
-         * "computeMachinesUsed"
-         */
-//        }
+        //on recupere le cout journalier des camions
+        costPlanning += this.getVehicleInstance().getUsageCost() * this.computeMaxTrucksUsed();
+
+        //costPlanning += (double) this.computeIdleMachineCosts();
         this.cost = costPlanning;
     }
 
     /**
      * Computes overall distance travelled by all vehicles
      *
-     * @param vehicleItineraryManager
      * @return int
      */
-    public int computeTruckDistance(VehicleItineraryDao vehicleItineraryManager, PlannedDemandDao plannedDemandManager) {
+    public int computeTruckDistance() {
         int truckDistance = 0;
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
-                if (day.getDayNumber() == 1) {
-                    System.err.println(itinerary);
-                }
                 if (itinerary instanceof VehicleItinerary) {
                     truckDistance += ((VehicleItinerary) itinerary).computeDistanceDemands(itinerary.getPoints());
                 }
             }
-            System.out.println(truckDistance);
         }
         return truckDistance;
     }
@@ -300,10 +296,11 @@ public class Planning implements Serializable {
      */
     public int computeNbTruckDays() {
         int truckDays = 0;
+
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof VehicleItinerary) {
-                    if (((VehicleItinerary) itinerary).getCost() != 0.0) {
+                    if (((VehicleItinerary) itinerary).getCustomersDemands().size() > 0) {
                         truckDays++;
                     }
                 }
@@ -322,7 +319,7 @@ public class Planning implements Serializable {
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof TechnicianItinerary) {
-                    if (((TechnicianItinerary) itinerary).getCost() != 0.0) {
+                    if (((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0) {
                         technicianDays++;
                     }
                 }
@@ -342,7 +339,9 @@ public class Planning implements Serializable {
             tmpMaxTrucksUsed = 0;
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof VehicleItinerary) {
-                    tmpMaxTrucksUsed++;
+                    if (((VehicleItinerary) itinerary).getCustomersDemands().size() > 0) {
+                        tmpMaxTrucksUsed++;
+                    }
                 }
             }
             if (tmpMaxTrucksUsed > maxTrucksUsed) {
@@ -358,11 +357,13 @@ public class Planning implements Serializable {
      * @return int
      */
     public int computeTotalNbTechniciansUsed() {
-        Set<Technician> techniciansList = new HashSet<>();
+        List<Integer> techniciansList = new ArrayList<>();
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
-                if (itinerary instanceof TechnicianItinerary) {
-                    techniciansList.add(((TechnicianItinerary) itinerary).getTechnician());
+                if (itinerary instanceof TechnicianItinerary
+                        && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0
+                        && !techniciansList.contains(((TechnicianItinerary) itinerary).getTechnician().getIdPoint())) {
+                    techniciansList.add(((TechnicianItinerary) itinerary).getTechnician().getIdPoint());
                 }
             }
         }
@@ -376,6 +377,16 @@ public class Planning implements Serializable {
      * @return int
      */
     public int computeIdleMachineCosts() {
-        return 0;
+        int idleMachinesCost = 0;
+
+        for (PlannedDemand demand : plannedDemands) {
+            int deliveryDay = demand.getVehicleItinerary().getDayNumber();
+            int installationDay = demand.getTechnicianItinerary().getDayNumber();
+            int uselessDays = installationDay - deliveryDay;
+            if (uselessDays > 1) {
+                idleMachinesCost += (uselessDays - 1) * demand.getMachine().getPenalty() * demand.getDemand().getNbMachines();
+            }
+        }
+        return idleMachinesCost;
     }
 }

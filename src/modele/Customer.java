@@ -33,15 +33,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @DiscriminatorValue("2")
 public class Customer extends Point implements Serializable {
 
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer")
-    private List<Demand> customerDemands;
-
     /**
      * No-argument constructor
      */
     public Customer() {
         super();
-        this.customerDemands = new ArrayList<>();
     }
 
     /**
@@ -55,53 +51,11 @@ public class Customer extends Point implements Serializable {
      */
     public Customer(Integer id, Integer idLocation, double x, double y, Instance instance) {
         super(id, idLocation, 2, x, y, instance);
-        this.customerDemands = new ArrayList<>();
     }
 
     @Override
     public String toString() {
         String str = "Customer (" + super.getId() + ")" + " at " + super.toString() + " asking for :\n";
-        for (Demand d : customerDemands) {
-            str += "\t\t\t\t" + d.toString() + "\n";
-        }
         return str;
-    }
-
-    public List<Demand> getCustomerDemands() {
-        return customerDemands;
-    }
-
-    /**
-     * Adds a demand
-     *
-     * @param id
-     * @param firstDay : first day of delivery window
-     * @param lastDay : last day of delivery window
-     * @param m : machine to add
-     * @param nbMachines
-     * @param demandManager : Dao demand
-     * @return true if demand is added
-     */
-    public boolean addDemand(int id, int firstDay, int lastDay, MachineType m, int nbMachines, DemandDao demandManager) {
-        if (firstDay <= lastDay) {
-            Demand d = new Demand(id, firstDay, lastDay, this, m, nbMachines);
-            m.addDemand(d);
-            this.customerDemands.add(d);
-            if (this.customerDemands.contains(d)) {
-                return true;
-            }
-            demandManager.create(d);
-        }
-        return false;
-    }
-
-    /**
-     * Clears data related to the customer
-     */
-    public void clear() {
-        for (Demand d : this.customerDemands) {
-            d.clear();
-        }
-        this.customerDemands.clear();
     }
 }

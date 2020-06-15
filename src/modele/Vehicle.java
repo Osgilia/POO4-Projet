@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Vehicle.findAll", query = "SELECT v FROM Vehicle v")
     , @NamedQuery(name = "Vehicle.findById", query = "SELECT v FROM Vehicle v WHERE v.id = :id")
-    , @NamedQuery(name = "Vehicle.findByInstance", query = "SELECT v FROM Vehicle v WHERE v.vInstance = :instance")})
+    , @NamedQuery(name = "Vehicle.findByInstance", query = "SELECT v FROM Vehicle v WHERE v.vInstance.id = :instanceId")})
 public class Vehicle implements Serializable {
 
     /**
@@ -71,10 +71,7 @@ public class Vehicle implements Serializable {
     @ManyToOne
     private Depot depot;
 
-    @OneToMany(mappedBy = "vehicle",
-            cascade = {
-                CascadeType.PERSIST
-            })
+    @OneToMany(mappedBy = "vehicle")
     private List<VehicleItinerary> itineraries;
 
     /**
@@ -180,12 +177,6 @@ public class Vehicle implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.capacity) ^ (Double.doubleToLongBits(this.capacity) >>> 32));
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.distanceMax) ^ (Double.doubleToLongBits(this.distanceMax) >>> 32));
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.distanceCost) ^ (Double.doubleToLongBits(this.distanceCost) >>> 32));
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.dayCost) ^ (Double.doubleToLongBits(this.dayCost) >>> 32));
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.usageCost) ^ (Double.doubleToLongBits(this.usageCost) >>> 32));
-        hash = 97 * hash + Objects.hashCode(this.depot);
         return hash;
     }
 
@@ -216,7 +207,13 @@ public class Vehicle implements Serializable {
         if (Double.doubleToLongBits(this.usageCost) != Double.doubleToLongBits(other.usageCost)) {
             return false;
         }
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
         if (!Objects.equals(this.depot, other.depot)) {
+            return false;
+        }
+        if (!Objects.equals(this.vInstance, other.vInstance)) {
             return false;
         }
         return true;

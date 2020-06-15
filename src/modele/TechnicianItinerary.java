@@ -34,11 +34,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @DiscriminatorValue("2")
 public class TechnicianItinerary extends Itinerary implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @ManyToOne
     @JoinColumn(name = "TECHNICIAN_ID")
     private Technician technician;
@@ -173,6 +168,28 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         return false;
     }
 
+    public double checkTechnician(PlannedDemand d) {
+        if (d == null) {
+            return Double.MAX_VALUE;
+        }
+        int dayNumber = this.getDayNumber();
+        int deliveryDayNumber = d.getVehicleItinerary().getDayNumber();
+        if (dayNumber <= deliveryDayNumber) { // installation possible the day after the delivery
+            return Double.MAX_VALUE;
+        }
+        if (nbDemands + 1 > this.technician.getDemandMax()) {
+            return Double.MAX_VALUE;
+        }
+        if (!this.technician.canInstallDemand(d, dayNumber)) {
+            return Double.MAX_VALUE;
+        }
+        double distanceUpdated = this.computeDistanceDemands(d);
+        if (distanceUpdated > this.technician.getDistMax()) {
+            return Double.MAX_VALUE;
+        }
+        return distanceUpdated;
+    }
+    
     /**
      * Assess the possibility of adding a technician itinerary associated to a
      * customer
@@ -185,9 +202,6 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
             return false;
         }
         int dayNumber = this.getDayNumber();
-        if (dayNumber < d.getFirstDay() || dayNumber > d.getLastDay()) {
-            return false;
-        }
         int deliveryDayNumber = d.getVehicleItinerary().getDayNumber();
         if (dayNumber <= deliveryDayNumber) { // installation possible the day after the delivery
             return false;
@@ -195,11 +209,11 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         if (nbDemands + 1 > this.technician.getDemandMax()) {
             return false;
         }
-        double distanceUpdated = this.computeDistanceDemands(d);
-        if (distanceUpdated > this.technician.getDistMax()) {
+        if (!this.technician.canInstallDemand(d, dayNumber)) {
             return false;
         }
-        if (!this.technician.canInstallDemand(d, dayNumber)) {
+        double distanceUpdated = this.computeDistanceDemands(d);
+        if (distanceUpdated > this.technician.getDistMax()) {
             return false;
         }
         if (!this.addDemand(d)) {
@@ -223,19 +237,23 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
+
+        // on créer une premiere route entre le technicien et  le premeir point à livrer
+        this.technician.addDestination(pointsItinerary.get(0).getPoint(), this.technician.computeDistance(pointsItinerary.get(0).getPoint()));
         double distance = this.technician.getDistanceTo(pointsItinerary.get(0).getPoint());
         for (int i = 1; i < pointsItinerary.size(); i++) {
             Point previousPoint = pointsItinerary.get(i - 1).getPoint();
             if (!previousPoint.equals(pointsItinerary.get(i))) {
+                previousPoint.addDestination(pointsItinerary.get(i).getPoint(), previousPoint.computeDistance(pointsItinerary.get(i).getPoint()));
                 distance += previousPoint.getDistanceTo(pointsItinerary.get(i).getPoint());
             }
         }
         if (pointsItinerary.size() == 1) {
             distance += distance;
         } else {
+            pointsItinerary.get(pointsItinerary.size() - 1).getPoint().addDestination(this.technician, pointsItinerary.get(pointsItinerary.size() - 1).getPoint().computeDistance(this.technician));
             distance += pointsItinerary.get(pointsItinerary.size() - 1).getPoint().getDistanceTo(this.technician);
         }
-
         return distance;
     }
 
@@ -248,7 +266,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      */
     protected double computeDistanceDemands(PlannedDemand d) {
         List<ItineraryPoint> pointsItinerary = new ArrayList<>(super.getPoints());
-        pointsItinerary.add(new ItineraryPoint(this,d.getCustomer(),pointsItinerary.size()));
+        pointsItinerary.add(new ItineraryPoint(this, d.getCustomer(), pointsItinerary.size()));
         return this.computeDistanceDemands(pointsItinerary);
     }
 
@@ -259,11 +277,12 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      * @return double : the cost of the itinerary
      */
     protected double computeCostItinerary() {
+        //we get the sum of the itinerary distances
         double distanceDemands = this.computeDistanceDemands(new ArrayList<>(super.getPoints()));
+        //we calculate the distance cost for the itinerary
         double newCost = distanceDemands * this.technician.getDistanceCost();
-        if (distanceDemands != 0.0) { // if used
-            newCost += this.technician.getDayCost();
-        }
+        //we add the Day Cost of the related technician (cost for the use of this technician for a day)
+        newCost += this.technician.getDayCost();
         return newCost;
     }
 }

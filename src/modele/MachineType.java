@@ -34,6 +34,12 @@ public class MachineType implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+     /**
+     * Id of a machine of this type for a specific instance
+     */
+    @Column(name = "IDMACHINE")
+    private int idMachine;
+    
     /**
      * Size of a machine of this type
      */
@@ -55,11 +61,11 @@ public class MachineType implements Serializable {
     /**
      * Demands associated to the machine type
      */
-    @OneToMany(mappedBy = "machine",
-            cascade = {
-                CascadeType.PERSIST
-            })
-    private List<Demand> demandsMachineType;
+//    @OneToMany(mappedBy = "machine",
+//            cascade = {
+//                CascadeType.PERSIST
+//            })
+//    private List<Demand> demandsMachineType;
 
     /**
      * Instance using this machine
@@ -76,10 +82,11 @@ public class MachineType implements Serializable {
      * No-argument constructor
      */
     public MachineType() {
+        this.idMachine = 0;
         this.size = 0;
         this.penalty = 0.0;
         this.certifiedTechnicians = new HashSet<>();
-        this.demandsMachineType = new ArrayList<>();
+//        this.demandsMachineType = new ArrayList<>();
     }
 
     /**
@@ -92,7 +99,7 @@ public class MachineType implements Serializable {
      */
     public MachineType(Integer id, int size, double penalty, Instance instance) {
         this();
-        this.id = id;
+        this.idMachine = id;
         this.size = size;
         this.penalty = penalty;
         this.mInstance = instance;
@@ -118,7 +125,6 @@ public class MachineType implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 23 * hash + Objects.hashCode(this.id);
         return hash;
     }
 
@@ -148,9 +154,11 @@ public class MachineType implements Serializable {
         return "[size = " + size + " and penalty = " + penalty + "]";
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getIdMachine() {
+        return idMachine;
     }
+    
+    
     
     /**
      * Adds a technician to the list of technicians that can install this machine
@@ -171,13 +179,13 @@ public class MachineType implements Serializable {
      * @param demand
      * @return true if success
      */
-    public boolean addDemand(Demand demand) {
-        if (demand != null) {
-            this.demandsMachineType.add(demand);
-            if (this.demandsMachineType.contains(demand)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean addDemand(Demand demand) {
+//        if (demand != null) {
+//            this.demandsMachineType.add(demand);
+//            if (this.demandsMachineType.contains(demand)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 }

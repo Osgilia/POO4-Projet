@@ -31,10 +31,7 @@ public class DayHorizon implements Serializable {
     @ManyToOne
     private Planning planning;
 
-    @OneToMany(mappedBy = "dayHorizon",
-            cascade = {
-                CascadeType.PERSIST
-            })
+    @OneToMany(mappedBy = "dayHorizon")
     private List<Itinerary> itineraries;
 
     @Column(name = "NUMBER")
@@ -65,8 +62,6 @@ public class DayHorizon implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 37 * hash + Objects.hashCode(this.id);
-        hash = 37 * hash + this.dayNumber;
         return hash;
     }
 
@@ -86,6 +81,9 @@ public class DayHorizon implements Serializable {
             return false;
         }
         if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.planning, other.planning)) {
             return false;
         }
         return true;
@@ -121,14 +119,17 @@ public class DayHorizon implements Serializable {
      */
     public void updateCost() {
         double costDay = 0.0;
+        //we check all the day's itineraries
         for (Itinerary itinerary : this.itineraries) {
-            if (itinerary instanceof VehicleItinerary) {
+            //if it's a vehicule itinerary and is used
+            if (itinerary instanceof VehicleItinerary && !(((VehicleItinerary) itinerary).getCustomersDemands().isEmpty())) {
                 costDay += ((VehicleItinerary) itinerary).computeCostItinerary();
-            }
-            if (itinerary instanceof TechnicianItinerary) {
+            } else if (itinerary instanceof TechnicianItinerary && !(((TechnicianItinerary) itinerary).getCustomersDemands().isEmpty())) {
+                //if it's a technician  itinerary and is used
                 costDay += ((TechnicianItinerary) itinerary).computeCostItinerary();
             }
         }
+        //the costDay is updated
         this.cost = costDay;
         this.planning.updateCost();
     }
@@ -216,7 +217,7 @@ public class DayHorizon implements Serializable {
                                 for (PlannedDemand d2 : plannedDemands) {
                                     if (d2.getDemand().getCustomer().equals(p.getPoint()) && !demandsDisplayed.contains(d2)) {
                                         demandsDisplayed.add(d2);
-                                        str += " " + d2.getDemand().getId();
+                                        str += " " + d2.getDemand().getIdDemand();
                                     }
                                 }
                             }
@@ -247,7 +248,7 @@ public class DayHorizon implements Serializable {
                             for (PlannedDemand d2 : plannedDemands) {
                                 if (d2.getDemand().getCustomer().equals(p.getPoint()) && !demandsDisplayed.contains(d2)) {
                                     demandsDisplayed.add(d2);
-                                    str += " " + d2.getDemand().getId();
+                                    str += " " + d2.getDemand().getIdDemand();
                                 }
                             }
                         }
