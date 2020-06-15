@@ -351,11 +351,13 @@ public class Planning implements Serializable {
      * @return int
      */
     public int computeTotalNbTechniciansUsed() {
-        Set<Technician> techniciansList = new HashSet<>();
+        List<Integer> techniciansList = new ArrayList<>();
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
-                if (itinerary instanceof TechnicianItinerary && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0) {
-                    techniciansList.add(((TechnicianItinerary) itinerary).getTechnician());
+                if (itinerary instanceof TechnicianItinerary 
+                        && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0
+                        && !techniciansList.contains(((TechnicianItinerary) itinerary).getTechnician().getIdPoint())) {
+                    techniciansList.add(((TechnicianItinerary) itinerary).getTechnician().getIdPoint());
                 }
             }
         }

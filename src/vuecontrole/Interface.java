@@ -97,7 +97,7 @@ public class Interface extends javax.swing.JFrame {
         jLabelDataset.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabelDataset.setText("Dataset :");
 
-        jComboBoxSolutions.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "MinimalSolution" }));
+        jComboBoxSolutions.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "MinimalSolution", "BestTechnicianItinerarySolution", "BestVehicleItinerarySolution", "BestItinerarySolution" }));
         jComboBoxSolutions.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxSolutionsActionPerformed(evt);
@@ -300,8 +300,6 @@ public class Interface extends javax.swing.JFrame {
             PlanningDao planningManager = factory.getPlanningDao();
 
             Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
-
-            //System.out.println(instance);
             Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
             // This solution doesn't exist yet for this instance
             if (planning == null) {
@@ -314,6 +312,48 @@ public class Interface extends javax.swing.JFrame {
                             generateButtonStatus();
                             JOptionPane d = new JOptionPane();
                             d.showMessageDialog(this, "MinimalSolution generated");
+                            checkPlannedDemand(planning);
+
+                        } catch (IOException ex) {
+                            System.err.println("ERROR : " + ex);
+                        }
+                        break;
+                    case "BestTechnicianItinerarySolution":
+                        try {
+                            HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
+                            heur.bestTechnicianItinerarySolution();
+                            displayTree();
+                            generateButtonStatus();
+                            JOptionPane d = new JOptionPane();
+                            d.showMessageDialog(this, "Best Technician Itinerary Solution generated");
+                            checkPlannedDemand(planning);
+
+                        } catch (IOException ex) {
+                            System.err.println("ERROR : " + ex);
+                        }
+                        break;
+                    case "BestVehicleItinerarySolution":
+                        try {
+                            HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
+                            heur.bestVehicleItinerarySolution();
+                            displayTree();
+                            generateButtonStatus();
+                            JOptionPane d = new JOptionPane();
+                            d.showMessageDialog(this, "Best Vehicle Itinerary Solution generated");
+                            checkPlannedDemand(planning);
+
+                        } catch (IOException ex) {
+                            System.err.println("ERROR : " + ex);
+                        }
+                        break;
+                    case "BestItinerarySolution":
+                        try {
+                            HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
+                            heur.bestItinerarySolution();
+                            displayTree();
+                            generateButtonStatus();
+                            JOptionPane d = new JOptionPane();
+                            d.showMessageDialog(this, "Best Itinerary Solution generated");
                             checkPlannedDemand(planning);
 
                         } catch (IOException ex) {
@@ -363,9 +403,11 @@ public class Interface extends javax.swing.JFrame {
             if (planning != null) {
                 jButtonGenerate.setEnabled(false);
                 jButtonGenerate.setText("Already Generated");
+                displayTree();
             } else {
                 jButtonGenerate.setEnabled(true);
                 jButtonGenerate.setText("Generate");
+                jTree1.setModel(null);
             }
 
         }

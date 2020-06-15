@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import modele.Customer;
+import modele.Demand;
 import modele.Depot;
 import modele.Instance;
 import modele.MachineType;
@@ -175,10 +176,12 @@ public class ReadInstance {
                                 if (points[j].getIdLocation() == idLocation) {
                                     if (!customersAdded.contains(c)) {
                                         customerManager.create(c);
-                                        c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
+                                        Demand newDemand = new Demand(id, firstDay, lastDay, c, m, nbMachinesRequested);
+                                        demandManager.create(newDemand);
                                         customersAdded.add(c);
                                     } else {
-                                        c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
+                                        Demand newDemand = new Demand(id, firstDay, lastDay, c, m, nbMachinesRequested);
+                                        demandManager.create(newDemand);
                                     }
                                 }
                             }

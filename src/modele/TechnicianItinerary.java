@@ -168,6 +168,28 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         return false;
     }
 
+    public double checkTechnician(PlannedDemand d) {
+        if (d == null) {
+            return Double.MAX_VALUE;
+        }
+        int dayNumber = this.getDayNumber();
+        int deliveryDayNumber = d.getVehicleItinerary().getDayNumber();
+        if (dayNumber <= deliveryDayNumber) { // installation possible the day after the delivery
+            return Double.MAX_VALUE;
+        }
+        if (nbDemands + 1 > this.technician.getDemandMax()) {
+            return Double.MAX_VALUE;
+        }
+        if (!this.technician.canInstallDemand(d, dayNumber)) {
+            return Double.MAX_VALUE;
+        }
+        double distanceUpdated = this.computeDistanceDemands(d);
+        if (distanceUpdated > this.technician.getDistMax()) {
+            return Double.MAX_VALUE;
+        }
+        return distanceUpdated;
+    }
+    
     /**
      * Assess the possibility of adding a technician itinerary associated to a
      * customer

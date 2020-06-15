@@ -206,7 +206,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         }
         return notEnoughVehicles;
     }
-
+    
     /**
      * Assess the possibility of adding a vehicle itinerary associated to a
      * customer + Checks size of machines requested and distance to travel
@@ -287,7 +287,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
      * @param d : demand to add
      * @return the distance
      */
-    protected double computeDistanceDemands(PlannedDemand d) {
+    public double computeDistanceDemands(PlannedDemand d) {
         List<ItineraryPoint> pointsItinerary = new ArrayList<>(super.getPoints());
         pointsItinerary.add(new ItineraryPoint(this, d.getCustomer(), pointsItinerary.size()));
         return this.computeDistanceDemands(pointsItinerary);
