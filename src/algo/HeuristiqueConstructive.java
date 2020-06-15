@@ -127,6 +127,6 @@ public class HeuristiqueConstructive {
         }
         
         planningManager.update(planning);
-        System.out.println(planning);
+        //System.out.println(planning);
     }
 }
