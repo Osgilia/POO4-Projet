@@ -40,7 +40,7 @@ public class PrintSolution {
                 techniciansUsed = planning.computeTotalNbTechniciansUsed(),
                 idleMachineCosts = planning.computeIdleMachineCosts();
         
-        double totalCost = planning.getCost();
+        double totalCost = planning.getCost() + (double) idleMachineCosts;
         // Outputs the solution in text file
         // For each day in planning ..
         FileWriter fileToPrint = new FileWriter(path);

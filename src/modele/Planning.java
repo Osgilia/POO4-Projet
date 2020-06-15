@@ -231,29 +231,32 @@ public class Planning implements Serializable {
      */
     public void updateCost() {
         double costPlanning = 0.0;
-        List<Integer> techniciansUsed = new ArrayList<>();
+        List<Technician> techniciansUsed = new ArrayList<>();
+
         for (DayHorizon day : days) {
+            //on recupere le couts de la journee
             costPlanning += day.getCost();
+
+            //on cherche à connaitre le cout d'usage de nos techniciens et de nos vehicules
             for (Itinerary itinerary : day.getItineraries()) {
+                //si c'est un itinerairre de technicien
                 if (itinerary instanceof TechnicianItinerary) {
-                    Technician technician = ((TechnicianItinerary) itinerary).getTechnician();
-                    if (!techniciansUsed.contains(technician.getIdLocation()) && ((TechnicianItinerary) itinerary).getCost() != 0.0) {
-                        costPlanning += technician.getUsageCost();
-                        techniciansUsed.add(technician.getIdLocation());
+                    if (!(((TechnicianItinerary) itinerary).getCustomersDemands().isEmpty())
+                            && !techniciansUsed.contains(((TechnicianItinerary) itinerary).getTechnician())) {
+                        techniciansUsed.add(((TechnicianItinerary) itinerary).getTechnician());
                     }
                 }
             }
         }
-        costPlanning += this.getVehicleInstance().getUsageCost() * this.computeNbTruckDays();
-        Set<MachineType> machinesUsed = new HashSet<>();
-//        for (Map.Entry<PlannedDemand, Integer> demand : plannedDemands.entrySet()) {
-        /**
-         * @todo later : take into account penaltys associated to the machines
-         * when they are not used for more than 1 day so far, machines are
-         * always installed the day after the delivery method
-         * "computeMachinesUsed"
-         */
-//        }
+
+        System.err.println(techniciansUsed.size());
+        for (Technician t : techniciansUsed) {
+            costPlanning += t.getUsageCost();
+        }
+        //on recupere le cout journalier des camions
+        costPlanning += this.getVehicleInstance().getUsageCost()* this.computeMaxTrucksUsed();
+
+        //costPlanning += (double) this.computeIdleMachineCosts();
         this.cost = costPlanning;
     }
 
