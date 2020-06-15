@@ -1,9 +1,11 @@
 package dao;
 
 import java.util.Collection;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import modele.Instance;
 import modele.PlannedDemand;
+import modele.Planning;
 import modele.VehicleItinerary;
 
 /**
@@ -60,4 +62,16 @@ public class JpaPlannedDemandDao extends JpaDao<PlannedDemand> implements Planne
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Collection<PlannedDemand> findByStatedemandAndPlanning(int stateDemand, Planning planning) {
+        try{
+            Query query = this.getEm().createNamedQuery("PlannedDemand.findByStatedemandAndPlanning")
+                .setParameter("stateDemand", stateDemand)
+                .setParameter("planning",planning);
+            return query.getResultList();
+        } catch(NoResultException e) {
+            return null;
+        }
+    }
+    
 }

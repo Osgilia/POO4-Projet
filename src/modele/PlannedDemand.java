@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "PLANNEDDEMAND")
 @XmlRootElement
 @NamedQueries({
+    @NamedQuery(name = "PlannedDemand.findByStatedemandAndPlanning", query = "SELECT p FROM PlannedDemand p WHERE p.stateDemand = :stateDemand AND p.planning = :planning")
 })
 public class PlannedDemand implements Serializable {
 
