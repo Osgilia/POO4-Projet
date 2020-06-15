@@ -77,7 +77,6 @@ public class ReadInstance {
             String instanceName = "", instanceDataSet = "";
 
             int nbMachines = -1, nbLocations = -1;
-//            Point points[] = null;
 
             while ((line = in.readLine()) != null) {
                 arg = line.split(" = ");
@@ -176,17 +175,11 @@ public class ReadInstance {
                                 if (points[j].getIdLocation() == idLocation) {
                                     if (!customersAdded.contains(c)) {
                                         customerManager.create(c);
-
                                         c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
                                         customersAdded.add(c);
                                     } else {
-//                                        Customer customerInstance = customerManager.find(points[j].getId());
                                         c.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
-
-//                                        customerInstance.addDemand(id, firstDay, lastDay, m, nbMachinesRequested, demandManager);
-//                                        customerManager.update(customerInstance);
                                     }
-//                                    machineManager.update(m);
                                 }
                             }
                         }
@@ -227,7 +220,6 @@ public class ReadInstance {
             } else {
                 System.out.println("TECHNICIAN CHARACTERISTICS IMPORTED");
             }
-            //           System.out.println(instance);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -236,31 +228,9 @@ public class ReadInstance {
         Vehicle vehicleType = new Vehicle(1, d, truckCapacity, truckMaxDistance, truckDistanceCost, truckDayCost, truckCost);
         vehicleType.setvInstance(instance);
         vehicleManager.create(vehicleType);
-        System.out.println("MAINTENANT ROUTES");
-
-        // ROUTES ////////////////////////////////////////
-        List<Point> pointsAdded = new ArrayList<>();
-        pointsAdded.add(d);
-        for (Customer c : customersAdded) {
-            pointsAdded.add(c);
-        }
-        for (Technician t : techniciansAdded) {
-            pointsAdded.add(t);
-        }
-        System.out.println("UPDATE POINTS");
-        for (Point p1 : pointsAdded) {
-            for (Point p2 : pointsAdded) {
-                if (!p1.equals(p2)) {
-                    p1.addDestination(p2, p1.computeDistance(p2));
-                }
-            }
-            pointManager.update(p1);
-        }
-        System.out.println("MAINTENANT INSTANCE");
 
         instanceManager.update(instance);
         System.out.println("MAINTENANT FINI");
-
         return instance;
     }
 }
