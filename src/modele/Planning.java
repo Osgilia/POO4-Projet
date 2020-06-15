@@ -251,7 +251,6 @@ public class Planning implements Serializable {
             }
         }
 
-        System.err.println(techniciansUsed.size());
         for (Technician t : techniciansUsed) {
             costPlanning += t.getUsageCost();
         }
