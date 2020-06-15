@@ -255,7 +255,7 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
     protected double computeCostItinerary() {
         double distanceDemands = this.computeDistanceDemands(new ArrayList<>(super.getPoints()));
         double newCost = distanceDemands * this.technician.getDistanceCost();
-        if (distanceDemands != 0.0) { // if used
+        if (this.customersDemands.size() > 0) { // if used
             newCost += this.technician.getDayCost();
         }
         return newCost;

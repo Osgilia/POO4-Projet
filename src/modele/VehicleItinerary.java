@@ -250,7 +250,7 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     protected double computeCostItinerary() {
         double distanceDemands = this.computeDistanceDemands(new ArrayList<>(super.getPoints()));
         double newCost = distanceDemands * this.vehicle.getDistanceCost();
-        if (distanceDemands != 0.0) { // if used
+        if (this.customersDemands.size() > 0) { // if used
             newCost += this.vehicle.getDayCost();
         }
         return newCost;

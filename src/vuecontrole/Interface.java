@@ -310,7 +310,6 @@ public class Interface extends javax.swing.JFrame {
                         try {
                             HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
                             heur.minimalSolution();
-//                            minimalSolution(instance);
                             displayTree();
                             generateButtonStatus();
                             JOptionPane d = new JOptionPane();

@@ -46,7 +46,7 @@ public class HeuristiqueConstructive {
     public void minimalSolution() throws IOException {
         //DAO Manager initialisation
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
-        InstanceDao instancemanager = factory.getInstanceDao();
+        InstanceDao instanceManager = factory.getInstanceDao();
         PlanningDao planningManager = factory.getPlanningDao();
         VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
         TechnicianDao technicianManager = factory.getTechnicianDao();
@@ -56,7 +56,7 @@ public class HeuristiqueConstructive {
         PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
 
         // Initiate planning
-        Planning planning = InitiatePlanning.createPlanning(instance, instancemanager, planningManager, demandManager, plannedDemandManager, "MinimalSolution");
+        Planning planning = InitiatePlanning.createPlanning(instance, instanceManager, planningManager, demandManager, plannedDemandManager, "MinimalSolution");
 
         // Get vehicle information
         Vehicle vehicleInstance = instance.getVehicle();
@@ -127,6 +127,6 @@ public class HeuristiqueConstructive {
         }
         
         planningManager.update(planning);
-        System.out.println(planning);
+//        System.out.println(planning);
     }
 }

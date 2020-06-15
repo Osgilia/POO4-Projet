@@ -237,23 +237,15 @@ public class Planning implements Serializable {
             for (Itinerary itinerary : day.getItineraries()) {
                 if (itinerary instanceof TechnicianItinerary) {
                     Technician technician = ((TechnicianItinerary) itinerary).getTechnician();
-                    if (!techniciansUsed.contains(technician.getIdLocation()) && ((TechnicianItinerary) itinerary).getCost() != 0.0) {
+                    if (!techniciansUsed.contains(technician.getIdPoint()) 
+                            && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0) {
                         costPlanning += technician.getUsageCost();
-                        techniciansUsed.add(technician.getIdLocation());
+                        techniciansUsed.add(technician.getIdPoint());
                     }
                 }
             }
         }
         costPlanning += this.getVehicleInstance().getUsageCost() * this.computeNbTruckDays();
-        Set<MachineType> machinesUsed = new HashSet<>();
-//        for (Map.Entry<PlannedDemand, Integer> demand : plannedDemands.entrySet()) {
-        /**
-         * @todo later : take into account penaltys associated to the machines
-         * when they are not used for more than 1 day so far, machines are
-         * always installed the day after the delivery method
-         * "computeMachinesUsed"
-         */
-//        }
         this.cost = costPlanning;
     }
 
