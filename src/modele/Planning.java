@@ -260,10 +260,9 @@ public class Planning implements Serializable {
     /**
      * Computes overall distance travelled by all vehicles
      *
-     * @param vehicleItineraryManager
      * @return int
      */
-    public int computeTruckDistance(VehicleItineraryDao vehicleItineraryManager, PlannedDemandDao plannedDemandManager) {
+    public int computeTruckDistance() {
         int truckDistance = 0;
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
@@ -348,7 +347,6 @@ public class Planning implements Serializable {
                 }
             }
             if (tmpMaxTrucksUsed > maxTrucksUsed) {
-                System.err.println(maxTrucksUsed + " " + tmpMaxTrucksUsed);
                 maxTrucksUsed = tmpMaxTrucksUsed;
             }
         }
@@ -369,8 +367,6 @@ public class Planning implements Serializable {
                 }
             }
         }
-        System.err.println(techniciansList);
-
         return techniciansList.size();
     }
 
@@ -382,11 +378,11 @@ public class Planning implements Serializable {
      */
     public int computeIdleMachineCosts() {
         int idleMachinesCost = 0;
-        for(PlannedDemand demand : plannedDemands) {
+        for (PlannedDemand demand : plannedDemands) {
             int deliveryDay = demand.getVehicleItinerary().getDayNumber();
             int installationDay = demand.getTechnicianItinerary().getDayNumber();
             int uselessDays = installationDay - deliveryDay;
-            if(uselessDays > 1) {
+            if (uselessDays > 1) {
                 idleMachinesCost += (uselessDays - 1) * demand.getMachine().getPenalty() * demand.getDemand().getNbMachines();
             }
         }

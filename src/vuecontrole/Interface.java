@@ -42,7 +42,7 @@ public class Interface extends javax.swing.JFrame {
         initialisationWindow();
         this.setVisible(true);  //Display the window
         refreshComboBox();
-        jTree1.setModel(null); 
+        jTree1.setModel(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -207,8 +207,8 @@ public class Interface extends javax.swing.JFrame {
             PlanningDao planningManager = factory.getPlanningDao();
 
             Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
-            Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(),instance);
-            if(planning != null){
+            Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
+            if (planning != null) {
                 //the solution is already calculated
                 JFileChooser input = new JFileChooser();
                 input.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -227,11 +227,10 @@ public class Interface extends javax.swing.JFrame {
                         System.err.println("ERROR : " + ex);
                     }
                 }
-            }else{
+            } else {
                 JOptionPane d = new JOptionPane();
                 d.showMessageDialog(this, "This solution is not generated");
-            
-                
+
             }
         }
     }//GEN-LAST:event_jButtonDownloadActionPerformed
@@ -259,9 +258,9 @@ public class Interface extends javax.swing.JFrame {
                 System.out.println(path);
                 Instance instance = ReadInstance.readInstance(path);
                 refreshComboBox();
-                path = path.replace("\\\\","\\");
+                path = path.replace("\\\\", "\\");
                 JOptionPane d = new JOptionPane();
-                d.showMessageDialog(this, "Instance uploaded from :\n"+path);
+                d.showMessageDialog(this, "Instance uploaded from :\n" + path);
             }
         }
     }//GEN-LAST:event_jButtonUploadActionPerformed
@@ -272,25 +271,25 @@ public class Interface extends javax.swing.JFrame {
 
     /**
      * Check if every commands had been installed
-     * @param planning 
+     *
+     * @param planning
      */
-    public void checkPlannedDemand(Planning planning){
-        if(jComboBoxInstances.getSelectedItem() != null &&
-           jComboBoxSolutions.getSelectedItem() != null){
-            
+    public void checkPlannedDemand(Planning planning) {
+        if (jComboBoxInstances.getSelectedItem() != null
+                && jComboBoxSolutions.getSelectedItem() != null) {
+
             DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
             PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
-            
+
             Collection<PlannedDemand> plannedDemand = plannedDemandManager.findByStatedemandAndPlanning(0, planning);
-            if(!plannedDemand.isEmpty()){
+            if (!plannedDemand.isEmpty()) {
                 JOptionPane d = new JOptionPane();
                 d.showMessageDialog(this, "WARNING : Every commands are not installed.");
             }
-            
-            
+
         }
     }
-    
+
     private void jButtonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateActionPerformed
         if (jComboBoxInstances.getSelectedItem() != null
                 && jComboBoxSolutions.getSelectedItem() != null) {
@@ -303,13 +302,15 @@ public class Interface extends javax.swing.JFrame {
             Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
 
             //System.out.println(instance);
-            Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(),instance);
+            Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
             // This solution doesn't exist yet for this instance
             if (planning == null) {
                 switch (jComboBoxSolutions.getSelectedItem().toString()) {
                     case "MinimalSolution":
                         try {
-                            minimalSolution(instance);
+                            HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
+                            heur.minimalSolution();
+//                            minimalSolution(instance);
                             displayTree();
                             generateButtonStatus();
                             JOptionPane d = new JOptionPane();
@@ -321,7 +322,7 @@ public class Interface extends javax.swing.JFrame {
                         }
                         break;
                 }
-            }else{
+            } else {
                 //the solution is already generated
                 JOptionPane d = new JOptionPane();
                 d.showMessageDialog(this, "This solution is already generated");
@@ -346,31 +347,32 @@ public class Interface extends javax.swing.JFrame {
 
     /**
      * If the solution is already generated then return true
-     * @return 
+     *
+     * @return
      */
-    public void generateButtonStatus(){
-        
-        if(jComboBoxInstances.getSelectedItem() != null &&
-           jComboBoxSolutions.getSelectedItem() != null){
-            
+    public void generateButtonStatus() {
+
+        if (jComboBoxInstances.getSelectedItem() != null
+                && jComboBoxSolutions.getSelectedItem() != null) {
+
             DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
             InstanceDao instancemanager = factory.getInstanceDao();
             PlanningDao planningManager = factory.getPlanningDao();
             Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
-            Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(),instance);
+            Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
             // This solution for this instance is already generated
-            if(planning != null){
+            if (planning != null) {
                 jButtonGenerate.setEnabled(false);
                 jButtonGenerate.setText("Already Generated");
-            }else{
+            } else {
                 jButtonGenerate.setEnabled(true);
                 jButtonGenerate.setText("Generate");
             }
-                
+
         }
     }
-    
-    public void fillComboBoxDataset(){
+
+    public void fillComboBoxDataset() {
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
         InstanceDao instancemanager = factory.getInstanceDao();
@@ -384,23 +386,23 @@ public class Interface extends javax.swing.JFrame {
         }
         jComboBoxDataset.setModel(dcbm);
     }
-    
-    public void fillComboBoxInstances(){
+
+    public void fillComboBoxInstances() {
 
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
         InstanceDao instancemanager = factory.getInstanceDao();
         if (jComboBoxDataset.getSelectedItem() != null) {
             Collection<Instance> instanceList = instancemanager.findByDataset(jComboBoxDataset.getSelectedItem().toString());
-            for(Instance i : instanceList){
+            for (Instance i : instanceList) {
                 dcbm.addElement(i.getName());
             }
             jComboBoxInstances.setModel(dcbm);
         }
         generateButtonStatus();
     }
-    
-    public void refreshComboBox(){
+
+    public void refreshComboBox() {
         fillComboBoxDataset();
         fillComboBoxInstances();
         System.out.println("ComboBox REFRESHED");
@@ -430,78 +432,77 @@ public class Interface extends javax.swing.JFrame {
 
             Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
 
-          Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(),instance);
+            Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
             VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
             PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
-        
+
             DefaultMutableTreeNode root = new DefaultMutableTreeNode(instance.getName());
 
-            if(planning == null){
+            if (planning == null) {
                 // If the planning is not genereted yet
-                    JOptionPane d = new JOptionPane();
-                    d.showMessageDialog(this, "This solution is not generated");
-            }else{
+                JOptionPane d = new JOptionPane();
+                d.showMessageDialog(this, "This solution is not generated");
+            } else {
                 //if the planning is already generated
                 DefaultMutableTreeNode newNode = new DefaultMutableTreeNode("VALUES");
-                int truckDistance = planning.computeTruckDistance(vehicleItineraryManager, plannedDemandManager),
-                    truckDays = planning.computeNbTruckDays(),
-                    trucksUsed = planning.computeMaxTrucksUsed(),
-                    technicianDistance = planning.computeTechnicianDistance(),
-                    technicianDays = planning.computeNbTechnicianDays(),
-                    techniciansUsed = planning.computeTotalNbTechniciansUsed(),
-                    idleMachineCosts = planning.computeIdleMachineCosts(),
-                    totalCost = (int) (planning.getCost());
+                int truckDistance = planning.computeTruckDistance(),
+                        truckDays = planning.computeNbTruckDays(),
+                        trucksUsed = planning.computeMaxTrucksUsed(),
+                        technicianDistance = planning.computeTechnicianDistance(),
+                        technicianDays = planning.computeNbTechnicianDays(),
+                        techniciansUsed = planning.computeTotalNbTechniciansUsed(),
+                        idleMachineCosts = planning.computeIdleMachineCosts();
+                double totalCost = planning.getCost();
 
-                DefaultMutableTreeNode newNode2 = new DefaultMutableTreeNode("TRUCK_DISTANCE = "+ truckDistance);
+                DefaultMutableTreeNode newNode2 = new DefaultMutableTreeNode("TRUCK_DISTANCE = " + truckDistance);
                 newNode.add(newNode2);
-                newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TRUCK_DAYS = "+ truckDays);
+                newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TRUCK_DAYS = " + truckDays);
                 newNode.add(newNode2);
-                newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TRUCKS_USED = "+ trucksUsed);
+                newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TRUCKS_USED = " + trucksUsed);
                 newNode.add(newNode2);
-                newNode2 = new DefaultMutableTreeNode("TECHNICIAN_DISTANCE = "+ technicianDistance);
+                newNode2 = new DefaultMutableTreeNode("TECHNICIAN_DISTANCE = " + technicianDistance);
                 newNode.add(newNode2);
-                newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TECHNICIAN_DAYS = "+ technicianDays);
+                newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TECHNICIAN_DAYS = " + technicianDays);
                 newNode.add(newNode2);
-                newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TECHNICIANS_USED = "+ techniciansUsed);
+                newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TECHNICIANS_USED = " + techniciansUsed);
                 newNode.add(newNode2);
-                newNode2 = new DefaultMutableTreeNode("IDLE_MACHINE_COSTS  = "+ idleMachineCosts);
+                newNode2 = new DefaultMutableTreeNode("IDLE_MACHINE_COSTS  = " + idleMachineCosts);
                 newNode.add(newNode2);
-                newNode2 = new DefaultMutableTreeNode("TOTAL_COST = "+ totalCost);
+                newNode2 = new DefaultMutableTreeNode("TOTAL_COST = " + String.format("%.0f", totalCost));
                 newNode.add(newNode2);
                 root.add(newNode);
 
                 for (DayHorizon day : planning.getDays()) {
-                    newNode = new DefaultMutableTreeNode("DAY "+day.getDayNumber());
+                    newNode = new DefaultMutableTreeNode("DAY " + day.getDayNumber());
 
-                    newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TRUCKS  = "+ day.computeTruckUsed());
-                    if(day.computeTruckUsed() > 0){
+                    newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TRUCKS  = " + day.computeTruckUsed());
+                    if (day.computeTruckUsed() > 0) {
                         String display1 = day.displayTruckActivity();
                         String[] display2 = display1.split("\n");
-                        for(int i =0; i < display2.length; i++){
+                        for (int i = 0; i < display2.length; i++) {
                             DefaultMutableTreeNode newNode3 = new DefaultMutableTreeNode(display2[i]);
                             newNode2.add(newNode3);
                         }
                     }
                     newNode.add(newNode2);
 
-                    newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TECHNICIANS  = "+ day.computeTechnicianUsed());
-                    if(day.computeTechnicianUsed() > 0){
+                    newNode2 = new DefaultMutableTreeNode("NUMBER_OF_TECHNICIANS  = " + day.computeTechnicianUsed());
+                    if (day.computeTechnicianUsed() > 0) {
                         String display1 = day.displayTechniciansActivity();
                         String[] display2 = display1.split("\n");
-                        for(int i =0; i < display2.length; i++){
+                        for (int i = 0; i < display2.length; i++) {
                             DefaultMutableTreeNode newNode3 = new DefaultMutableTreeNode(display2[i]);
                             newNode2.add(newNode3);
                         }
                     }
-                    newNode.add(newNode2);  
+                    newNode.add(newNode2);
                     root.add(newNode);
                 }
-                DefaultTreeModel tm= new DefaultTreeModel(root);
+                DefaultTreeModel tm = new DefaultTreeModel(root);
                 jTree1.setModel(tm);
                 for (int i = 0; i < jTree1.getRowCount(); i++) {
                     jTree1.expandRow(i);
                 }
-
 
             }
         }

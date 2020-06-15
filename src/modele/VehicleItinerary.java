@@ -233,7 +233,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         if (!this.addDemand(d)) {
             return false;
         }
-
         double costUpdated = this.computeCostItinerary();
         this.setCost(costUpdated);
         this.setCapacityUsed(capacityUsed + totalSizeMachinesRequested);

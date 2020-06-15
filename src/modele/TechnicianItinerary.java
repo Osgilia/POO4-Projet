@@ -182,20 +182,16 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         int dayNumber = this.getDayNumber();
         int deliveryDayNumber = d.getVehicleItinerary().getDayNumber();
         if (dayNumber <= deliveryDayNumber) { // installation possible the day after the delivery
-
             return false;
         }
         if (nbDemands + 1 > this.technician.getDemandMax()) {
             return false;
         }
-        double distanceUpdated = this.computeDistanceDemands(d);
-        if (distanceUpdated > this.technician.getDistMax()) {
+        if (!this.technician.canInstallDemand(d, dayNumber)) {
             return false;
         }
-        if (!this.technician.canInstallDemand(d, dayNumber)) {
-            if (dayNumber > 10) {
-                System.err.println(" DAY " + dayNumber + " DEMAND " + d.getId() + " TECHNICIAN IS ON VACATION");
-            }
+        double distanceUpdated = this.computeDistanceDemands(d);
+        if (distanceUpdated > this.technician.getDistMax()) {
             return false;
         }
         if (!this.addDemand(d)) {
@@ -220,7 +216,6 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
             return 0.0;
         }
         this.technician.addDestination(pointsItinerary.get(0).getPoint(), this.technician.computeDistance(pointsItinerary.get(0).getPoint()));
-
         double distance = this.technician.getDistanceTo(pointsItinerary.get(0).getPoint());
         for (int i = 1; i < pointsItinerary.size(); i++) {
             Point previousPoint = pointsItinerary.get(i - 1).getPoint();
@@ -235,7 +230,6 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
             pointsItinerary.get(pointsItinerary.size() - 1).getPoint().addDestination(this.technician, pointsItinerary.get(pointsItinerary.size() - 1).getPoint().computeDistance(this.technician));
             distance += pointsItinerary.get(pointsItinerary.size() - 1).getPoint().getDistanceTo(this.technician);
         }
-
         return distance;
     }
 

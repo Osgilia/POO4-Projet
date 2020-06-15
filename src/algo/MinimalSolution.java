@@ -103,9 +103,6 @@ public class MinimalSolution {
             }
             daysManager.update(day);
         }
-
         planningManager.update(planning);
-        //System.out.println(planning);
-        // PrintSolution.print(instance, planning);
     }
 }

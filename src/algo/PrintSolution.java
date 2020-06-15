@@ -31,16 +31,16 @@ public class PrintSolution {
 
         VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
         PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
-        
-        int truckDistance = planning.computeTruckDistance(vehicleItineraryManager, plannedDemandManager),
+
+        int truckDistance = planning.computeTruckDistance(),
                 truckDays = planning.computeNbTruckDays(),
                 trucksUsed = planning.computeMaxTrucksUsed(),
                 technicianDistance = planning.computeTechnicianDistance(),
                 technicianDays = planning.computeNbTechnicianDays(),
                 techniciansUsed = planning.computeTotalNbTechniciansUsed(),
-                idleMachineCosts = planning.computeIdleMachineCosts(),
-                totalCost = (int) (planning.getCost());
-
+                idleMachineCosts = planning.computeIdleMachineCosts();
+        
+        double totalCost = planning.getCost();
         // Outputs the solution in text file
         // For each day in planning ..
         FileWriter fileToPrint = new FileWriter(path);
@@ -56,7 +56,7 @@ public class PrintSolution {
             printWriter.printf("NUMBER_OF_TECHNICIAN_DAYS = %d\n", technicianDays);
             printWriter.printf("NUMBER_OF_TECHNICIANS_USED = %d\n", techniciansUsed);
             printWriter.printf("IDLE_MACHINE_COSTS  = %d\n", idleMachineCosts);
-            printWriter.printf("TOTAL_COST = %d\n", totalCost);
+            printWriter.printf("TOTAL_COST = %s\n", String.format("%.0f", totalCost));
 
             for (DayHorizon day : planning.getDays()) {
                 printWriter.printf("DAY = %d\n", day.getDayNumber());
