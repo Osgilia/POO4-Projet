@@ -32,16 +32,18 @@ public class PrintSolution {
         VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
         PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
 
-        int truckDistance = planning.computeTruckDistance();
-        int truckDays = planning.computeNbTruckDays();
-        int trucksUsed = planning.computeMaxTrucksUsed();
-        int technicianDistance = planning.computeTechnicianDistance();
-        int technicianDays = planning.computeNbTechnicianDays();
-        int techniciansUsed = planning.computeTotalNbTechniciansUsed();
-        int idleMachineCosts = planning.computeIdleMachineCosts();
 
-        double totalCost = planning.getCost();
-        // Outputs the solution in text file
+        int truckDistance = planning.computeTruckDistance(),
+                truckDays = planning.computeNbTruckDays(),
+                trucksUsed = planning.computeMaxTrucksUsed(),
+                technicianDistance = planning.computeTechnicianDistance(),
+                technicianDays = planning.computeNbTechnicianDays(),
+                techniciansUsed = planning.computeTotalNbTechniciansUsed(),
+                idleMachineCosts = planning.computeIdleMachineCosts();
+        
+        double totalCost = planning.getCost() + (double) idleMachineCosts;
+
+      // Outputs the solution in text file
         // For each day in planning ..
         FileWriter fileToPrint = new FileWriter(path);
         PrintWriter printWriter = new PrintWriter(fileToPrint);

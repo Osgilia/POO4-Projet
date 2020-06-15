@@ -119,14 +119,17 @@ public class DayHorizon implements Serializable {
      */
     public void updateCost() {
         double costDay = 0.0;
+        //we check all the day's itineraries
         for (Itinerary itinerary : this.itineraries) {
-            if (itinerary instanceof VehicleItinerary) {
+            //if it's a vehicule itinerary and is used
+            if (itinerary instanceof VehicleItinerary && !(((VehicleItinerary) itinerary).getCustomersDemands().isEmpty())) {
                 costDay += ((VehicleItinerary) itinerary).computeCostItinerary();
-            }
-            if (itinerary instanceof TechnicianItinerary) {
+            } else if (itinerary instanceof TechnicianItinerary && !(((TechnicianItinerary) itinerary).getCustomersDemands().isEmpty())) {
+                //if it's a technician  itinerary and is used
                 costDay += ((TechnicianItinerary) itinerary).computeCostItinerary();
             }
         }
+        //the costDay is updated
         this.cost = costDay;
         this.planning.updateCost();
     }

@@ -231,21 +231,35 @@ public class Planning implements Serializable {
      */
     public void updateCost() {
         double costPlanning = 0.0;
-        List<Integer> techniciansUsed = new ArrayList<>();
+
+        Set<Technician> techniciansUsed = new HashSet<>();
+
         for (DayHorizon day : days) {
+            //we get the day costs
             costPlanning += day.getCost();
+
+            //we want to know the used cost
             for (Itinerary itinerary : day.getItineraries()) {
+                //if it's a technician Itinerary
                 if (itinerary instanceof TechnicianItinerary) {
-                    Technician technician = ((TechnicianItinerary) itinerary).getTechnician();
-                    if (!techniciansUsed.contains(technician.getIdPoint()) 
-                            && ((TechnicianItinerary) itinerary).getCustomersDemands().size() > 0) {
-                        costPlanning += technician.getUsageCost();
-                        techniciansUsed.add(technician.getIdPoint());
+
+                    //if the itinerary is used and the technician is not already in the list
+                    if (!(((TechnicianItinerary) itinerary).getCustomersDemands().isEmpty())) {
+                        //we add the technician to the list
+                        techniciansUsed.add(((TechnicianItinerary) itinerary).getTechnician());
                     }
                 }
             }
         }
-        costPlanning += this.getVehicleInstance().getUsageCost() * this.computeNbTruckDays();
+
+
+        for (Technician t : techniciansUsed) {
+            costPlanning += t.getUsageCost();
+        }
+        //on recupere le cout journalier des camions
+        costPlanning += this.getVehicleInstance().getUsageCost() * this.computeMaxTrucksUsed();
+
+        //costPlanning += (double) this.computeIdleMachineCosts();
         this.cost = costPlanning;
     }
 

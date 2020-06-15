@@ -237,6 +237,8 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
+
+        // on créer une premiere route entre le technicien et  le premeir point à livrer
         this.technician.addDestination(pointsItinerary.get(0).getPoint(), this.technician.computeDistance(pointsItinerary.get(0).getPoint()));
         double distance = this.technician.getDistanceTo(pointsItinerary.get(0).getPoint());
         for (int i = 1; i < pointsItinerary.size(); i++) {
@@ -275,11 +277,12 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
      * @return double : the cost of the itinerary
      */
     protected double computeCostItinerary() {
+        //we get the sum of the itinerary distances
         double distanceDemands = this.computeDistanceDemands(new ArrayList<>(super.getPoints()));
+        //we calculate the distance cost for the itinerary
         double newCost = distanceDemands * this.technician.getDistanceCost();
-        if (this.customersDemands.size() > 0) { // if used
-            newCost += this.technician.getDayCost();
-        }
+        //we add the Day Cost of the related technician (cost for the use of this technician for a day)
+        newCost += this.technician.getDayCost();
         return newCost;
     }
 }
