@@ -177,14 +177,6 @@ public class Vehicle implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 89 * hash + Objects.hashCode(this.id);
-        hash = 89 * hash + (int) (Double.doubleToLongBits(this.capacity) ^ (Double.doubleToLongBits(this.capacity) >>> 32));
-        hash = 89 * hash + (int) (Double.doubleToLongBits(this.distanceMax) ^ (Double.doubleToLongBits(this.distanceMax) >>> 32));
-        hash = 89 * hash + (int) (Double.doubleToLongBits(this.distanceCost) ^ (Double.doubleToLongBits(this.distanceCost) >>> 32));
-        hash = 89 * hash + (int) (Double.doubleToLongBits(this.dayCost) ^ (Double.doubleToLongBits(this.dayCost) >>> 32));
-        hash = 89 * hash + (int) (Double.doubleToLongBits(this.usageCost) ^ (Double.doubleToLongBits(this.usageCost) >>> 32));
-        hash = 89 * hash + Objects.hashCode(this.depot);
-        hash = 89 * hash + Objects.hashCode(this.vInstance);
         return hash;
     }
 

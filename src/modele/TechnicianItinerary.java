@@ -219,16 +219,20 @@ public class TechnicianItinerary extends Itinerary implements Serializable {
         if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
+        this.technician.addDestination(pointsItinerary.get(0).getPoint(), this.technician.computeDistance(pointsItinerary.get(0).getPoint()));
+
         double distance = this.technician.getDistanceTo(pointsItinerary.get(0).getPoint());
         for (int i = 1; i < pointsItinerary.size(); i++) {
             Point previousPoint = pointsItinerary.get(i - 1).getPoint();
             if (!previousPoint.equals(pointsItinerary.get(i))) {
+                previousPoint.addDestination(pointsItinerary.get(i).getPoint(), previousPoint.computeDistance(pointsItinerary.get(i).getPoint()));
                 distance += previousPoint.getDistanceTo(pointsItinerary.get(i).getPoint());
             }
         }
         if (pointsItinerary.size() == 1) {
             distance += distance;
         } else {
+            pointsItinerary.get(pointsItinerary.size() - 1).getPoint().addDestination(this.technician, pointsItinerary.get(pointsItinerary.size() - 1).getPoint().computeDistance(this.technician));
             distance += pointsItinerary.get(pointsItinerary.size() - 1).getPoint().getDistanceTo(this.technician);
         }
 

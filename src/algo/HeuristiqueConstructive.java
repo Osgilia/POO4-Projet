@@ -1,29 +1,53 @@
 package algo;
 
-import dao.*;
+import dao.DaoFactory;
+import dao.DayHorizonDao;
+import dao.DemandDao;
+import dao.InstanceDao;
 import dao.PersistenceType;
+import dao.PlannedDemandDao;
 import dao.PlanningDao;
+import dao.TechnicianDao;
+import dao.TechnicianItineraryDao;
+import dao.VehicleItineraryDao;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import modele.*;
+import modele.DayHorizon;
+import modele.Instance;
+import modele.Itinerary;
+import modele.PlannedDemand;
+import modele.Planning;
+import modele.Technician;
+import modele.TechnicianItinerary;
+import modele.Vehicle;
+import modele.VehicleItinerary;
 
 /**
- * Sequence schedule of a minimal solution
  *
- * @author Henri, Lucas, Louis
+ * @author Lucas, Henri, Louis
  */
-public class MinimalSolution {
+public class HeuristiqueConstructive {
 
-    public static void minimalSolution(Instance instance) throws IOException {
+    private Instance instance;
 
+    /**
+     * Parameterized constructor
+     *
+     * @param instance
+     */
+    public HeuristiqueConstructive(Instance instance) {
+        this.instance = instance;
+    }
+
+    public void minimalSolution() throws IOException {
         //DAO Manager initialisation
         DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
         InstanceDao instancemanager = factory.getInstanceDao();
         PlanningDao planningManager = factory.getPlanningDao();
-        VehicleDao vehicleManager = factory.getVehicleDao();
         VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
         TechnicianDao technicianManager = factory.getTechnicianDao();
         TechnicianItineraryDao technicianItineraryManager = factory.getTechnicianItineraryDao();
@@ -31,19 +55,17 @@ public class MinimalSolution {
         DayHorizonDao daysManager = factory.getDayHorizonDao();
         PlannedDemandDao plannedDemandManager = factory.getPlannedDemandDao();
 
-        // Instance instance = instancemanager.findById(instanceId);
         // Initiate planning
         Planning planning = InitiatePlanning.createPlanning(instance, instancemanager, planningManager, demandManager, plannedDemandManager, "MinimalSolution");
 
         // Get vehicle information
         Vehicle vehicleInstance = instance.getVehicle();
 
-//        System.out.println(vehicleInstance);
         //create the first sued vehicle
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicleInstance);
-        System.out.println(vehicles);
         List<PlannedDemand> plannedDemands = planning.getPlannedDemands();
+
         // Starts requests sequencing
         for (int i = 1; i <= instance.getNbDays(); i++) {
             DayHorizon day = new DayHorizon(i);
@@ -99,13 +121,12 @@ public class MinimalSolution {
                         }
                     }
                 }
-//                plannedDemandManager.update(demand);
+                plannedDemandManager.create(demand);
             }
             daysManager.update(day);
         }
-
+        
         planningManager.update(planning);
-        //System.out.println(planning);
-        // PrintSolution.print(instance, planning);
+        System.out.println(planning);
     }
 }

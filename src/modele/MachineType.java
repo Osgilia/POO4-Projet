@@ -61,11 +61,11 @@ public class MachineType implements Serializable {
     /**
      * Demands associated to the machine type
      */
-    @OneToMany(mappedBy = "machine",
-            cascade = {
-                CascadeType.PERSIST
-            })
-    private List<Demand> demandsMachineType;
+//    @OneToMany(mappedBy = "machine",
+//            cascade = {
+//                CascadeType.PERSIST
+//            })
+//    private List<Demand> demandsMachineType;
 
     /**
      * Instance using this machine
@@ -86,7 +86,7 @@ public class MachineType implements Serializable {
         this.size = 0;
         this.penalty = 0.0;
         this.certifiedTechnicians = new HashSet<>();
-        this.demandsMachineType = new ArrayList<>();
+//        this.demandsMachineType = new ArrayList<>();
     }
 
     /**
@@ -125,7 +125,6 @@ public class MachineType implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 23 * hash + Objects.hashCode(this.id);
         return hash;
     }
 
@@ -180,13 +179,13 @@ public class MachineType implements Serializable {
      * @param demand
      * @return true if success
      */
-    public boolean addDemand(Demand demand) {
-        if (demand != null) {
-            this.demandsMachineType.add(demand);
-            if (this.demandsMachineType.contains(demand)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean addDemand(Demand demand) {
+//        if (demand != null) {
+//            this.demandsMachineType.add(demand);
+//            if (this.demandsMachineType.contains(demand)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 }

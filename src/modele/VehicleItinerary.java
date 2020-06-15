@@ -75,10 +75,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.vehicle);
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.cost) ^ (Double.doubleToLongBits(this.cost) >>> 32));
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.distanceTravelled) ^ (Double.doubleToLongBits(this.distanceTravelled) >>> 32));
-        hash = 97 * hash + (int) (Double.doubleToLongBits(this.capacityUsed) ^ (Double.doubleToLongBits(this.capacityUsed) >>> 32));
         return hash;
     }
 
@@ -271,16 +267,17 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         if (pointsItinerary.isEmpty()) {
             return 0.0;
         }
+        this.vehicle.getDepot().addDestination(pointsItinerary.get(0).getPoint(), this.vehicle.getDepot().computeDistance(pointsItinerary.get(0).getPoint()));
         double distance = this.vehicle.getDepot().getDistanceTo(pointsItinerary.get(0).getPoint());
-
         for (int i = 1; i < pointsItinerary.size(); i++) {
             Point previousPoint = pointsItinerary.get(i - 1).getPoint();
             if (!previousPoint.equals(pointsItinerary.get(i))) {
+                previousPoint.addDestination(pointsItinerary.get(i).getPoint(), previousPoint.computeDistance(pointsItinerary.get(i).getPoint()));
                 distance += previousPoint.getDistanceTo(pointsItinerary.get(i).getPoint());
             }
         }
+        pointsItinerary.get(pointsItinerary.size() - 1).getPoint().addDestination(this.vehicle.getDepot(), pointsItinerary.get(pointsItinerary.size() - 1).getPoint().computeDistance(this.vehicle.getDepot()));
         distance += pointsItinerary.get(pointsItinerary.size() - 1).getPoint().getDistanceTo(this.vehicle.getDepot());
-
         return distance;
     }
 
@@ -296,7 +293,6 @@ public class VehicleItinerary extends Itinerary implements Serializable {
         pointsItinerary.add(new ItineraryPoint(this, d.getCustomer(), pointsItinerary.size()));
         return this.computeDistanceDemands(pointsItinerary);
     }
-
 
     /**
      * Clears data related to the vehicle itinerary

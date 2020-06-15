@@ -31,10 +31,7 @@ public class DayHorizon implements Serializable {
     @ManyToOne
     private Planning planning;
 
-    @OneToMany(mappedBy = "dayHorizon", cascade = {
-                CascadeType.PERSIST
-            }
-    )
+    @OneToMany(mappedBy = "dayHorizon")
     private List<Itinerary> itineraries;
 
     @Column(name = "NUMBER")
@@ -65,9 +62,6 @@ public class DayHorizon implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 71 * hash + Objects.hashCode(this.id);
-        hash = 71 * hash + Objects.hashCode(this.planning);
-        hash = 71 * hash + this.dayNumber;
         return hash;
     }
 
