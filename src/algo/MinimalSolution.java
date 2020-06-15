@@ -105,7 +105,7 @@ public class MinimalSolution {
         }
 
         planningManager.update(planning);
-        System.out.println(planning);
+        //System.out.println(planning);
         // PrintSolution.print(instance, planning);
     }
 }
