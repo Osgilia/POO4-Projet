@@ -20,7 +20,7 @@ public class ItineraryPoint implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @JoinColumn(name = "ITINERARY_ID", referencedColumnName = "ID")
@@ -62,10 +62,6 @@ public class ItineraryPoint implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 17 * hash + Objects.hashCode(this.id);
-        hash = 17 * hash + Objects.hashCode(this.itinerary);
-        hash = 17 * hash + Objects.hashCode(this.point);
-        hash = 17 * hash + this.position;
         return hash;
     }
 

@@ -31,10 +31,10 @@ public class DayHorizon implements Serializable {
     @ManyToOne
     private Planning planning;
 
-    @OneToMany(mappedBy = "dayHorizon",
-            cascade = {
+    @OneToMany(mappedBy = "dayHorizon", cascade = {
                 CascadeType.PERSIST
-            })
+            }
+    )
     private List<Itinerary> itineraries;
 
     @Column(name = "NUMBER")
@@ -65,8 +65,6 @@ public class DayHorizon implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 37 * hash + Objects.hashCode(this.id);
-        hash = 37 * hash + this.dayNumber;
         return hash;
     }
 
@@ -86,6 +84,9 @@ public class DayHorizon implements Serializable {
             return false;
         }
         if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.planning, other.planning)) {
             return false;
         }
         return true;
@@ -216,7 +217,7 @@ public class DayHorizon implements Serializable {
                                 for (PlannedDemand d2 : plannedDemands) {
                                     if (d2.getDemand().getCustomer().equals(p.getPoint()) && !demandsDisplayed.contains(d2)) {
                                         demandsDisplayed.add(d2);
-                                        str += " " + d2.getDemand().getId();
+                                        str += " " + d2.getDemand().getIdDemand();
                                     }
                                 }
                             }
@@ -247,7 +248,7 @@ public class DayHorizon implements Serializable {
                             for (PlannedDemand d2 : plannedDemands) {
                                 if (d2.getDemand().getCustomer().equals(p.getPoint()) && !demandsDisplayed.contains(d2)) {
                                     demandsDisplayed.add(d2);
-                                    str += " " + d2.getDemand().getId();
+                                    str += " " + d2.getDemand().getIdDemand();
                                 }
                             }
                         }

@@ -34,11 +34,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @DiscriminatorValue("2")
 public class TechnicianItinerary extends Itinerary implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @ManyToOne
     @JoinColumn(name = "TECHNICIAN_ID")
     private Technician technician;

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,11 +39,11 @@ public class Route implements Serializable {
     private Double distance;
 
     @JoinColumn(name = "NARRIVEE", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Point arrivee;
 
     @JoinColumn(name = "NDEPART", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Point depart;
 
     /**
@@ -72,9 +73,6 @@ public class Route implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 67 * hash + Objects.hashCode(this.distance);
-        hash = 67 * hash + Objects.hashCode(this.arrivee);
-        hash = 67 * hash + Objects.hashCode(this.depart);
         return hash;
     }
 

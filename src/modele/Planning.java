@@ -64,7 +64,7 @@ public class Planning implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "planning")
     private List<DayHorizon> days;
 
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "planning")
+    @OneToMany(mappedBy = "planning")
     private List<PlannedDemand> plannedDemands;
 
     /**
@@ -196,15 +196,13 @@ public class Planning implements Serializable {
      * @param demand
      * @return true if success
      */
-    public boolean addDemand(Demand demand, PlannedDemandDao plannedDemandmanager, DemandDao demandManager) {
+    public boolean addDemand(Demand demand, PlannedDemandDao plannedDemandmanager) {
         if (demand != null) {
-            Demand realDemand = demandManager.find(demand.getId());
-            PlannedDemand plannedDemand = new PlannedDemand(this, realDemand);
+            PlannedDemand plannedDemand = new PlannedDemand(this, demand);
             this.plannedDemands.add(plannedDemand);
             if (this.plannedDemands.contains(plannedDemand)) {
-                boolean success = realDemand.addPlannedDemand(plannedDemand);
                 plannedDemandmanager.create(plannedDemand);
-                return success;
+                return true;
             }
         }
         return false;
@@ -270,14 +268,10 @@ public class Planning implements Serializable {
         int truckDistance = 0;
         for (DayHorizon day : days) {
             for (Itinerary itinerary : day.getItineraries()) {
-                if (day.getDayNumber() == 1) {
-                    System.err.println(itinerary);
-                }
                 if (itinerary instanceof VehicleItinerary) {
                     truckDistance += ((VehicleItinerary) itinerary).computeDistanceDemands(itinerary.getPoints());
                 }
             }
-            System.out.println(truckDistance);
         }
         return truckDistance;
     }

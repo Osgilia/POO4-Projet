@@ -39,6 +39,9 @@ public class Demand implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    
+    @Column(name = "IDDEMAND")
+    private Integer idDemand;
 
     /**
      * First day of the delivery window
@@ -51,11 +54,11 @@ public class Demand implements Serializable {
     private int lastDay;
 
     @JoinColumn(name = "NCUSTOMER")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Customer customer;
 
     @JoinColumn(name = "NMACHINE")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private MachineType machine;
 
     @Column(name = "NBMACHINES")
@@ -67,7 +70,8 @@ public class Demand implements Serializable {
     @OneToMany(mappedBy = "demand",
             cascade = {
                 CascadeType.PERSIST
-            })
+            }
+    )
     private List<PlannedDemand> plannedDemands;
 
     /**
@@ -94,7 +98,7 @@ public class Demand implements Serializable {
      */
     public Demand(int id, int firstDay, int lastDay, Customer customer, MachineType machine, int nbMachines) {
         this();
-        this.id = id;
+        this.idDemand = id;
         this.firstDay = firstDay;
         this.lastDay = lastDay;
         this.customer = customer;
@@ -104,6 +108,10 @@ public class Demand implements Serializable {
 
     public Integer getId() {
         return id;
+    }
+
+    public Integer getIdDemand() {
+        return idDemand;
     }
     
     @Override
@@ -131,6 +139,12 @@ public class Demand implements Serializable {
             return false;
         }
         if (this.nbMachines != other.nbMachines) {
+            return false;
+        }
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.idDemand, other.idDemand)) {
             return false;
         }
         if (!Objects.equals(this.customer, other.customer)) {

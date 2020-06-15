@@ -25,37 +25,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 @DiscriminatorValue("1")
 public class Depot extends Point implements Serializable {
 
-    @OneToMany(mappedBy = "depot")
-    private Set<Vehicle> vehicleSet;
-
     public Depot() {
         super();
-        this.vehicleSet = new HashSet<>();
     }
 
     public Depot(Integer id, Integer idLocation, double x, double y, Instance instance) {
         super(id, idLocation, 1, x, y, instance);
-        this.vehicleSet = new HashSet<>();
     }
 
     @Override
     public String toString() {
         return "Depot : " + super.toString();
     }
-
-    /**
-     * Adds a vehicle to the depot
-     *
-     * @param v : vehicle to add
-     * @return true if success
-     */
-    /*public boolean addVehicle(Vehicle v) {
-        if (v != null) {
-            if (this.vehicleSet.add(v)) {
-                v.setDepot(this);
-                return true;
-            }
-        }
-        return false;
-    }*/
 }
