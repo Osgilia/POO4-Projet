@@ -1,8 +1,6 @@
 package modele;
 
-import dao.DemandDao;
 import dao.PlannedDemandDao;
-import dao.VehicleItineraryDao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
