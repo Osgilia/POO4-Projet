@@ -13,12 +13,10 @@ import dao.VehicleItineraryDao;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import modele.DayHorizon;
 import modele.Instance;
-import modele.Itinerary;
 import modele.PlannedDemand;
 import modele.Planning;
 import modele.Technician;
@@ -44,8 +42,8 @@ public class HeuristiqueConstructive {
     private PlannedDemandDao plannedDemandManager;
     private Vehicle vehicleInstance;
     private List<Vehicle> vehiclesUsed;
-    private List<TechnicianItinerary> technicianItineraries;
-    private List<VehicleItinerary> vehicleItineraries;
+    private Set<TechnicianItinerary> technicianItineraries;
+    private Set<VehicleItinerary> vehicleItineraries;
     private List<PlannedDemand> plannedDemands;
 
     /**
@@ -65,8 +63,8 @@ public class HeuristiqueConstructive {
         this.daysManager = this.factory.getDayHorizonDao();
         this.plannedDemandManager = this.factory.getPlannedDemandDao();
         this.vehicleInstance = instance.getVehicle();
-        this.technicianItineraries = new ArrayList<>();
-        this.vehicleItineraries = new ArrayList<>();
+        this.technicianItineraries = new HashSet<>();
+        this.vehicleItineraries = new HashSet<>();
         this.plannedDemands = new ArrayList<>();
         this.vehiclesUsed = new ArrayList<>();
     }
@@ -86,6 +84,7 @@ public class HeuristiqueConstructive {
                 // if there is enough room in the truck we add the demand to this itinerary
                 // else we create a new used vehicle to carry the demand
                 for (VehicleItinerary vehicleItinerary : this.vehicleItineraries) {
+                    System.out.println(vehicleItinerary);
                     if (vehicleItinerary.checkVehicle(demand)) {
                         notEnoughVehicles = true;
                         continue;
@@ -143,17 +142,17 @@ public class HeuristiqueConstructive {
                 }
             } else if (demand.getStateDemand() == 1) { // if demand is to be installed
                 double bestCost = Double.MAX_VALUE, tmpCost;
-                int bestTechItinerary = 0;
-                for (int itineraryIndex = 0; itineraryIndex < this.technicianItineraries.size(); itineraryIndex++) {
-                    tmpCost = this.technicianItineraries.get(itineraryIndex).checkTechnician(demand);
+                TechnicianItinerary bestTechItinerary = null;
+                for (TechnicianItinerary techItinerary : technicianItineraries) {
+                    tmpCost = techItinerary.checkTechnician(demand);
                     if (bestCost > tmpCost) {
                         bestCost = tmpCost;
-                        bestTechItinerary = itineraryIndex;
+                        bestTechItinerary = techItinerary;
 
                     }
                 }
-                if (this.technicianItineraries.get(bestTechItinerary).addDemandTechnician(demand)) {
-                    this.technicianItineraryManager.create(this.technicianItineraries.get(bestTechItinerary));
+                if (bestTechItinerary != null && bestTechItinerary.addDemandTechnician(demand)) {
+                    this.technicianItineraryManager.create(bestTechItinerary);
                 }
             }
             this.plannedDemandManager.create(demand);
@@ -169,16 +168,16 @@ public class HeuristiqueConstructive {
                 // if there is enough room in the truck we add the demand to this itinerary
                 // else we create a new used vehicle to carry the demand
                 double bestCost = Double.MAX_VALUE, tmpCost;
-                int bestVehicleItinerary = 0;
-                for (int itineraryIndex = 0; itineraryIndex < this.vehicleItineraries.size(); itineraryIndex++) {
-                    if (this.vehicleItineraries.get(itineraryIndex).checkVehicle(demand)) {
+                VehicleItinerary bestVehicleItinerary = null;
+                for (VehicleItinerary itinerary : this.vehicleItineraries) {
+                    if (itinerary.checkVehicle(demand)) {
                         notEnoughVehicles = true;
                         continue;
                     }
-                    tmpCost = this.vehicleItineraries.get(itineraryIndex).computeDistanceDemands(demand);
+                    tmpCost = itinerary.computeDistanceDemands(demand);
                     if (bestCost > tmpCost) {
                         bestCost = tmpCost;
-                        bestVehicleItinerary = itineraryIndex;
+                        bestVehicleItinerary = itinerary;
                     }
                 }
                 if (notEnoughVehicles) {
@@ -188,8 +187,8 @@ public class HeuristiqueConstructive {
                     vehicleItinerary.addDemandVehicle(demand);
                     this.vehicleItineraries.add(vehicleItinerary);
                     this.vehicleItineraryManager.create(vehicleItinerary);
-                } else {
-                    this.vehicleItineraries.get(bestVehicleItinerary).addDemandVehicle(demand);
+                } else if(bestVehicleItinerary != null) {
+                    bestVehicleItinerary.addDemandVehicle(demand);
                 }
             } else if (demand.getStateDemand() == 1) { // if demand is to be installed
                 for (TechnicianItinerary technicianItinerary : this.technicianItineraries) {
@@ -211,41 +210,41 @@ public class HeuristiqueConstructive {
                 // if there is enough room in the truck we add the demand to this itinerary
                 // else we create a new used vehicle to carry the demand
                 double bestCost = Double.MAX_VALUE, tmpCost;
-                int bestVehicleItinerary = 0;
-                for (int itineraryIndex = 0; itineraryIndex < this.vehicleItineraries.size(); itineraryIndex++) {
-                    if (this.vehicleItineraries.get(itineraryIndex).checkVehicle(demand)) {
+                VehicleItinerary bestVehicleItinerary = null;
+                for (VehicleItinerary itinerary : this.vehicleItineraries) {
+                    if (itinerary.checkVehicle(demand)) {
                         notEnoughVehicles = true;
                         continue;
                     }
-                    tmpCost = this.vehicleItineraries.get(itineraryIndex).computeDistanceDemands(demand);
+                    tmpCost = itinerary.computeDistanceDemands(demand);
                     if (bestCost > tmpCost) {
                         bestCost = tmpCost;
-                        bestVehicleItinerary = itineraryIndex;
+                        bestVehicleItinerary = itinerary;
                     }
                 }
                 if (notEnoughVehicles) {
-                   this.vehiclesUsed.add(this.vehicleInstance);
+                    this.vehiclesUsed.add(this.vehicleInstance);
                     VehicleItinerary vehicleItinerary = new VehicleItinerary(this.vehicleInstance);
                     day.addItinerary(vehicleItinerary);
                     vehicleItinerary.addDemandVehicle(demand);
                     this.vehicleItineraries.add(vehicleItinerary);
                     this.vehicleItineraryManager.create(vehicleItinerary);
-                } else {
-                    this.vehicleItineraries.get(bestVehicleItinerary).addDemandVehicle(demand);
+                } else if(bestVehicleItinerary != null) {
+                    bestVehicleItinerary.addDemandVehicle(demand);
                 }
             } else if (demand.getStateDemand() == 1) { // if demand is to be installed
                 double bestCost = Double.MAX_VALUE, tmpCost;
-                int bestTechItinerary = 0;
-                for (int itineraryIndex = 0; itineraryIndex < this.technicianItineraries.size(); itineraryIndex++) {
-                    tmpCost = this.technicianItineraries.get(itineraryIndex).checkTechnician(demand);
+                TechnicianItinerary bestTechItinerary = null;
+                for (TechnicianItinerary techItinerary : technicianItineraries) {
+                    tmpCost = techItinerary.checkTechnician(demand);
                     if (bestCost > tmpCost) {
                         bestCost = tmpCost;
-                        bestTechItinerary = itineraryIndex;
+                        bestTechItinerary = techItinerary;
 
                     }
                 }
-                if (this.technicianItineraries.get(bestTechItinerary).addDemandTechnician(demand)) {
-                    this.technicianItineraryManager.create(this.technicianItineraries.get(bestTechItinerary));
+                if (bestTechItinerary != null && bestTechItinerary.addDemandTechnician(demand)) {
+                    this.technicianItineraryManager.create(bestTechItinerary);
                 }
             }
             this.plannedDemandManager.create(demand);
@@ -267,7 +266,8 @@ public class HeuristiqueConstructive {
             DayHorizon day = new DayHorizon(i);
             planning.addDayHorizon(day);
             this.daysManager.create(day);
-
+            this.technicianItineraries = new HashSet<>();
+            this.vehicleItineraries = new HashSet<>();
             // Vehicle Itineraries setup depending on available vehiclesUsed
             for (Vehicle v : this.vehiclesUsed) {
                 VehicleItinerary vehicleItinerary = new VehicleItinerary(v);
@@ -282,7 +282,6 @@ public class HeuristiqueConstructive {
                 day.addItinerary(technicianItinerary);
                 this.technicianItineraries.add(technicianItinerary);
             }
-
             switch (algoName) {
                 case "MinimalSolution":
                     this.minimalSolution(day);
