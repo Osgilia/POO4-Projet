@@ -302,64 +302,20 @@ public class Interface extends javax.swing.JFrame {
             Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
             Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
             // This solution doesn't exist yet for this instance
+
             if (planning == null) {
-                switch (jComboBoxSolutions.getSelectedItem().toString()) {
-                    case "MinimalSolution":
-                        try {
-                            HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
-                            heur.minimalSolution();
-                            displayTree();
-                            generateButtonStatus();
-                            JOptionPane d = new JOptionPane();
-                            d.showMessageDialog(this, "MinimalSolution generated");
-                            checkPlannedDemand(planning);
+                try {
+                    HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
+                    System.err.println(jComboBoxSolutions.getSelectedItem().toString());
+                    heur.generateSolution(jComboBoxSolutions.getSelectedItem().toString());
+                    displayTree();
+                    generateButtonStatus();
+                    JOptionPane d = new JOptionPane();
+                    d.showMessageDialog(this, jComboBoxSolutions.getSelectedItem().toString() + " generated");
+                    checkPlannedDemand(planning);
 
-                        } catch (IOException ex) {
-                            System.err.println("ERROR : " + ex);
-                        }
-                        break;
-                    case "BestTechnicianItinerarySolution":
-                        try {
-                            HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
-                            heur.bestTechnicianItinerarySolution();
-                            displayTree();
-                            generateButtonStatus();
-                            JOptionPane d = new JOptionPane();
-                            d.showMessageDialog(this, "Best Technician Itinerary Solution generated");
-                            checkPlannedDemand(planning);
-
-                        } catch (IOException ex) {
-                            System.err.println("ERROR : " + ex);
-                        }
-                        break;
-                    case "BestVehicleItinerarySolution":
-                        try {
-                            HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
-                            heur.bestVehicleItinerarySolution();
-                            displayTree();
-                            generateButtonStatus();
-                            JOptionPane d = new JOptionPane();
-                            d.showMessageDialog(this, "Best Vehicle Itinerary Solution generated");
-                            checkPlannedDemand(planning);
-
-                        } catch (IOException ex) {
-                            System.err.println("ERROR : " + ex);
-                        }
-                        break;
-                    case "BestItinerarySolution":
-                        try {
-                            HeuristiqueConstructive heur = new HeuristiqueConstructive(instance);
-                            heur.bestItinerarySolution();
-                            displayTree();
-                            generateButtonStatus();
-                            JOptionPane d = new JOptionPane();
-                            d.showMessageDialog(this, "Best Itinerary Solution generated");
-                            checkPlannedDemand(planning);
-
-                        } catch (IOException ex) {
-                            System.err.println("ERROR : " + ex);
-                        }
-                        break;
+                } catch (IOException ex) {
+                    System.err.println("ERROR : " + ex);
                 }
             } else {
                 //the solution is already generated
