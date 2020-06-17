@@ -84,7 +84,6 @@ public class HeuristiqueConstructive {
                 // if there is enough room in the truck we add the demand to this itinerary
                 // else we create a new used vehicle to carry the demand
                 for (VehicleItinerary vehicleItinerary : this.vehicleItineraries) {
-                    System.out.println(vehicleItinerary);
                     if (vehicleItinerary.checkVehicle(demand)) {
                         notEnoughVehicles = true;
                         continue;

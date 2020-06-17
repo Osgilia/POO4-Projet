@@ -10,6 +10,11 @@ import modele.Instance;
  */
 public interface DemandDao extends Dao<Demand> {
 
+    /**
+     * find demands by instance
+     * @param instance
+     * @return 
+     */
     public Collection<Demand> findByInstance(Instance instance);
 
 }

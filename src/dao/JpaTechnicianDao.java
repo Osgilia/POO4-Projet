@@ -15,10 +15,17 @@ public class JpaTechnicianDao extends JpaDao<Technician> implements TechnicianDa
 
     private static JpaTechnicianDao instance;
 
+    /**
+     * Dafault constructor
+     */
     private JpaTechnicianDao() {
         super(Technician.class);
     }
 
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaTechnicianDao getInstance() {
         if (instance == null) {
             instance = new JpaTechnicianDao();
@@ -61,6 +68,11 @@ public class JpaTechnicianDao extends JpaDao<Technician> implements TechnicianDa
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * find by instance
+     * @param instance
+     * @return 
+     */
     @Override
     public Collection<Technician> findbyInstance(Instance instance) {
         Query query = this.getEm().createNamedQuery("Technician.findByInstance")

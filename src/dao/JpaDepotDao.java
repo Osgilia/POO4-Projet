@@ -14,6 +14,10 @@ public class JpaDepotDao extends JpaDao<Depot> implements DepotDao {
         super(Depot.class);
     }
     
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaDepotDao getInstance() {
         if(instance == null) {
             instance = new JpaDepotDao();

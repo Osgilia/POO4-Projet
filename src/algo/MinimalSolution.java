@@ -38,11 +38,9 @@ public class MinimalSolution {
         // Get vehicle information
         Vehicle vehicleInstance = instance.getVehicle();
 
-//        System.out.println(vehicleInstance);
         //create the first sued vehicle
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicleInstance);
-        System.out.println(vehicles);
         List<PlannedDemand> plannedDemands = planning.getPlannedDemands();
         // Starts requests sequencing
         for (int i = 1; i <= instance.getNbDays(); i++) {

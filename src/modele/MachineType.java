@@ -173,19 +173,4 @@ public class MachineType implements Serializable {
         return false;
     }
 
-    /**
-     * Adds a demand associated to this type of machine
-     *
-     * @param demand
-     * @return true if success
-     */
-//    public boolean addDemand(Demand demand) {
-//        if (demand != null) {
-//            this.demandsMachineType.add(demand);
-//            if (this.demandsMachineType.contains(demand)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 }

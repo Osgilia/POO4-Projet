@@ -13,10 +13,17 @@ import modele.Instance;
 public class JpaDemandDao extends JpaDao<Demand> implements DemandDao {
     private static JpaDemandDao instance;
     
+    /**
+     * Default Constructor
+     */
     private JpaDemandDao() {
         super(Demand.class);
     }
     
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaDemandDao getInstance() {
         if(instance == null) {
             instance = new JpaDemandDao();
@@ -61,6 +68,12 @@ public class JpaDemandDao extends JpaDao<Demand> implements DemandDao {
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
     } 
 
+    
+    /**
+     * find demands by instance
+     * @param instance
+     * @return 
+     */
     @Override
     public Collection<Demand> findByInstance(Instance instance) {
         Query query = this.getEm().createNamedQuery("Demand.findByInstance")

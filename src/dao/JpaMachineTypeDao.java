@@ -10,10 +10,17 @@ import modele.MachineType;
 public class JpaMachineTypeDao extends JpaDao<MachineType> implements MachineTypeDao {
     private static JpaMachineTypeDao instance;
     
+    /**
+     * Default Constructor
+     */
     private JpaMachineTypeDao() {
         super(MachineType.class);
     }
     
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaMachineTypeDao getInstance() {
         if(instance == null) {
             instance = new JpaMachineTypeDao();

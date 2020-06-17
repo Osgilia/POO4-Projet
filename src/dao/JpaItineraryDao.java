@@ -10,10 +10,17 @@ import modele.Itinerary;
 public class JpaItineraryDao extends JpaDao<Itinerary> implements ItineraryDao {
     private static JpaItineraryDao instance;
     
+    /**
+     * Default Constructor
+     */
     private JpaItineraryDao() {
         super(Itinerary.class);
     }
     
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaItineraryDao getInstance() {
         if(instance == null) {
             instance = new JpaItineraryDao();
@@ -50,7 +57,7 @@ public class JpaItineraryDao extends JpaDao<Itinerary> implements ItineraryDao {
     public boolean update(Itinerary obj) {
         return super.update(obj); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public boolean create(Itinerary obj) {
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.

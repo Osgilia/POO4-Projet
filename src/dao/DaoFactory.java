@@ -6,6 +6,11 @@ package dao;
  */
 public abstract class DaoFactory {
 
+    /**
+     * get the DaoFactory
+     * @param type
+     * @return 
+     */
     public static DaoFactory getDaoFactory(PersistenceType type) {
         if (type.equals(PersistenceType.Jpa)) {
             return new DaoFactoryJpa();

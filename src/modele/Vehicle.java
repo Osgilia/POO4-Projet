@@ -224,6 +224,10 @@ public class Vehicle implements Serializable {
         return "Vehicule (" + id + ")";
     }
 
+    /**
+     * add a vehicleItinerary from a solution
+     * @param v 
+     */
     public void addItinerary(VehicleItinerary v) {
         this.itineraries.add(v);
     }

@@ -16,10 +16,17 @@ public class JpaPlannedDemandDao extends JpaDao<PlannedDemand> implements Planne
 
     private static JpaPlannedDemandDao instance;
 
+    /**
+     * Dafault constructor
+     */
     private JpaPlannedDemandDao() {
         super(PlannedDemand.class);
     }
 
+    /**
+     * get isntance
+     * @return 
+     */
     public static JpaPlannedDemandDao getInstance() {
         if (instance == null) {
             instance = new JpaPlannedDemandDao();
@@ -62,6 +69,12 @@ public class JpaPlannedDemandDao extends JpaDao<PlannedDemand> implements Planne
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * find by demand state and planning
+     * @param stateDemand
+     * @param planning
+     * @return 
+     */
     @Override
     public Collection<PlannedDemand> findByStatedemandAndPlanning(int stateDemand, Planning planning) {
         try{

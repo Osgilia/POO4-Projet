@@ -3,7 +3,8 @@ package dao;
 import java.util.Collection;
 
 /**
- * Interface générique pour implémenter un DAO
+ * 
+ * Generic interface to implement a DAO
  * @author Henri, Lucas, Louis
  * @param <T>
  */

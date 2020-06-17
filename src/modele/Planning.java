@@ -44,9 +44,14 @@ public class Planning implements Serializable {
     @Column(name = "ID")
     private Integer id;
 
+    
+    /**
+     * name of the algorithm used
+     */
     @Column(name = "ALGONAME")
     private String algoName;
 
+    
     @Column(name = "COST")
     private double cost;
 
@@ -60,6 +65,7 @@ public class Planning implements Serializable {
     @Column(name = "NBDAYS")
     private int nbDays;
 
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "planning")
     private List<DayHorizon> days;
 

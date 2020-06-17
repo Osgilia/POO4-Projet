@@ -4,7 +4,7 @@ import modele.Depot;
 
 /**
  *
- * @author Lucas Van Den Driessche
+ * @author Henri, Lucas, Louis
  */
 public interface DepotDao extends Dao<Depot> {
     

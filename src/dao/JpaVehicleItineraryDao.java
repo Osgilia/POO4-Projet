@@ -9,10 +9,15 @@ import modele.VehicleItinerary;
  */
 public class JpaVehicleItineraryDao extends JpaDao<VehicleItinerary> implements VehicleItineraryDao {
     private static JpaVehicleItineraryDao instance;
+    
+    /**
+     * Default constructor
+     */
     private JpaVehicleItineraryDao() {
         super(VehicleItinerary.class);
     }
 
+    //get instance
     public static JpaVehicleItineraryDao getInstance() {
         if(instance == null) {
             instance = new JpaVehicleItineraryDao();
