@@ -33,7 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Instance.findAll", query = "SELECT i FROM Instance i")
     , @NamedQuery(name = "Instance.findById", query = "SELECT i FROM Instance i WHERE i.id = :id")
     , @NamedQuery(name = "Instance.findByName", query = "SELECT i FROM Instance i WHERE i.name = :name")
-    , @NamedQuery(name = "Instance.findByDataset", query = "SELECT i FROM Instance i WHERE i.dataset = :dataset")})
+    , @NamedQuery(name = "Instance.findByDataset", query = "SELECT i FROM Instance i WHERE i.dataset = :dataset")
+    , @NamedQuery(name = "Instance.findByNameAndDataSet", query = "SELECT i FROM Instance i WHERE i.dataset = :dataset AND i.name = :name")})
 public class Instance implements Serializable {
 
     /**
