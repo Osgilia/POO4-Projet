@@ -11,10 +11,17 @@ import modele.Instance;
 public class JpaInstanceDao extends JpaDao<Instance> implements InstanceDao {
     private static JpaInstanceDao instance;
     
-    public JpaInstanceDao() {
+    /**
+     * Default Constructor
+     */
+    private JpaInstanceDao() {
         super(Instance.class);
     }
     
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaInstanceDao getInstance() {
         if(instance == null) {
             instance = new JpaInstanceDao();
@@ -57,6 +64,11 @@ public class JpaInstanceDao extends JpaDao<Instance> implements InstanceDao {
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
     }
     
+    /**
+     * find instance by name
+     * @param name
+     * @return 
+     */
     @Override
     public Instance findByName(String name) {
         Query query = this.getEm().createNamedQuery("Instance.findByName")
@@ -65,6 +77,11 @@ public class JpaInstanceDao extends JpaDao<Instance> implements InstanceDao {
         return (Instance) query.getSingleResult();
     }
 
+    /**
+     * find instance by id
+     * @param id
+     * @return 
+     */
     @Override
     public Instance findById(Integer id) {
         Query query = this.getEm().createNamedQuery("Instance.findById")
@@ -72,6 +89,11 @@ public class JpaInstanceDao extends JpaDao<Instance> implements InstanceDao {
         
         return (Instance) query.getSingleResult();    }
     
+    /**
+     * find instance by dataset
+     * @param dataset
+     * @return 
+     */
     @Override
     public Collection<Instance> findByDataset(String dataset) {
         Query query = this.getEm().createNamedQuery("Instance.findByDataset")

@@ -216,9 +216,9 @@ public class Interface extends javax.swing.JFrame {
                 int result = input.showSaveDialog(this);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     String path = input.getSelectedFile().getAbsolutePath();
-                    System.out.println(path);
+                    // System.out.println(path);
                     path = path + "\\" + instance.getName() + "-" + planning.getAlgoName() + ".txt";
-                    System.out.println(path);
+                    // System.out.println(path);
                     try {
                         PrintSolution.print(instance, planning, path);
                         JOptionPane d = new JOptionPane();
@@ -240,13 +240,13 @@ public class Interface extends javax.swing.JFrame {
         int result = input.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             String path = input.getSelectedFile().getAbsolutePath();
-            System.out.println(path);
+            // System.out.println(path);
             String extension = "";
             int i = path.lastIndexOf('.');
             if (i > 0) {
                 extension = path.substring(i + 1);
             }
-            System.out.println("Extension : " + extension);
+            // System.out.println("Extension : " + extension);
             if (extension == null) {
                 JOptionPane d = new JOptionPane();
                 d.showMessageDialog(this, "Wrong file type.");
@@ -255,7 +255,7 @@ public class Interface extends javax.swing.JFrame {
                 d.showMessageDialog(this, "Please, choose a text file.");
             } else {
                 path = path.replace("\\", "\\\\");
-                System.out.println(path);
+                // System.out.println(path);
                 Instance instance = ReadInstance.readInstance(path);
                 refreshComboBox();
                 path = path.replace("\\\\", "\\");
@@ -402,7 +402,7 @@ public class Interface extends javax.swing.JFrame {
     public void refreshComboBox() {
         fillComboBoxDataset();
         fillComboBoxInstances();
-        System.out.println("ComboBox REFRESHED");
+        // System.out.println("ComboBox REFRESHED");
     }
 
     /**
@@ -412,7 +412,6 @@ public class Interface extends javax.swing.JFrame {
         //this.setSize(700, 500);            //Set width : 600 et height 400 ; coord (0,0) => Top & Left
         this.setLocationRelativeTo(null);  //Position on the screen : null is centrale position
         this.setTitle("Upload");            //Window's title
-        //this.setDefaultCloseOperation(EXIT_ON_CLOSE);    //Lors de la fermeture de la fenetre, quitte l’application (fait un appel à System.exit()).
         this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);   //During the window closing,  destroy the window object
         this.getContentPane().setBackground(Color.white);       // Set the background color
     }

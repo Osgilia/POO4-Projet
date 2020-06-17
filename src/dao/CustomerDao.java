@@ -11,14 +11,24 @@ import modele.Instance;
 public interface CustomerDao extends Dao<Customer> {
 
     /**
-     * Renvoie tous les clients non livrés par un véhicule
-     *
+     * find all the customers not delivered
      * @return une collection de clients
      */
     public Collection<Customer> findNotServed();
     
+    /**
+     * find customers by Instance
+     * @param instance
+     * @return 
+     */
     public Collection<Customer> findByInstance(Instance instance);
     
+    /**
+     * find a customer in an isntance
+     * @param instance
+     * @param id
+     * @return 
+     */
     public Customer findByInstanceCustomer(Instance instance, Integer id);
 
 }

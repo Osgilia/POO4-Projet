@@ -11,13 +11,12 @@ import modele.Vehicle;
 public interface VehicleDao extends Dao<Vehicle> {
 
     /**
-     * Permet de renvoyer tous les véhicules non encore utilisés Càd ceux non
-     * affectés à un planning
+     * return all vehicles not yet used, i.e. those not assigned to a schedule
      *
      * @return
      */
     public Collection<Vehicle> findAllNotUsed();
 
-    public Vehicle findbyInstance(Integer  instanceId);
+    public Vehicle findbyInstance(Integer instanceId);
 
 }

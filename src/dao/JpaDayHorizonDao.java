@@ -10,10 +10,17 @@ import modele.DayHorizon;
 public class JpaDayHorizonDao extends JpaDao<DayHorizon> implements DayHorizonDao {
     private static JpaDayHorizonDao instance;
     
+    /**
+     * Default Constructor
+     */
     private JpaDayHorizonDao() {
         super(DayHorizon.class);
     }
     
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaDayHorizonDao getInstance() {
         if(instance == null) {
             instance = new JpaDayHorizonDao();

@@ -16,10 +16,17 @@ public class JpaVehicleDao extends JpaDao<Vehicle> implements VehicleDao {
 
     private static JpaVehicleDao instance;
 
+    /**
+     * Default Constructor
+     */
     private JpaVehicleDao() {
         super(Vehicle.class);
     }
 
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaVehicleDao getInstance() {
         if (instance == null) {
             instance = new JpaVehicleDao();
@@ -62,6 +69,10 @@ public class JpaVehicleDao extends JpaDao<Vehicle> implements VehicleDao {
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * find vehicle not used
+     * @return 
+     */
     @Override
     public List<Vehicle> findAllNotUsed() {
         Query query = this.getEm().createNamedQuery("Vehicle.findAllNotUsed");
@@ -72,6 +83,11 @@ public class JpaVehicleDao extends JpaDao<Vehicle> implements VehicleDao {
         return vehicules;
     }
 
+    /**
+     * find by instance
+     * @param instanceId
+     * @return 
+     */
     @Override
     public Vehicle findbyInstance(Integer instanceId) {
         Query query = this.getEm().createNamedQuery("Vehicle.findByInstance")

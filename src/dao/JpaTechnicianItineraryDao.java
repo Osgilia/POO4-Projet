@@ -9,10 +9,18 @@ import modele.TechnicianItinerary;
  */
 public class JpaTechnicianItineraryDao extends JpaDao<TechnicianItinerary> implements TechnicianItineraryDao {
     private static JpaTechnicianItineraryDao instance;
+    
+    /**
+     * Dafault constructor
+     */
     private JpaTechnicianItineraryDao() {
         super(TechnicianItinerary.class);
     }
 
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaTechnicianItineraryDao getInstance() {
         if(instance == null) {
             instance = new JpaTechnicianItineraryDao();

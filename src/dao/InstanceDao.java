@@ -10,7 +10,7 @@ import modele.Instance;
 public interface InstanceDao extends Dao<Instance> {
 
     /**
-     * Renvoie l'instance dont le nom est name
+     * find the instance by name
      *
      * @param name
      * @return
@@ -18,15 +18,15 @@ public interface InstanceDao extends Dao<Instance> {
     public Instance findByName(String name);
 
     /**
-     * 
+     * find the instance by id
      * @param id
      * @return 
      */
     public Instance findById(Integer id);
     
     /**
-     * 
-     * @param id
+     * find instance by dataset
+     * @param dataset
      * @return 
      */
     public Collection<Instance> findByDataset(String dataset);

@@ -33,6 +33,11 @@ public abstract class JpaDao<T> implements Dao<T> {
         this.classeEntite = classeEntite;
     }
 
+    /**
+     * create an object in the DB
+     * @param obj
+     * @return 
+     */
     @Override
     public boolean create(T obj) {
         EntityTransaction et = this.em.getTransaction();
@@ -47,6 +52,11 @@ public abstract class JpaDao<T> implements Dao<T> {
         return true;
     }
 
+    /**
+     * update an object
+     * @param obj
+     * @return 
+     */
     @Override
     public boolean update(T obj) {
         EntityTransaction et = this.em.getTransaction();
@@ -61,6 +71,11 @@ public abstract class JpaDao<T> implements Dao<T> {
         return true;
     }
 
+    /**
+     * delete an object from the DB
+     * @param obj
+     * @return 
+     */
     @Override
     public boolean delete(T obj) {
         EntityTransaction et = em.getTransaction();
@@ -75,6 +90,9 @@ public abstract class JpaDao<T> implements Dao<T> {
         return true;
     }
 
+    /**
+     * close the entity manager
+     */
     @Override
     public void close() {
         if (em != null && em.isOpen()) {
@@ -85,11 +103,20 @@ public abstract class JpaDao<T> implements Dao<T> {
         }
     }
 
+    /**
+     * find an object in the database following his Id
+     * @param id
+     * @return 
+     */
     @Override
     public T find(Integer id) {
         return this.em.find(this.classeEntite, id);
     }
 
+    /**
+     * find all the object
+     * @return 
+     */
     @Override
     public Collection<T> findAll() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -99,6 +126,10 @@ public abstract class JpaDao<T> implements Dao<T> {
         return em.createQuery(cq).getResultList();
     }
 
+    /**
+     * delete all the objects of a specific class
+     * @return 
+     */
     @Override
     public boolean deleteAll() {
         EntityTransaction et = em.getTransaction();
@@ -115,10 +146,18 @@ public abstract class JpaDao<T> implements Dao<T> {
         return true;
     }
 
+    /**
+     * get the EntituManager
+     * @return 
+     */
     public EntityManager getEm() {
         return em;
     }
 
+    /**
+     * get the class entity
+     * @return 
+     */
     public Class<T> getClasseEntite() {
         return classeEntite;
     }

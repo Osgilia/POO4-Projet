@@ -14,10 +14,17 @@ public class JpaPlanningDao extends JpaDao<Planning> implements PlanningDao {
 
     private static JpaPlanningDao instance;
     
+    /**
+     * Default constructor
+     */
     private JpaPlanningDao() {
         super(Planning.class);
     }
     
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaPlanningDao getInstance() {
         if(instance == null) {
             instance = new JpaPlanningDao();
@@ -60,6 +67,12 @@ public class JpaPlanningDao extends JpaDao<Planning> implements PlanningDao {
         return super.create(obj); //To change body of generated methods, choose Tools | Templates.
     }
     
+    /**
+     * find planning by algoName and instance
+     * @param algoName
+     * @param ninstance
+     * @return 
+     */
     @Override
     public Planning findByAlgoNameAndInstance(String algoName,Instance ninstance) {
         try{

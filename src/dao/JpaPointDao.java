@@ -9,10 +9,18 @@ import modele.Point;
  */
 public class JpaPointDao extends JpaDao<Point> implements PointDao {
     private static JpaPointDao instance;
+    
+    /**
+     * dafault Constructor
+     */
     private JpaPointDao() {
         super(Point.class);
     }
 
+    /**
+     * get instance
+     * @return 
+     */
     public static JpaPointDao getInstance() {
         if(instance == null) {
             instance = new JpaPointDao();
