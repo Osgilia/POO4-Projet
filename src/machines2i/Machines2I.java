@@ -5,9 +5,11 @@
  */
 package machines2i;
 
+import vuecontrole.Interface;
+
 /**
  *
- * @author Osgilia
+ * @author Henri, Lucas, Louis
  */
 public class Machines2I {
 
@@ -15,7 +17,9 @@ public class Machines2I {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        // launch the interface
+        Interface.main(args);
+    
     }
     
 }

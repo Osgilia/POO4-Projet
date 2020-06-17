@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="Machines2IPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>modele.Point</class>
+    <class>modele.Depot</class>
+    <class>modele.Technician</class>
+    <class>modele.Customer</class>
+    <class>modele.Route</class>
+    <class>modele.Vehicle</class>
+    <class>modele.Planning</class>
+    <class>modele.Demand</class>
+    <class>modele.OrderMachine</class>
+    <class>modele.Instance</class>
+    <class>modele.Installation</class>
+    <class>modele.Itinerary</class>
+    <class>modele.DayHorizon</class>
+    <class>modele.TechnicianItinerary</class>
+    <class>modele.VehicleItinerary</class>
+    <class>modele.CustomerVisit</class>
+    <class>modele.MachineType</class>
+    <class>modele.PlannedDemand</class>
+    <class>modele.ItineraryPoint</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/machines2i"/>
+      <property name="javax.persistence.jdbc.user" value="Henri"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="javax.persistence.jdbc.password" value="123"/>
+      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+      <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+    </properties>
+  </persistence-unit>
+</persistence>
