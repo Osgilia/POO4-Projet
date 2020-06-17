@@ -30,5 +30,13 @@ public interface InstanceDao extends Dao<Instance> {
      * @return 
      */
     public Collection<Instance> findByDataset(String dataset);
+    
+        /**
+     * find instance by dataset and name
+     * @param name
+     * @param dataset
+     * @return 
+     */
+    public Instance findByNameAndDataSet(String name, String dataset);
 
 }

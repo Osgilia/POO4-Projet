@@ -206,7 +206,7 @@ public class Interface extends javax.swing.JFrame {
             InstanceDao instancemanager = factory.getInstanceDao();
             PlanningDao planningManager = factory.getPlanningDao();
 
-            Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
+            Instance instance = instancemanager.findByNameAndDataSet(jComboBoxInstances.getSelectedItem().toString(), jComboBoxDataset.getSelectedItem().toString());
             Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
             if (planning != null) {
                 //the solution is already calculated
@@ -299,7 +299,7 @@ public class Interface extends javax.swing.JFrame {
             InstanceDao instancemanager = factory.getInstanceDao();
             PlanningDao planningManager = factory.getPlanningDao();
 
-            Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
+            Instance instance = instancemanager.findByNameAndDataSet(jComboBoxInstances.getSelectedItem().toString(), jComboBoxDataset.getSelectedItem().toString());
             Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
             // This solution doesn't exist yet for this instance
 
@@ -353,7 +353,7 @@ public class Interface extends javax.swing.JFrame {
             DaoFactory factory = DaoFactory.getDaoFactory(PersistenceType.Jpa);
             InstanceDao instancemanager = factory.getInstanceDao();
             PlanningDao planningManager = factory.getPlanningDao();
-            Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
+            Instance instance = instancemanager.findByNameAndDataSet(jComboBoxInstances.getSelectedItem().toString(), jComboBoxDataset.getSelectedItem().toString());
             Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
             // This solution for this instance is already generated
             if (planning != null) {
@@ -426,7 +426,7 @@ public class Interface extends javax.swing.JFrame {
             InstanceDao instancemanager = factory.getInstanceDao();
             PlanningDao planningManager = factory.getPlanningDao();
 
-            Instance instance = instancemanager.findByName(jComboBoxInstances.getSelectedItem().toString());
+            Instance instance = instancemanager.findByNameAndDataSet(jComboBoxInstances.getSelectedItem().toString(), jComboBoxDataset.getSelectedItem().toString());
 
             Planning planning = planningManager.findByAlgoNameAndInstance(jComboBoxSolutions.getSelectedItem().toString(), instance);
             VehicleItineraryDao vehicleItineraryManager = factory.getVehicleItineraryDao();
